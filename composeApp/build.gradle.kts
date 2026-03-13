@@ -1,0 +1,125 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.detekt)
+    id("spotless-conventions")
+}
+
+kotlin {
+    androidLibrary {
+        namespace = "com.vibely.pos.lib"
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
+        androidResources {
+            enable = true
+        }
+    }
+
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
+
+    jvm()
+
+    js {
+        browser()
+        binaries.executable()
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        binaries.executable()
+    }
+
+    sourceSets {
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
+        }
+        commonMain.dependencies {
+            implementation(libs.androidx.ui.tooling.preview)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.composeIcons.fontAwesome)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.androidx.navigation3.ui)
+            implementation(libs.material3.windowsize)
+
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.ktor.clientCore)
+            implementation(libs.ktor.clientContentNegotiation)
+            implementation(libs.ktor.clientSerialization)
+            implementation(libs.ktor.clientAuth)
+            implementation(libs.ktor.clientLogging)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(projects.shared)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+        jvmMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.ktor.clientCio)
+        }
+        jvmTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.koin.test)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.mockk)
+        }
+    }
+}
+
+compose.desktop {
+    application {
+        mainClass = "com.vibely.pos.MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "com.vibely.pos"
+            packageVersion = "1.0.0"
+        }
+    }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files("$rootDir/detekt.yml"))
+    baseline = file("$rootDir/detekt-baseline.xml")
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "17"
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        txt.required.set(true)
+        sarif.required.set(true)
+    }
+}
