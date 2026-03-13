@@ -14,7 +14,7 @@ import org.koin.dsl.module
 val backendModule =
     module {
         // Supabase client singleton
-        single<SupabaseClient> { SupabaseConfig.createClient() }
+        single<SupabaseClient> { SupabaseConfig.client }
 
         // Backend-specific services will be registered here
         // Example:

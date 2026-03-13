@@ -530,3 +530,216 @@ formatting:
     autoCorrect: true
     layout: 'idea'
 
+# Koin-Detekt Rules for Koin 4.x
+# https://github.com/androidbroadcast/Koin-Detekt
+koin-rules:
+  active: true
+
+  # Service Locator Anti-patterns
+  NoKoinComponentInterface:
+    active: true
+    allowedSuperTypes:
+      - 'Application'
+      - 'Activity'
+      - 'Fragment'
+      - 'ViewModel'
+      - 'Service'
+
+  NoInjectDelegate:
+    active: true
+    allowedSuperTypes:
+      - 'Application'
+      - 'Activity'
+      - 'AppCompatActivity'
+      - 'Fragment'
+      - 'Service'
+      - 'GlanceAppWidget'
+
+  PreferConstructorInjection:
+    active: true
+
+  PreferLazyConstructorInjection:
+    active: true
+
+  NoGetInComposable:
+    active: true
+    excludeAnnotatedClasses:
+      - 'Composable'
+      - 'Preview'
+
+  NoGetOutsideModuleDefinition:
+    active: true
+
+  # Module DSL Best Practices
+  SingletonInsteadOfSingle:
+    active: false  # Prefer 'single' for consistency
+
+  FactoryInsteadOfProvider:
+    active: false  # Prefer 'factory' for consistency
+
+  OverrideInIncludedModule:
+    active: true
+
+  RedundantSingle:
+    active: true
+
+  IncludeModuleInsteadOfSubmodules:
+    active: true
+
+  ConstructorDslAmbiguousParameters:
+    active: true
+
+  GenericDefinitionWithoutQualifier:
+    active: true
+
+  SingleForNonSharedDependency:
+    active: true
+    namePatterns:
+      - '.*UseCase'
+      - '.*Command'
+      - '.*Handler'
+      - '.*Validator'
+
+  FactoryForStatefulDependency:
+    active: true
+
+  KClassInsteadOfClass:
+    active: true
+
+  MissingModuleName:
+    active: true
+
+  RedundantNamed:
+    active: true
+
+  QualifierOnNonGenericDefinition:
+    active: true
+
+  MissingFactoryFunction:
+    active: true
+
+  # Scope Management
+  ScopeDeclareWithActivityOrFragment:
+    active: true
+    additionalLeakProneTypes:
+      - 'View'
+      - 'Context'
+
+  AndroidContextNotFromKoin:
+    active: true
+
+  GlobalScopeWithModule:
+    active: true
+
+  FragmentScopeWithActivity:
+    active: true
+
+  GetScopeInsteadOfScope:
+    active: true
+
+  GetKoinInsteadOfKoinComponent:
+    active: true
+
+  OrphanedScopeClose:
+    active: true
+
+  RedundantScopeId:
+    active: true
+
+  # Platform-Specific
+  StartKoinInActivity:
+    active: true
+
+  ViewModelCreatedWithGet:
+    active: true
+
+  ViewModelCreatedWithNew:
+    active: true
+
+  AndroidContextByInject:
+    active: true
+
+  AndroidViewModelForViewModel:
+    active: true
+
+  ViewModelInsteadOfAndroidViewModel:
+    active: false  # Allow AndroidViewModel when needed
+
+  WorkerCreatedWithGet:
+    active: true
+
+  WorkerCreatedWithNew:
+    active: true
+
+  # Architecture
+  DeprecatedKoinApi:
+    active: true
+
+  KoinComponentInsteadOfExtension:
+    active: true
+
+  InjectInsteadOfGet:
+    active: false  # Allow get() for immediate resolution
+
+  GetInsteadOfInject:
+    active: false  # Allow inject() for lazy resolution
+
+  # Koin Annotations (if using koin-annotations)
+  AnnotationProcessorNotConfigured:
+    active: true
+
+  ModuleMissingIncludes:
+    active: true
+
+  MissingModuleDeclaration:
+    active: true
+
+  ComponentScanInKoinMain:
+    active: true
+
+  SingleOnAbstractClass:
+    active: true
+
+  KoinWorkerOnNonWorker:
+    active: true
+
+  InjectedParamAnnotationOrder:
+    active: true
+
+  MissingKoinStopInTest:
+    active: true
+    additionalTeardownAnnotations:
+      - 'AfterTest'
+      - 'Cleanup'
+
+  KoinViewModelOnNonViewModel:
+    active: true
+
+  QualifierObfuscationRisk:
+    active: true
+
+  ModuleOnObject:
+    active: true
+
+  ModuleOnNonPublic:
+    active: true
+
+  MissingScope:
+    active: true
+
+  MissingComponentScan:
+    active: true
+
+  RedundantQualifier:
+    active: true
+
+  PropertyOnVal:
+    active: true
+
+  PropertyOnVar:
+    active: true
+
+  IncompatibleAnnotationCombination:
+    active: true
+
+

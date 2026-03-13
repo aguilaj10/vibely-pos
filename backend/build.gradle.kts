@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ktor)
     alias(libs.plugins.kover)
+    alias(libs.plugins.detekt)
     application
 }
 
@@ -40,4 +41,25 @@ dependencies {
     // Testing
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.ktor.serverTestHost)
+
+    // Detekt Plugins
+    detektPlugins(libs.detekt.koin.rules)
+}
+
+// Detekt configuration
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files("$rootDir/detekt.yml"))
+    baseline = file("$rootDir/detekt-baseline.xml")
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "17"
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        txt.required.set(true)
+        sarif.required.set(true)
+    }
 }

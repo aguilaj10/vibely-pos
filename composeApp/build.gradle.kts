@@ -114,6 +114,10 @@ detekt {
     baseline = file("$rootDir/detekt-baseline.xml")
 }
 
+dependencies {
+    detektPlugins(libs.detekt.koin.rules)
+}
+
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     jvmTarget = "17"
     reports {

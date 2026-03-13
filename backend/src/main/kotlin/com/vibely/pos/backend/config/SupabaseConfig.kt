@@ -14,20 +14,25 @@ object SupabaseConfig {
      * Should be set via SUPABASE_URL environment variable.
      */
     private val supabaseUrl: String = System.getenv("SUPABASE_URL")
-        ?: throw IllegalStateException("SUPABASE_URL environment variable is not set")
+        ?: error("SUPABASE_URL environment variable is not set")
 
     /**
      * The Supabase service role key (for backend server use only).
      * Should be set via SUPABASE_SERVICE_ROLE_KEY environment variable.
      */
     private val supabaseServiceKey: String = System.getenv("SUPABASE_SERVICE_ROLE_KEY")
-        ?: throw IllegalStateException("SUPABASE_SERVICE_ROLE_KEY environment variable is not set")
+        ?: error("SUPABASE_SERVICE_ROLE_KEY environment variable is not set")
+
+    /**
+     * Lazy-initialized singleton Supabase client.
+     */
+    val client: SupabaseClient by lazy { createClient() }
 
     /**
      * Creates and configures a Supabase client instance.
      * Uses CIO engine for HTTP client and enables Postgrest module.
      */
-    fun createClient(): SupabaseClient {
+    private fun createClient(): SupabaseClient {
         return createSupabaseClient(
             supabaseUrl = supabaseUrl,
             supabaseKey = supabaseServiceKey
@@ -38,9 +43,4 @@ object SupabaseConfig {
             httpEngine = CIO.create()
         }
     }
-
-    /**
-     * Lazy-initialized singleton Supabase client.
-     */
-    val client: SupabaseClient by lazy { createClient() }
 }
