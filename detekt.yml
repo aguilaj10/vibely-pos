@@ -519,7 +519,9 @@ style:
   VarCouldBeVal:
     active: true
   WildcardImport:
-    active: false
+    active: true
+    excludeImports:
+      - 'kotlinx.coroutines.*'
 
 formatting:
   active: true

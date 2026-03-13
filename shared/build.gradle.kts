@@ -46,6 +46,9 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
 
+            // DI - Koin
+            api(libs.koin.core)
+
             // Ktor Client - Core
             implementation(libs.ktor.clientCore)
             implementation(libs.ktor.clientContentNegotiation)
@@ -54,6 +57,10 @@ kotlin {
 
             // Ktor Client - Auth (para manejo de tokens)
             implementation(libs.ktor.clientAuth)
+
+            // Supabase
+            implementation(libs.supabase.postgrest)
+            implementation(libs.supabase.storage)
 
             // Cryptography KMP - for encryption across platforms
             implementation(libs.cryptography.core)
@@ -98,6 +105,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.ktor.clientMock)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.koin.test)
         }
     }
 }

@@ -3,6 +3,7 @@
 A modern, cross-platform Point of Sale system built with Kotlin Multiplatform and Compose Multiplatform.
 
 [![CI](https://github.com/yourusername/vibely-pos/workflows/CI/badge.svg)](https://github.com/yourusername/vibely-pos/actions)
+[![Coverage](.github/badges/jacoco.svg)](https://github.com/yourusername/vibely-pos/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Kotlin](https://img.shields.io/badge/kotlin-2.3.10-blue.svg)](https://kotlinlang.org)
 
@@ -122,8 +123,28 @@ This project maintains high code quality standards:
 ./gradlew test
 
 # Run tests with coverage
-./gradlew koverXmlReport
+./gradlew koverXmlReport koverHtmlReport
+
+# View HTML coverage report
+open build/reports/kover/html/index.html
+
+# Run tests for specific platform
+./gradlew jvmTest           # JVM/Desktop tests
+./gradlew jsTest            # JavaScript tests
+./gradlew iosSimulatorArm64Test  # iOS tests
 ```
+
+### Continuous Integration
+
+The project uses GitHub Actions for CI/CD with the following checks:
+
+- **Code Quality** - Spotless formatting and Detekt static analysis
+- **Multi-platform Builds** - Desktop (JVM), Android, iOS, Web (JS/Wasm)
+- **Automated Testing** - Unit tests on all platforms
+- **Code Coverage** - Kover reports with badge generation
+- **Parallel Execution** - Fast feedback with parallel jobs
+
+All checks must pass before merging.
 
 ## Contributing
 

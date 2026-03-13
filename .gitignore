@@ -47,3 +47,6 @@ detekt-baseline.xml
 
 # Compose Resources
 composeResources/
+/.kotlin/
+.env
+/.claude/WEEK2_VERIFICATION_REPORT.md

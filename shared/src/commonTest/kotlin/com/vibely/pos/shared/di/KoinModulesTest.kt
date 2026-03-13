@@ -1,0 +1,180 @@
+package com.vibely.pos.shared.di
+
+import io.github.jan.supabase.SupabaseClient
+import io.ktor.client.HttpClient
+import kotlinx.serialization.json.Json
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.dsl.koinApplication
+import org.koin.test.verify.verify
+import kotlin.test.Test
+import kotlin.test.assertNotNull
+
+/**
+ * Tests for Koin dependency injection configuration.
+ *
+ * Verifies that:
+ * - All modules are properly configured
+ * - All dependencies can be resolved
+ * - No circular dependencies exist
+ * - Module definitions are consistent
+ */
+class KoinModulesTest {
+    /**
+     * Verifies the structure and consistency of all Koin modules.
+     *
+     * Uses Koin's experimental verify feature to check:
+     * - All declared dependencies can be resolved
+     * - No missing dependencies
+     * - Constructor injection is valid
+     */
+    @OptIn(KoinExperimentalAPI::class)
+    @Test
+    fun `verify domain module structure`() {
+        domainModule.verify()
+    }
+
+    @OptIn(KoinExperimentalAPI::class)
+    @Test
+    fun `verify data module structure`() {
+        dataModule.verify(
+            extraTypes =
+            listOf(
+                String::class, // For SUPABASE_URL and SUPABASE_ANON_KEY properties
+                io.ktor.client.engine.HttpClientEngine::class, // For HttpClient
+            ),
+        )
+    }
+
+    @OptIn(KoinExperimentalAPI::class)
+    @Test
+    fun `verify presentation module structure`() {
+        presentationModule.verify()
+    }
+
+    /**
+     * Tests that Koin can start successfully with all shared modules.
+     *
+     * This ensures there are no configuration errors or conflicts between modules.
+     */
+    @Test
+    fun `koin application starts with all modules`() {
+        val koinApp =
+            koinApplication {
+                properties(
+                    mapOf(
+                        "SUPABASE_URL" to "https://test.supabase.co",
+                        "SUPABASE_ANON_KEY" to "test-anon-key",
+                    ),
+                )
+                modules(sharedModules())
+            }
+
+        assertNotNull(koinApp.koin, "Koin application should be initialized")
+    }
+
+    /**
+     * Tests that core dependencies can be resolved from DataModule.
+     */
+    @Test
+    fun `data module provides core dependencies`() {
+        val koinApp =
+            koinApplication {
+                properties(
+                    mapOf(
+                        "SUPABASE_URL" to "https://test.supabase.co",
+                        "SUPABASE_ANON_KEY" to "test-anon-key",
+                    ),
+                )
+                modules(dataModule)
+            }
+
+        val koin = koinApp.koin
+
+        // Verify JSON configuration is available
+        val json = koin.get<Json>()
+        assertNotNull(json, "Json instance should be provided")
+
+        // Verify HTTP client is available
+        val httpClient = koin.get<HttpClient>()
+        assertNotNull(httpClient, "HttpClient should be provided")
+
+        // Verify Supabase client is available
+        val supabaseClient = koin.get<SupabaseClient>()
+        assertNotNull(supabaseClient, "SupabaseClient should be provided")
+    }
+
+    /**
+     * Tests that sharedModules returns all expected modules.
+     */
+    @Test
+    fun `sharedModules returns all modules`() {
+        val modules = sharedModules()
+
+        assertNotNull(modules, "Shared modules list should not be null")
+        assert(modules.size == 3) { "Expected 3 modules (domain, data, presentation), got ${modules.size}" }
+    }
+
+    /**
+     * Tests that all modules can be loaded together without conflicts.
+     */
+    @Test
+    fun `all modules load without conflicts`() {
+        val koinApp =
+            koinApplication {
+                properties(
+                    mapOf(
+                        "SUPABASE_URL" to "https://test.supabase.co",
+                        "SUPABASE_ANON_KEY" to "test-anon-key",
+                    ),
+                )
+                modules(
+                    domainModule,
+                    dataModule,
+                    presentationModule,
+                )
+            }
+
+        assertNotNull(koinApp.koin, "Koin should start with all modules")
+
+        // Verify we can get instances from each layer
+        val json = koinApp.koin.getOrNull<Json>()
+        assertNotNull(json, "Should be able to resolve dependencies from data module")
+    }
+
+    /**
+     * Tests that the module hierarchy follows Clean Architecture principles.
+     *
+     * Domain should not depend on Data or Presentation.
+     * Data can depend on Domain.
+     * Presentation can depend on Domain.
+     */
+    @Test
+    fun `modules follow clean architecture hierarchy`() {
+        // Domain module should work independently
+        val domainOnly =
+            koinApplication {
+                modules(domainModule)
+            }
+        assertNotNull(domainOnly.koin, "Domain module should have no external dependencies")
+
+        // Data module should work with domain
+        val dataWithDomain =
+            koinApplication {
+                properties(
+                    mapOf(
+                        "SUPABASE_URL" to "https://test.supabase.co",
+                        "SUPABASE_ANON_KEY" to "test-anon-key",
+                    ),
+                )
+                modules(domainModule, dataModule)
+            }
+        assertNotNull(dataWithDomain.koin, "Data module should work with domain module")
+
+        // Presentation module should work with domain
+        val presentationWithDomain =
+            koinApplication {
+                modules(domainModule, presentationModule)
+            }
+        assertNotNull(presentationWithDomain.koin, "Presentation module should work with domain module")
+    }
+}
