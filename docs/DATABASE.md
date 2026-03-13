@@ -1,10 +1,13 @@
-# Database Schema - Vibely POS System
+# Database Schema
 
-**Project:** pos
+Complete database schema reference for Vibely POS. This document contains the full PostgreSQL schema including tables, relationships, indexes, and constraints.
+
+> **Note:** This is a reference document. For architecture overview, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+**Database:** Supabase PostgreSQL
 **Project ID:** jewqhojchyrmozxsrkoq
 **Region:** us-west-2
-**PostgreSQL Version:** 17.6.1.084
-**Created:** 2026-03-12
+**Version:** PostgreSQL 17.6.1.084
 
 ---
 

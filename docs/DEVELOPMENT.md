@@ -1,11 +1,12 @@
-# Implementation Plan - Vibely POS System
+# Development Guide
 
-**Project:** Vibely POS - Kotlin Multiplatform Point of Sale System
+Implementation roadmap and development tasks for Vibely POS.
+
+> **Note:** This is an internal development guide. For contributing guidelines, see [CONTRIBUTING.md](../CONTRIBUTING.md).
+
 **Timeline:** 16 weeks (4 phases)
-**Team Size:** 2-3 developers
-**Total Effort:** ~780 hours
-**Target Platforms:** Desktop (JVM), Mobile (Android/iOS), Web (Wasm)
-**Status:** ✅ Ready for Development
+**Target Platforms:** Desktop (JVM), Mobile (Android/iOS), Web (JS/Wasm)
+**Status:** 🚧 Phase 0 - Week 1 Complete
 
 ---
 
