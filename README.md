@@ -4,12 +4,12 @@ A modern, cross-platform Point of Sale system built with Kotlin Multiplatform an
 
 ## 🚀 Tech Stack
 
-- **Kotlin**: 2.1.0
-- **Compose Multiplatform**: 1.7.1
-- **Ktor**: 3.0.1 (Client & Server)
-- **SQLDelight**: 2.0.2
-- **Koin**: 4.0.0
-- **Gradle**: 8.11
+- **Kotlin**: 2.3.10
+- **Compose Multiplatform**: 1.10.1
+- **Ktor**: 3.4.0 (Client & Server)
+- **Koin**: 4.1.1
+- **Gradle**: 9.3.1
+- **Android Gradle Plugin**: 9.1.0
 
 ## 🏗️ Project Structure
 
@@ -40,7 +40,8 @@ vibely-pos/
 
 - ✅ **Desktop** (Windows, macOS, Linux via JVM) - Primary development platform
 - ✅ **Android** (API 24+) - Mobile POS terminals
-- ⏸️ **Web (Wasm)** - Configured but awaiting SQLDelight Wasm support
+- ✅ **iOS** (arm64, simulator) - Mobile POS terminals
+- ✅ **Web** (JavaScript & WebAssembly) - Browser-based POS
 
 ## 🛠️ Build Commands
 
@@ -76,9 +77,11 @@ vibely-pos/
 
 ### Web Application (Wasm)
 ```bash
-# Note: Web build currently blocked by SQLDelight not supporting Wasm yet
-# Structure is ready, will work once SQLDelight adds Wasm support
-# ./gradlew :composeApp:wasmJsBrowserDevelopmentWebpack
+# Build and run Web application
+./gradlew :composeApp:wasmJsBrowserDevelopmentRun
+
+# Production build
+./gradlew :composeApp:wasmJsBrowserDistribution
 ```
 
 ## 🧪 Testing & Quality
@@ -109,9 +112,10 @@ vibely-pos/
 
 ## 📋 Prerequisites
 
-- **JDK 11+** (JDK 17+ recommended)
+- **JDK 17** (required for Kotlin 2.3.10)
 - **Android SDK** (for Android builds)
   - Set `ANDROID_HOME` or create `local.properties` with `sdk.dir=/path/to/android/sdk`
+- **Xcode** (for iOS builds, macOS only)
 - **Git**
 
 ## 🚦 Getting Started
@@ -179,9 +183,11 @@ Key configurations in `gradle.properties`:
 - `kotlin.native.ignoreDisabledTargets=true` - Ignore iOS targets on non-macOS
 
 ### Code Quality
-- **Spotless** with ktlint for code formatting (120 char line length)
-- **Detekt** for static code analysis
+- **Spotless** with ktlint for code formatting (150 char line length)
+- **Detekt** for static code analysis (strict rules, warnings as errors)
 - **EditorConfig** for IDE consistency
+- **Pre-commit hooks** for automatic quality checks
+- **CI/CD** with GitHub Actions for continuous validation
 
 ## 📚 Documentation
 
@@ -194,11 +200,71 @@ Additional documentation available in the `docs/` directory:
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Git Workflow
+
+This project uses a **Git Flow** branching strategy:
+
+- **`main`** - Production-ready code. Protected branch, all changes via PR.
+- **`develop`** - Integration branch for features. Base for all feature branches.
+- **`feature/*`** - Feature branches (e.g., `feature/login-screen`)
+  - Branch from: `develop`
+  - Merge back to: `develop` via PR
+- **`hotfix/*`** - Urgent production fixes (e.g., `hotfix/critical-bug`)
+  - Branch from: `main`
+  - Merge to: `main` AND `develop`
+
+### Development Workflow
+
+1. **Start a new feature**
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make changes and commit**
+   ```bash
+   # Pre-commit hooks will run automatically
+   git add .
+   git commit -m "Description of changes"
+
+   # To skip hooks (not recommended):
+   # git commit --no-verify
+   ```
+
+3. **Push and create PR**
+   ```bash
+   git push origin feature/your-feature-name
+   # Open Pull Request on GitHub: feature/your-feature-name → develop
+   ```
+
+4. **After PR is merged**
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git branch -d feature/your-feature-name  # Delete local branch
+   ```
+
+### Pre-commit Hooks
+
+This project uses Git pre-commit hooks to ensure code quality:
+
+- **Spotless Check**: Verifies code formatting
+- **Detekt**: Runs static analysis
+
+If checks fail, the commit will be rejected. Fix issues before committing:
+```bash
+# Fix formatting automatically
+./gradlew spotlessApply
+
+# Check and fix Detekt issues
+./gradlew detekt
+```
+
+To temporarily skip hooks (use sparingly):
+```bash
+git commit --no-verify
+```
 
 ### Code Style
 - Follow Kotlin coding conventions
