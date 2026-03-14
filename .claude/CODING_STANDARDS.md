@@ -1,5 +1,35 @@
 # Coding Standards for Vibely POS
 
+## 🔴 CRITICAL: Development Workflow
+
+### After Making Code Changes:
+
+**Run ONLY this single command:**
+```bash
+./gradlew assemble test spotlessApply detekt
+```
+
+**⚠️ IMPORTANT:**
+- ✅ Use `assemble` (NOT `build`) - saves time and resources
+- ✅ Run all quality checks in one command
+- ❌ NEVER run full `build`
+- ❌ NEVER run tasks separately or multiple times
+
+### Checking for Errors:
+
+**Read existing reports - DO NOT re-run gradlew:**
+- Test results: `backend/build/test-results/test/*.xml`
+- Detekt reports: `*/build/reports/detekt/detekt.xml`
+- Build logs and compiler output from previous run
+
+**⚠️ NEVER:**
+- Run `./gradlew test` again just to see errors
+- Run `./gradlew detekt` again just to see violations
+- Run any gradlew task multiple times unnecessarily
+- This wastes resources and time
+
+---
+
 ## Critical Requirements
 
 ### ⚠️ DO NOT USE `kotlinx.datetime.Clock` - IT'S DEPRECATED
@@ -92,4 +122,4 @@ fun `test protected route`() = testApplication {
 
 ---
 
-**Last Updated**: 2026-03-13
+**Last Updated**: 2026-03-14

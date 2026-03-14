@@ -2,6 +2,7 @@ package com.vibely.pos.shared.di
 
 import io.github.jan.supabase.SupabaseClient
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngine
 import kotlinx.serialization.json.Json
 import org.koin.dsl.koinApplication
 import org.koin.test.check.checkModules
@@ -48,7 +49,7 @@ class KoinModulesTest {
             modules(dataModule)
             checkModules {
                 withInstance<String>()
-                withInstance<io.ktor.client.engine.HttpClientEngine>()
+                withInstance<HttpClientEngine>()
             }
         }
     }

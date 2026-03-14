@@ -29,10 +29,6 @@ dependencies {
     implementation(libs.ktor.clientContentNegotiation)
     implementation(libs.ktor.clientLogging)
 
-    // Database
-    implementation(libs.postgres.driver)
-    implementation(libs.hikari)
-
     // Authentication
     implementation(libs.jwt)
     implementation(libs.bcrypt)

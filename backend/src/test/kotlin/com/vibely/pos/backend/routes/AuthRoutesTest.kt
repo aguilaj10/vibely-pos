@@ -1,27 +1,20 @@
 package com.vibely.pos.backend.routes
 
-import com.vibely.pos.backend.config.configureTestAuthentication
 import com.vibely.pos.backend.services.AuthService
 import com.vibely.pos.shared.data.auth.dto.AuthResponseDTO
 import com.vibely.pos.shared.data.auth.dto.LoginRequestDTO
 import com.vibely.pos.shared.data.auth.dto.RefreshTokenRequestDTO
 import com.vibely.pos.shared.data.auth.dto.UserDTO
 import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation as ClientContentNegotiation
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.application.install
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -59,25 +52,8 @@ class AuthRoutesTest {
 
     @Test
     fun `POST login - successful authentication returns 200 with tokens`() = testApplication {
-        application {
-            configureTestAuthentication()
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-            routing {
-                authRoutes(mockAuthService)
-            }
-        }
-
-        val client = createClient {
-            install(ClientContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-        }
+        application { configureTestApplication(mockAuthService) }
+        val client = createTestClient()
 
         // Mock successful login
         coEvery {
@@ -104,25 +80,8 @@ class AuthRoutesTest {
 
     @Test
     fun `POST login - invalid credentials returns 401`() = testApplication {
-        application {
-            configureTestAuthentication()
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-            routing {
-                authRoutes(mockAuthService)
-            }
-        }
-
-        val client = createClient {
-            install(ClientContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-        }
+        application { configureTestApplication(mockAuthService) }
+        val client = createTestClient()
 
         // Mock failed login
         coEvery {
@@ -142,25 +101,8 @@ class AuthRoutesTest {
 
     @Test
     fun `POST login - empty credentials returns 400`() = testApplication {
-        application {
-            configureTestAuthentication()
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-            routing {
-                authRoutes(mockAuthService)
-            }
-        }
-
-        val client = createClient {
-            install(ClientContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-        }
+        application { configureTestApplication(mockAuthService) }
+        val client = createTestClient()
 
         val response = client.post("/api/auth/login") {
             contentType(ContentType.Application.Json)
@@ -175,25 +117,8 @@ class AuthRoutesTest {
 
     @Test
     fun `POST refresh - successful token refresh returns 200 with new tokens`() = testApplication {
-        application {
-            configureTestAuthentication()
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-            routing {
-                authRoutes(mockAuthService)
-            }
-        }
-
-        val client = createClient {
-            install(ClientContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-        }
+        application { configureTestApplication(mockAuthService) }
+        val client = createTestClient()
 
         // Mock successful refresh
         coEvery {
@@ -217,25 +142,8 @@ class AuthRoutesTest {
 
     @Test
     fun `POST refresh - invalid refresh token returns 401`() = testApplication {
-        application {
-            configureTestAuthentication()
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-            routing {
-                authRoutes(mockAuthService)
-            }
-        }
-
-        val client = createClient {
-            install(ClientContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-        }
+        application { configureTestApplication(mockAuthService) }
+        val client = createTestClient()
 
         // Mock failed refresh
         coEvery {
@@ -254,25 +162,8 @@ class AuthRoutesTest {
 
     @Test
     fun `POST refresh - empty refresh token returns 400`() = testApplication {
-        application {
-            configureTestAuthentication()
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-            routing {
-                authRoutes(mockAuthService)
-            }
-        }
-
-        val client = createClient {
-            install(ClientContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-        }
+        application { configureTestApplication(mockAuthService) }
+        val client = createTestClient()
 
         val response = client.post("/api/auth/refresh") {
             contentType(ContentType.Application.Json)
