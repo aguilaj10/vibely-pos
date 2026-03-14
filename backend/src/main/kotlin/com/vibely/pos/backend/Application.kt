@@ -7,6 +7,8 @@ import com.vibely.pos.backend.config.configureCallLogging
 import com.vibely.pos.backend.config.configureContentNegotiation
 import com.vibely.pos.backend.config.configureKoin
 import com.vibely.pos.backend.config.configureStatusPages
+import com.vibely.pos.backend.routes.authRoutes
+import com.vibely.pos.backend.services.AuthService
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
@@ -20,6 +22,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.RoutingContext
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import org.koin.ktor.ext.inject
 
 // Constants
 private const val SERVER_PORT = 8080
@@ -61,7 +64,10 @@ fun Application.module() {
 /**
  * Configures application routing with health checks and test endpoints.
  */
-private fun Application.configureRouting(supabaseClient: SupabaseClient) {
+private fun Application.configureRouting(
+    supabaseClient: SupabaseClient,
+    authService: Lazy<AuthService> = inject<AuthService>(),
+) {
     routing {
         get("/") {
             call.respondText("Vibely POS Backend API - Ready!")
@@ -82,6 +88,9 @@ private fun Application.configureRouting(supabaseClient: SupabaseClient) {
         get("/api/test/database") {
             handleDatabaseTest(supabaseClient)
         }
+
+        // Authentication routes
+        authRoutes(authService.value)
     }
 }
 

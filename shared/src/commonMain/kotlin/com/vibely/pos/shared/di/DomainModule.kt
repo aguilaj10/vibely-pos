@@ -1,5 +1,10 @@
 package com.vibely.pos.shared.di
 
+import com.vibely.pos.shared.domain.auth.usecase.GetCurrentUserUseCase
+import com.vibely.pos.shared.domain.auth.usecase.LoginUseCase
+import com.vibely.pos.shared.domain.auth.usecase.LogoutUseCase
+import com.vibely.pos.shared.domain.auth.usecase.RefreshTokenUseCase
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -19,7 +24,13 @@ import org.koin.dsl.module
  */
 val domainModule =
     module {
-        // Use cases will be registered here as they are implemented
+        // Auth use cases
+        singleOf(::LoginUseCase)
+        singleOf(::LogoutUseCase)
+        singleOf(::GetCurrentUserUseCase)
+        singleOf(::RefreshTokenUseCase)
+
+        // Other use cases will be registered here as they are implemented
         // Example:
         // singleOf(::GetProductsUseCase)
         // singleOf(::CreateOrderUseCase)

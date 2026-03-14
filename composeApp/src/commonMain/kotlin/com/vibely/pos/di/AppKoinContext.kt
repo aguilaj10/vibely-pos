@@ -18,7 +18,7 @@ import org.koin.core.module.Module
 @Composable
 fun AppKoinContext(platformModules: List<Module> = emptyList(), content: @Composable () -> Unit) {
     KoinApplication(application = {
-        modules(sharedModules() + platformModules)
+        modules(sharedModules() + uiModule + platformModules)
     }) {
         content()
     }

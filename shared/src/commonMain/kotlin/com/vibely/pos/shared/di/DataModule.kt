@@ -1,5 +1,10 @@
 package com.vibely.pos.shared.di
 
+import com.vibely.pos.shared.data.auth.datasource.InMemoryAuthDataSource
+import com.vibely.pos.shared.data.auth.datasource.LocalAuthDataSource
+import com.vibely.pos.shared.data.auth.datasource.RemoteAuthDataSource
+import com.vibely.pos.shared.data.auth.repository.AuthRepositoryImpl
+import com.vibely.pos.shared.domain.auth.repository.AuthRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -10,6 +15,8 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -66,13 +73,20 @@ val dataModule =
             }
         }
 
-        // Repository implementations will be registered here
+        // Auth data sources
+        singleOf(::InMemoryAuthDataSource) { bind<LocalAuthDataSource>() }
+        single {
+            RemoteAuthDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Auth repository
+        singleOf(::AuthRepositoryImpl) { bind<AuthRepository>() }
+
+        // Other repository implementations will be registered here
         // Example:
         // singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
         // singleOf(::OrderRepositoryImpl) { bind<OrderRepository>() }
-
-        // Data sources will be registered here
-        // Example:
-        // singleOf(::RemoteProductDataSource)
-        // singleOf(::LocalCacheDataSource)
     }

@@ -217,6 +217,8 @@ naming:
   FunctionMaxLength:
     active: true
     maximumFunctionNameLength: 40
+    ignoreAnnotated:
+      - 'Test'
   FunctionMinLength:
     active: true
     minimumFunctionNameLength: 3

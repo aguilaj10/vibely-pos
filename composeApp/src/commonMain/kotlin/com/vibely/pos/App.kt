@@ -6,7 +6,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.vibely.pos.di.AppKoinContext
-import com.vibely.pos.ui.screens.ThemeDemoScreen
+import com.vibely.pos.ui.navigation.AppNavigation
 import com.vibely.pos.ui.theme.AppTheme
 import org.koin.core.module.Module
 
@@ -25,7 +25,7 @@ fun App(platformModules: List<Module> = emptyList()) {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background,
             ) {
-                ThemeDemoScreen()
+                AppNavigation()
             }
         }
     }

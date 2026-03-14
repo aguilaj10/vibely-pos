@@ -1,6 +1,9 @@
 package com.vibely.pos.backend.di
 
 import com.vibely.pos.backend.config.SupabaseConfig
+import com.vibely.pos.backend.services.AuthService
+import com.vibely.pos.backend.services.TokenService
+import com.vibely.pos.backend.services.UserRepository
 import io.github.jan.supabase.SupabaseClient
 import org.koin.dsl.module
 
@@ -16,8 +19,12 @@ val backendModule =
         // Supabase client singleton
         single<SupabaseClient> { SupabaseConfig.client }
 
-        // Backend-specific services will be registered here
-        // Example:
-        // singleOf(::AuthService)
-        // singleOf(::PaymentService)
+        // User repository
+        single { UserRepository(get()) }
+
+        // Token service
+        single { TokenService(get()) }
+
+        // Authentication service
+        single { AuthService(get(), get()) }
     }

@@ -3,9 +3,9 @@ package com.vibely.pos.shared.di
 import io.github.jan.supabase.SupabaseClient
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
-import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.koinApplication
-import org.koin.test.verify.verify
+import org.koin.test.check.checkModules
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
@@ -18,37 +18,47 @@ import kotlin.test.assertNotNull
  * - No circular dependencies exist
  * - Module definitions are consistent
  */
+@OptIn(ExperimentalNativeApi::class)
 class KoinModulesTest {
     /**
      * Verifies the structure and consistency of all Koin modules.
      *
-     * Uses Koin's experimental verify feature to check:
+     * Uses Koin's checkModules feature to check:
      * - All declared dependencies can be resolved
      * - No missing dependencies
      * - Constructor injection is valid
      */
-    @OptIn(KoinExperimentalAPI::class)
     @Test
     fun `verify domain module structure`() {
-        domainModule.verify()
+        koinApplication {
+            modules(domainModule)
+            checkModules()
+        }
     }
 
-    @OptIn(KoinExperimentalAPI::class)
     @Test
     fun `verify data module structure`() {
-        dataModule.verify(
-            extraTypes =
-            listOf(
-                String::class, // For SUPABASE_URL and SUPABASE_ANON_KEY properties
-                io.ktor.client.engine.HttpClientEngine::class, // For HttpClient
-            ),
-        )
+        koinApplication {
+            properties(
+                mapOf(
+                    "SUPABASE_URL" to "https://test.supabase.co",
+                    "SUPABASE_ANON_KEY" to "test-anon-key",
+                ),
+            )
+            modules(dataModule)
+            checkModules {
+                withInstance<String>()
+                withInstance<io.ktor.client.engine.HttpClientEngine>()
+            }
+        }
     }
 
-    @OptIn(KoinExperimentalAPI::class)
     @Test
     fun `verify presentation module structure`() {
-        presentationModule.verify()
+        koinApplication {
+            modules(presentationModule)
+            checkModules()
+        }
     }
 
     /**

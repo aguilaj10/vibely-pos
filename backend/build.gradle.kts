@@ -33,6 +33,10 @@ dependencies {
     implementation(libs.postgres.driver)
     implementation(libs.hikari)
 
+    // Authentication
+    implementation(libs.jwt)
+    implementation(libs.bcrypt)
+
     // DI
     implementation(libs.koin.core)
     implementation(libs.koin.ktor)
@@ -41,6 +45,8 @@ dependencies {
     // Testing
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.ktor.serverTestHost)
+    testImplementation(libs.mockk)
+    testImplementation(libs.koin.test)
 
     // Detekt Plugins
     detektPlugins(libs.detekt.koin.rules)
