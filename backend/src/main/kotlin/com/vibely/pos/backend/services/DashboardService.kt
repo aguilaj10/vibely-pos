@@ -13,23 +13,25 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Clock
 import kotlinx.serialization.SerializationException
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 
 // Database table names
 private const val TABLE_SALES = "sales"
-private const val TABLE_PRODUCTS = "products"
 private const val TABLE_CASH_SHIFTS = "cash_shifts"
+private const val VIEW_LOW_STOCK_PRODUCTS = "low_stock_products"
 
 // Database column names
 private const val COLUMN_STATUS = "status"
 private const val COLUMN_SALE_DATE = "sale_date"
 private const val COLUMN_CURRENT_STOCK = "current_stock"
-private const val COLUMN_MIN_STOCK_LEVEL = "min_stock_level"
 private const val COLUMN_CLOSED_AT = "closed_at"
 
 // Status values
 private const val STATUS_COMPLETED = "completed"
-private const val CURRENT_DATE = "CURRENT_DATE"
 private const val DEFAULT_TRANSACTIONS_LIMIT = 10
+private const val CENTS_PER_DOLLAR = 100
 
 /**
  * Service for handling dashboard data operations.
@@ -69,30 +71,33 @@ class DashboardService(
      * Fetches the total sales amount for today.
      */
     private suspend fun fetchTodaySalesTotal(): Long {
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
         val salesResult = supabaseClient.from(TABLE_SALES)
-            .select(columns = Columns.list("total")) {
+            .select(columns = Columns.list("total_amount")) {
                 filter {
                     eq(COLUMN_STATUS, STATUS_COMPLETED)
-                    gte(COLUMN_SALE_DATE, CURRENT_DATE)
+                    gte(COLUMN_SALE_DATE, today)
                 }
             }
             .decodeList<SaleTotalRow>()
 
-        return salesResult.sumOf { it.total }
+        // Convert from dollars (numeric) to cents (Long)
+        return salesResult.sumOf { (it.totalAmount * CENTS_PER_DOLLAR).toLong() }
     }
 
     /**
      * Fetches the count of completed transactions for today.
      */
     private suspend fun fetchTodayTransactionCount(): Int {
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
         val transactions = supabaseClient.from(TABLE_SALES)
             .select(columns = Columns.list("id")) {
                 filter {
                     eq(COLUMN_STATUS, STATUS_COMPLETED)
-                    gte(COLUMN_SALE_DATE, CURRENT_DATE)
+                    gte(COLUMN_SALE_DATE, today)
                 }
             }
-            .decodeList<SaleTotalRow>()
+            .decodeList<SaleIdRow>()
 
         return transactions.size
     }
@@ -101,13 +106,9 @@ class DashboardService(
      * Fetches the count of products below minimum stock level.
      */
     private suspend fun fetchLowStockCount(): Int {
-        val products = supabaseClient.from(TABLE_PRODUCTS)
-            .select(columns = Columns.list("id")) {
-                filter {
-                    lt(COLUMN_CURRENT_STOCK, COLUMN_MIN_STOCK_LEVEL)
-                }
-            }
-            .decodeList<SaleTotalRow>()
+        val products = supabaseClient.from(VIEW_LOW_STOCK_PRODUCTS)
+            .select(columns = Columns.list("id"))
+            .decodeList<ProductIdRow>()
 
         return products.size
     }
@@ -118,36 +119,42 @@ class DashboardService(
      */
     private suspend fun fetchActiveShift(): ActiveShiftInfoDTO? {
         val activeShiftColumns = Columns.list(
-            "shift_id",
+            "id",
+            "shift_number",
             "cashier_id",
-            "cashier_name",
             "opened_at",
-            "opening_balance_cents",
+            "opening_balance",
+            "users!inner(full_name)",
         )
 
-        // Query for active shift (WHERE closed_at IS NULL)
         val activeShiftResult = try {
             supabaseClient.from(TABLE_CASH_SHIFTS)
                 .select(columns = activeShiftColumns) {
                     filter {
-                        // Check for NULL closed_at using Postgrest filter syntax
                         exact(COLUMN_CLOSED_AT, null)
                     }
                     limit(1)
                 }
-                .decodeSingle<ActiveShiftRow>()
-        } catch (_: RestException) {
-            return null
-        } catch (_: SerializationException) {
+                .decodeSingleOrNull<ActiveShiftRow>()
+        } catch (e: RestException) {
+            null
+        } catch (e: SerializationException) {
+            null
+        }
+
+        if (activeShiftResult == null) {
             return null
         }
 
+        // Convert from dollars (numeric) to cents (Long)
+        val openingBalanceCents = (activeShiftResult.openingBalance * CENTS_PER_DOLLAR).toLong()
+
         return ActiveShiftInfoDTO(
-            shiftId = activeShiftResult.shiftId,
+            shiftId = activeShiftResult.id,
             cashierId = activeShiftResult.cashierId,
-            cashierName = activeShiftResult.cashierName,
+            cashierName = activeShiftResult.users.fullName,
             openedAt = activeShiftResult.openedAt,
-            openingBalanceCents = activeShiftResult.openingBalanceCents,
+            openingBalanceCents = openingBalanceCents,
         )
     }
 
@@ -163,10 +170,10 @@ class DashboardService(
                 columns = Columns.list(
                     "id",
                     "invoice_number",
-                    "total",
+                    "total_amount",
                     "status",
                     "sale_date",
-                    "customer_name",
+                    "customers(full_name)",
                 )
             ) {
                 order(column = COLUMN_SALE_DATE, order = Order.DESCENDING)
@@ -175,13 +182,16 @@ class DashboardService(
             .decodeList<RecentTransactionRow>()
 
         return transactions.map { row ->
+            // Convert from dollars (numeric) to cents (Long)
+            val totalCents = (row.totalAmount * CENTS_PER_DOLLAR).toLong()
+            
             RecentTransactionDTO(
                 id = row.id,
                 invoiceNumber = row.invoiceNumber,
-                totalCents = row.total,
+                totalCents = totalCents,
                 status = row.status,
                 saleDate = row.saleDate,
-                customerName = row.customerName,
+                customerName = row.customers?.fullName,
             )
         }
     }
@@ -192,7 +202,7 @@ class DashboardService(
      * @return List of [LowStockProductDTO].
      */
     suspend fun getLowStockProducts(): List<LowStockProductDTO> {
-        val products = supabaseClient.from(TABLE_PRODUCTS)
+        val products = supabaseClient.from(VIEW_LOW_STOCK_PRODUCTS)
             .select(
                 columns = Columns.list(
                     "id",
@@ -200,26 +210,26 @@ class DashboardService(
                     "name",
                     "current_stock",
                     "min_stock_level",
-                    "selling_price_cents",
-                    "category_name",
+                    "selling_price",
+                    "categories(name)",
                 )
             ) {
-                filter {
-                    lt(COLUMN_CURRENT_STOCK, COLUMN_MIN_STOCK_LEVEL)
-                }
                 order(column = COLUMN_CURRENT_STOCK, order = Order.ASCENDING)
             }
             .decodeList<LowStockProductRow>()
 
         return products.map { row ->
+            // Convert from dollars (numeric) to cents (Long)
+            val sellingPriceCents = (row.sellingPrice * CENTS_PER_DOLLAR).toLong()
+            
             LowStockProductDTO(
                 id = row.id,
                 sku = row.sku,
                 name = row.name,
                 currentStock = row.currentStock,
                 minStockLevel = row.minStockLevel,
-                sellingPriceCents = row.sellingPriceCents,
-                categoryName = row.categoryName,
+                sellingPriceCents = sellingPriceCents,
+                categoryName = row.categories?.name,
             )
         }
     }
@@ -228,26 +238,47 @@ class DashboardService(
 
     @Serializable
     private data class SaleTotalRow(
-        @SerialName("total") val total: Long,
+        @SerialName("total_amount") val totalAmount: Double,
+    )
+
+    @Serializable
+    private data class SaleIdRow(
+        @SerialName("id") val id: String,
+    )
+
+    @Serializable
+    private data class ProductIdRow(
+        @SerialName("id") val id: String,
     )
 
     @Serializable
     private data class ActiveShiftRow(
-        @SerialName("shift_id") val shiftId: String,
+        @SerialName("id") val id: String,
+        @SerialName("shift_number") val shiftNumber: String,
         @SerialName("cashier_id") val cashierId: String,
-        @SerialName("cashier_name") val cashierName: String,
         @SerialName("opened_at") val openedAt: String,
-        @SerialName("opening_balance_cents") val openingBalanceCents: Long,
+        @SerialName("opening_balance") val openingBalance: Double,
+        @SerialName("users") val users: UserName,
+    )
+
+    @Serializable
+    private data class UserName(
+        @SerialName("full_name") val fullName: String,
     )
 
     @Serializable
     private data class RecentTransactionRow(
         @SerialName("id") val id: String,
         @SerialName("invoice_number") val invoiceNumber: String,
-        @SerialName("total") val total: Long,
+        @SerialName("total_amount") val totalAmount: Double,
         @SerialName("status") val status: String,
         @SerialName("sale_date") val saleDate: String,
-        @SerialName("customer_name") val customerName: String?,
+        @SerialName("customers") val customers: CustomerName?,
+    )
+
+    @Serializable
+    private data class CustomerName(
+        @SerialName("full_name") val fullName: String,
     )
 
     @Serializable
@@ -257,7 +288,12 @@ class DashboardService(
         @SerialName("name") val name: String,
         @SerialName("current_stock") val currentStock: Int,
         @SerialName("min_stock_level") val minStockLevel: Int,
-        @SerialName("selling_price_cents") val sellingPriceCents: Long,
-        @SerialName("category_name") val categoryName: String?,
+        @SerialName("selling_price") val sellingPrice: Double,
+        @SerialName("categories") val categories: CategoryName?,
+    )
+
+    @Serializable
+    private data class CategoryName(
+        @SerialName("name") val name: String,
     )
 }

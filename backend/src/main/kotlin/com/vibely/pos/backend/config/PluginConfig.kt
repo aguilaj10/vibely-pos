@@ -26,6 +26,7 @@ import kotlinx.serialization.json.Json
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.slf4j.event.Level
+import org.slf4j.LoggerFactory
 
 private const val ERROR_KEY = "error"
 
@@ -86,14 +87,18 @@ fun Application.configureCallLogging() {
  * Configures global error handling.
  */
 fun Application.configureStatusPages() {
+    val logger = LoggerFactory.getLogger("StatusPages")
+    
     install(StatusPages) {
         exception<Throwable> { call, cause ->
+            logger.error("Unhandled exception at ${call.request.path()}", cause)
             call.respond(
                 HttpStatusCode.InternalServerError,
                 mapOf(ERROR_KEY to (cause.message ?: "Unknown error"))
             )
         }
         exception<IllegalArgumentException> { call, cause ->
+            logger.warn("Bad request at ${call.request.path()}: ${cause.message}", cause)
             call.respond(
                 HttpStatusCode.BadRequest,
                 mapOf(ERROR_KEY to (cause.message ?: "Invalid request"))

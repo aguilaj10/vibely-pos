@@ -66,6 +66,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.navigation3.ui)
             implementation(libs.material3.windowsize)
+            implementation(libs.compose.icons.fontawesome)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)

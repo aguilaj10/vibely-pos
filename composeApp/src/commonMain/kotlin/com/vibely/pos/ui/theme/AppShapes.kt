@@ -9,53 +9,25 @@ import androidx.compose.ui.unit.dp
  * Provides consistent corner radius across the application
  */
 val AppShapes = Shapes(
-    // Extra small - Chips, tags
     extraSmall = RoundedCornerShape(4.dp),
-
-    // Small - Buttons, small cards
     small = RoundedCornerShape(8.dp),
-
-    // Medium - Standard cards, dialogs
-    medium = RoundedCornerShape(12.dp),
-
-    // Large - Bottom sheets, large cards
-    large = RoundedCornerShape(16.dp),
-
-    // Extra large - Modal overlays
-    extraLarge = RoundedCornerShape(24.dp),
+    medium = RoundedCornerShape(10.dp),
+    large = RoundedCornerShape(12.dp),
+    extraLarge = RoundedCornerShape(16.dp),
 )
 
 /**
  * Additional custom shapes for POS-specific use cases
  */
 object PosShapes {
-    // Product cards
-    val ProductCard = RoundedCornerShape(12.dp)
-
-    // Action buttons (checkout, pay, etc.)
-    val ActionButton = RoundedCornerShape(16.dp)
-
-    // Input fields
+    val ProductCard = RoundedCornerShape(10.dp)
+    val ActionButton = RoundedCornerShape(8.dp)
     val InputField = RoundedCornerShape(8.dp)
-
-    // Modal bottom sheets
-    val BottomSheet = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-
-    // Toast/Snackbar
-    val Toast = RoundedCornerShape(12.dp)
-
-    // Image containers
+    val BottomSheet = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+    val Toast = RoundedCornerShape(8.dp)
     val ImageContainer = RoundedCornerShape(8.dp)
-
-    // Dialog boxes
-    val Dialog = RoundedCornerShape(20.dp)
-
-    // Chip badges
-    val Chip = RoundedCornerShape(100.dp) // Fully rounded
-
-    // Top app bar (if rounded)
-    val TopBar = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-
-    // Navigation rail/bar (if rounded)
-    val NavBar = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+    val Dialog = RoundedCornerShape(16.dp)
+    val Chip = RoundedCornerShape(100.dp)
+    val TopBar = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+    val NavBar = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
 }

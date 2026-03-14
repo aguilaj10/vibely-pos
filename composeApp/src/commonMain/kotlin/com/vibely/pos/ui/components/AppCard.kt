@@ -54,7 +54,7 @@ fun AppCard(
     shape: Shape = PosShapes.ProductCard,
     containerColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    elevation: Dp = 2.dp,
+    elevation: Dp = 1.dp,
     border: BorderStroke? = null,
     onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,

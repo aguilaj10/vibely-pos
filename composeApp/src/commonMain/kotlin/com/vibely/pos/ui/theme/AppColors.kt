@@ -6,23 +6,23 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * Custom color palette for Vibely POS
- * Designed for professional retail/restaurant environments
+ * Updated to match Figma design - Near-black primary with light theme
  */
 object AppColors {
 
-    // Primary Brand Colors - Professional Blue/Purple
-    val Primary = Color(0xFF6366F1) // Indigo - Trust, professionalism
-    val PrimaryLight = Color(0xFF818CF8)
-    val PrimaryDark = Color(0xFF4F46E5)
+    // Primary Brand Colors - Near-black (Figma design)
+    val Primary = Color(0xFF111827) // Near-black - Main brand color
+    val PrimaryLight = Color(0xFF1F2937) // Lighter near-black
+    val PrimaryDark = Color(0xFF0B0F1A) // Darker near-black
     val OnPrimary = Color.White
 
-    // Secondary Colors - Complementary Green
+    // Secondary Colors - Complementary Green (kept for success states)
     val Secondary = Color(0xFF10B981) // Emerald - Success, growth
     val SecondaryLight = Color(0xFF34D399)
     val SecondaryDark = Color(0xFF059669)
     val OnSecondary = Color.White
 
-    // Tertiary Colors - Warm Accent
+    // Tertiary Colors - Warm Accent (kept for warnings/highlights)
     val Tertiary = Color(0xFFF59E0B) // Amber - Energy, attention
     val TertiaryLight = Color(0xFFFBBF24)
     val TertiaryDark = Color(0xFFD97706)
@@ -31,13 +31,13 @@ object AppColors {
     // Neutral Colors - Light Mode
     val NeutralLight100 = Color(0xFFFAFAFA)
     val NeutralLight200 = Color(0xFFF5F5F5)
-    val NeutralLight300 = Color(0xFFE5E5E5)
-    val NeutralLight400 = Color(0xFFD4D4D4)
-    val NeutralLight500 = Color(0xFFA3A3A3)
-    val NeutralLight600 = Color(0xFF737373)
-    val NeutralLight700 = Color(0xFF525252)
-    val NeutralLight800 = Color(0xFF404040)
-    val NeutralLight900 = Color(0xFF262626)
+    val NeutralLight300 = Color(0xFFE5E7EB) // Subtle borders (Figma)
+    val NeutralLight400 = Color(0xFFD1D5DB)
+    val NeutralLight500 = Color(0xFF9CA3AF)
+    val NeutralLight600 = Color(0xFF6B7280)
+    val NeutralLight700 = Color(0xFF4B5563)
+    val NeutralLight800 = Color(0xFF374151)
+    val NeutralLight900 = Color(0xFF1F2937)
 
     // Neutral Colors - Dark Mode
     val NeutralDark100 = Color(0xFF1E1E1E)
@@ -50,73 +50,83 @@ object AppColors {
     val NeutralDark800 = Color(0xFFCACACA)
     val NeutralDark900 = Color(0xFFEAEAEA)
 
-    // Status Colors
-    val Success = Color(0xFF10B981) // Green
-    val SuccessLight = Color(0xFF34D399)
-    val SuccessDark = Color(0xFF059669)
+    // Status Colors - Success Green
+    val Success = Color(0xFF16A34A) // Green #16A34A
+    val SuccessLight = Color(0xFF22C55E)
+    val SuccessDark = Color(0xFF15803D)
     val OnSuccess = Color.White
 
+    // Status Colors - Warning Amber
     val Warning = Color(0xFFF59E0B) // Amber
     val WarningLight = Color(0xFFFBBF24)
     val WarningDark = Color(0xFFD97706)
     val OnWarning = Color.White
 
+    // Status Colors - Error Red
     val Error = Color(0xFFEF4444) // Red
     val ErrorLight = Color(0xFFF87171)
     val ErrorDark = Color(0xFFDC2626)
     val OnError = Color.White
 
-    val Info = Color(0xFF3B82F6) // Blue
-    val InfoLight = Color(0xFF60A5FA)
-    val InfoDark = Color(0xFF2563EB)
+    // Status Colors - Info Blue
+    val Info = Color(0xFF2563EB) // Blue #2563EB
+    val InfoLight = Color(0xFF3B82F6)
+    val InfoDark = Color(0xFF1D4ED8)
     val OnInfo = Color.White
 
-    // Surface Colors
+    // Accent Colors for Icons (Figma)
+    val AccentGreen = Color(0xFF16A34A) // Green
+    val AccentBlue = Color(0xFF2563EB) // Blue
+    val AccentPurple = Color(0xFF7C3AED) // Purple
+    val AccentOrange = Color(0xFFF97316) // Orange
+
+    // Surface Colors - Light Mode (Figma: White with subtle borders)
     val SurfaceLight = Color.White
     val SurfaceDark = Color(0xFF1E1E1E)
-    val SurfaceVariantLight = Color(0xFFF5F5F5)
+    val SurfaceVariantLight = Color(0xFFF9FAFB) // Slightly off-white
     val SurfaceVariantDark = Color(0xFF2A2A2A)
 
-    // Background Colors
-    val BackgroundLight = Color(0xFFFAFAFA)
-    val BackgroundDark = Color(0xFF121212)
+    // Background Colors - Light Mode (Figma: Off-white)
+    val BackgroundLight = Color(0xFFF8FAFC) // Off-white #F8FAFC
+    val BackgroundDark = Color(0xFF0F172A) // Dark blue-black
 
-    // Outline Colors
-    val OutlineLight = Color(0xFFE5E5E5)
-    val OutlineDark = Color(0xFF3A3A3A)
+    // Outline Colors (Figma: Light gray #E5E7EB)
+    val OutlineLight = Color(0xFFE5E7EB)
+    val OutlineDark = Color(0xFF374151)
 
-    // Text Colors
-    val TextPrimaryLight = Color(0xFF262626)
-    val TextSecondaryLight = Color(0xFF737373)
-    val TextDisabledLight = Color(0xFFA3A3A3)
+    // Text Colors - Light Mode
+    val TextPrimaryLight = Color(0xFF111827) // Near-black
+    val TextSecondaryLight = Color(0xFF6B7280) // Gray
+    val TextDisabledLight = Color(0xFF9CA3AF)
 
-    val TextPrimaryDark = Color(0xFFEAEAEA)
-    val TextSecondaryDark = Color(0xFF8A8A8A)
-    val TextDisabledDark = Color(0xFF6A6A6A)
+    // Text Colors - Dark Mode
+    val TextPrimaryDark = Color(0xFFF9FAFB)
+    val TextSecondaryDark = Color(0xFF9CA3AF)
+    val TextDisabledDark = Color(0xFF6B7280)
 }
 
 /**
- * Light color scheme for Vibely POS
+ * Light color scheme for Vibely POS (Figma design)
  */
 val LightColorScheme = lightColorScheme(
     primary = AppColors.Primary,
     onPrimary = AppColors.OnPrimary,
-    primaryContainer = AppColors.PrimaryLight,
+    primaryContainer = AppColors.NeutralLight200,
     onPrimaryContainer = AppColors.PrimaryDark,
 
     secondary = AppColors.Secondary,
     onSecondary = AppColors.OnSecondary,
-    secondaryContainer = AppColors.SecondaryLight,
-    onSecondaryContainer = AppColors.SecondaryDark,
+    secondaryContainer = AppColors.SuccessLight.copy(alpha = 0.15f),
+    onSecondaryContainer = AppColors.SuccessDark,
 
     tertiary = AppColors.Tertiary,
     onTertiary = AppColors.OnTertiary,
-    tertiaryContainer = AppColors.TertiaryLight,
-    onTertiaryContainer = AppColors.TertiaryDark,
+    tertiaryContainer = AppColors.WarningLight.copy(alpha = 0.15f),
+    onTertiaryContainer = AppColors.WarningDark,
 
     error = AppColors.Error,
     onError = AppColors.OnError,
-    errorContainer = AppColors.ErrorLight,
+    errorContainer = AppColors.ErrorLight.copy(alpha = 0.15f),
     onErrorContainer = AppColors.ErrorDark,
 
     background = AppColors.BackgroundLight,
@@ -135,25 +145,26 @@ val LightColorScheme = lightColorScheme(
 
 /**
  * Dark color scheme for Vibely POS
+ * Follows same design language as light theme
  */
 val DarkColorScheme = darkColorScheme(
-    primary = AppColors.PrimaryLight,
-    onPrimary = AppColors.NeutralDark900,
+    primary = AppColors.NeutralDark900,
+    onPrimary = AppColors.PrimaryDark,
     primaryContainer = AppColors.PrimaryDark,
-    onPrimaryContainer = AppColors.PrimaryLight,
+    onPrimaryContainer = AppColors.NeutralDark900,
 
-    secondary = AppColors.SecondaryLight,
-    onSecondary = AppColors.NeutralDark900,
-    secondaryContainer = AppColors.SecondaryDark,
-    onSecondaryContainer = AppColors.SecondaryLight,
+    secondary = AppColors.SuccessLight,
+    onSecondary = AppColors.SuccessDark,
+    secondaryContainer = AppColors.SuccessDark,
+    onSecondaryContainer = AppColors.SuccessLight,
 
     tertiary = AppColors.TertiaryLight,
-    onTertiary = AppColors.NeutralDark900,
+    onTertiary = AppColors.TertiaryDark,
     tertiaryContainer = AppColors.TertiaryDark,
     onTertiaryContainer = AppColors.TertiaryLight,
 
     error = AppColors.ErrorLight,
-    onError = AppColors.NeutralDark900,
+    onError = AppColors.ErrorDark,
     errorContainer = AppColors.ErrorDark,
     onErrorContainer = AppColors.ErrorLight,
 
