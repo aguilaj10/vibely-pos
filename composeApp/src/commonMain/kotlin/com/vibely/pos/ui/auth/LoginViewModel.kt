@@ -52,13 +52,6 @@ class LoginViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
     }
 
     /**
-     * Dismisses the error toast.
-     */
-    fun onErrorDismiss() {
-        _state.update { it.copy(errorMessage = null) }
-    }
-
-    /**
      * Attempts to log in with the current credentials.
      */
     fun onLoginClick() {
@@ -96,8 +89,6 @@ class LoginViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
                 }
             } catch (e: ValidationException) {
                 handleValidationError(e)
-            } catch (e: Exception) {
-                handleLoginError(e.message ?: "An unexpected error occurred")
             }
         }
     }

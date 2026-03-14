@@ -46,55 +46,46 @@ class DashboardViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            try {
-                // Load all data in parallel using async
-                val summaryDeferred = async { getDashboardSummaryUseCase() }
-                val transactionsDeferred = async { getRecentTransactionsUseCase(limit = 10) }
-                val lowStockDeferred = async { getLowStockProductsUseCase() }
+            // Load all data in parallel using async
+            val summaryDeferred = async { getDashboardSummaryUseCase() }
+            val transactionsDeferred = async { getRecentTransactionsUseCase(limit = 10) }
+            val lowStockDeferred = async { getLowStockProductsUseCase() }
 
-                // Await all results
-                val summaryResult = summaryDeferred.await()
-                val transactionsResult = transactionsDeferred.await()
-                val lowStockResult = lowStockDeferred.await()
+            // Await all results
+            val summaryResult = summaryDeferred.await()
+            val transactionsResult = transactionsDeferred.await()
+            val lowStockResult = lowStockDeferred.await()
 
-                // Handle results
-                when {
-                    // All successful - update state with data
-                    summaryResult is Result.Success &&
-                        transactionsResult is Result.Success &&
-                        lowStockResult is Result.Success -> {
-                        _state.update {
-                            it.copy(
-                                summary = summaryResult.data,
-                                recentTransactions = transactionsResult.data,
-                                lowStockProducts = lowStockResult.data,
-                                isLoading = false,
-                                errorMessage = null,
-                            )
-                        }
-                    }
-                    // At least one error - show error message
-                    else -> {
-                        val errorMessage = listOfNotNull(
-                            (summaryResult as? Result.Error)?.message,
-                            (transactionsResult as? Result.Error)?.message,
-                            (lowStockResult as? Result.Error)?.message,
-                        ).firstOrNull() ?: "Failed to load dashboard data"
-
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                errorMessage = errorMessage,
-                            )
-                        }
+            // Handle results
+            when {
+                // All successful - update state with data
+                summaryResult is Result.Success &&
+                    transactionsResult is Result.Success &&
+                    lowStockResult is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            summary = summaryResult.data,
+                            recentTransactions = transactionsResult.data,
+                            lowStockProducts = lowStockResult.data,
+                            isLoading = false,
+                            errorMessage = null,
+                        )
                     }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "An unexpected error occurred",
-                    )
+                // At least one error - show error message
+                else -> {
+                    val errorMessage = listOfNotNull(
+                        (summaryResult as? Result.Error)?.message,
+                        (transactionsResult as? Result.Error)?.message,
+                        (lowStockResult as? Result.Error)?.message,
+                    ).firstOrNull() ?: "Failed to load dashboard data"
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = errorMessage,
+                        )
+                    }
                 }
             }
         }
@@ -110,53 +101,44 @@ class DashboardViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isRefreshing = true, errorMessage = null) }
 
-            try {
-                // Load all data in parallel
-                val summaryDeferred = async { getDashboardSummaryUseCase() }
-                val transactionsDeferred = async { getRecentTransactionsUseCase(limit = 10) }
-                val lowStockDeferred = async { getLowStockProductsUseCase() }
+            // Load all data in parallel
+            val summaryDeferred = async { getDashboardSummaryUseCase() }
+            val transactionsDeferred = async { getRecentTransactionsUseCase(limit = 10) }
+            val lowStockDeferred = async { getLowStockProductsUseCase() }
 
-                // Await results
-                val summaryResult = summaryDeferred.await()
-                val transactionsResult = transactionsDeferred.await()
-                val lowStockResult = lowStockDeferred.await()
+            // Await results
+            val summaryResult = summaryDeferred.await()
+            val transactionsResult = transactionsDeferred.await()
+            val lowStockResult = lowStockDeferred.await()
 
-                // Update state based on results
-                when {
-                    summaryResult is Result.Success &&
-                        transactionsResult is Result.Success &&
-                        lowStockResult is Result.Success -> {
-                        _state.update {
-                            it.copy(
-                                summary = summaryResult.data,
-                                recentTransactions = transactionsResult.data,
-                                lowStockProducts = lowStockResult.data,
-                                isRefreshing = false,
-                                errorMessage = null,
-                            )
-                        }
-                    }
-                    else -> {
-                        val errorMessage = listOfNotNull(
-                            (summaryResult as? Result.Error)?.message,
-                            (transactionsResult as? Result.Error)?.message,
-                            (lowStockResult as? Result.Error)?.message,
-                        ).firstOrNull() ?: "Failed to refresh dashboard"
-
-                        _state.update {
-                            it.copy(
-                                isRefreshing = false,
-                                errorMessage = errorMessage,
-                            )
-                        }
+            // Update state based on results
+            when {
+                summaryResult is Result.Success &&
+                    transactionsResult is Result.Success &&
+                    lowStockResult is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            summary = summaryResult.data,
+                            recentTransactions = transactionsResult.data,
+                            lowStockProducts = lowStockResult.data,
+                            isRefreshing = false,
+                            errorMessage = null,
+                        )
                     }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isRefreshing = false,
-                        errorMessage = e.message ?: "Refresh failed",
-                    )
+                else -> {
+                    val errorMessage = listOfNotNull(
+                        (summaryResult as? Result.Error)?.message,
+                        (transactionsResult as? Result.Error)?.message,
+                        (lowStockResult as? Result.Error)?.message,
+                    ).firstOrNull() ?: "Failed to refresh dashboard"
+
+                    _state.update {
+                        it.copy(
+                            isRefreshing = false,
+                            errorMessage = errorMessage,
+                        )
+                    }
                 }
             }
         }
