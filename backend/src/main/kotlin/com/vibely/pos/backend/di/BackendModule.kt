@@ -2,6 +2,7 @@ package com.vibely.pos.backend.di
 
 import com.vibely.pos.backend.config.SupabaseConfig
 import com.vibely.pos.backend.services.AuthService
+import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.TokenService
 import com.vibely.pos.backend.services.UserRepository
 import io.github.jan.supabase.SupabaseClient
@@ -27,4 +28,7 @@ val backendModule =
 
         // Authentication service
         single { AuthService(get(), get()) }
+
+        // Dashboard service
+        single { DashboardService(get()) }
     }

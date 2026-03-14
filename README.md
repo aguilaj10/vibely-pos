@@ -93,6 +93,49 @@ vibely-pos/
 
 ## Development
 
+### Debug Mode (Skip Authentication)
+
+For development convenience, you can bypass the login screen and start directly at the dashboard with a mock admin user:
+
+#### Desktop (JVM)
+```bash
+# Using --skip-auth flag
+./gradlew :composeApp:run --args="--skip-auth"
+
+# Using shorthand -d flag
+./gradlew :composeApp:run --args="-d"
+```
+
+#### Environment Variable (All Platforms)
+```bash
+# Set environment variable
+DEBUG_MODE=true ./gradlew :composeApp:run
+```
+
+#### Android
+Add to `local.properties`:
+```properties
+debug.mode.enabled=true
+```
+
+Or set via adb:
+```bash
+adb shell setprop debug.my.app.debug_mode true
+```
+
+#### iOS
+1. Edit scheme in Xcode
+2. Add launch argument: `-skip-auth`
+
+**Debug Mode Features:**
+- ✅ Auto-login with mock admin user (dev@vibely.pos)
+- ✅ Skip authentication entirely
+- ✅ Shows "🔧 DEBUG MODE" badge in UI
+- ✅ Logs warning on startup
+- ✅ Automatically disabled in production builds
+
+**⚠️ IMPORTANT:** Debug mode is automatically disabled in production builds.
+
 ### Code Quality
 
 This project maintains high code quality standards:

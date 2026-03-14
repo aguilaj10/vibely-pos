@@ -4,7 +4,10 @@ import com.vibely.pos.shared.data.auth.datasource.InMemoryAuthDataSource
 import com.vibely.pos.shared.data.auth.datasource.LocalAuthDataSource
 import com.vibely.pos.shared.data.auth.datasource.RemoteAuthDataSource
 import com.vibely.pos.shared.data.auth.repository.AuthRepositoryImpl
+import com.vibely.pos.shared.data.dashboard.datasource.RemoteDashboardDataSource
+import com.vibely.pos.shared.data.dashboard.repository.DashboardRepositoryImpl
 import com.vibely.pos.shared.domain.auth.repository.AuthRepository
+import com.vibely.pos.shared.domain.dashboard.repository.DashboardRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -84,6 +87,17 @@ val dataModule =
 
         // Auth repository
         singleOf(::AuthRepositoryImpl) { bind<AuthRepository>() }
+
+        // Dashboard data sources
+        single {
+            RemoteDashboardDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Dashboard repository
+        singleOf(::DashboardRepositoryImpl) { bind<DashboardRepository>() }
 
         // Other repository implementations will be registered here
         // Example:

@@ -50,3 +50,5 @@ composeResources/
 /.kotlin/
 .env
 /.claude/WEEK2_VERIFICATION_REPORT.md
+/.claude/PHASE1_WEEK3_COMPLETION_REPORT.md
+/docs/DEBUG_MODE.md

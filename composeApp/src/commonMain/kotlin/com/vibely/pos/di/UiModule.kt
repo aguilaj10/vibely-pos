@@ -1,6 +1,7 @@
 package com.vibely.pos.di
 
 import com.vibely.pos.ui.auth.LoginViewModel
+import com.vibely.pos.ui.dashboard.DashboardViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -13,4 +14,7 @@ import org.koin.dsl.module
 val uiModule = module {
     // Auth ViewModels
     factoryOf(::LoginViewModel)
+
+    // Dashboard ViewModels
+    factoryOf(::DashboardViewModel)
 }

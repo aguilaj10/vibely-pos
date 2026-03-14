@@ -8,7 +8,9 @@ import com.vibely.pos.backend.config.configureContentNegotiation
 import com.vibely.pos.backend.config.configureKoin
 import com.vibely.pos.backend.config.configureStatusPages
 import com.vibely.pos.backend.routes.authRoutes
+import com.vibely.pos.backend.routes.dashboardRoutes
 import com.vibely.pos.backend.services.AuthService
+import com.vibely.pos.backend.services.DashboardService
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
@@ -67,6 +69,7 @@ fun Application.module() {
 private fun Application.configureRouting(
     supabaseClient: SupabaseClient,
     authService: Lazy<AuthService> = inject<AuthService>(),
+    dashboardService: Lazy<DashboardService> = inject<DashboardService>(),
 ) {
     routing {
         get("/") {
@@ -91,6 +94,9 @@ private fun Application.configureRouting(
 
         // Authentication routes
         authRoutes(authService.value)
+
+        // Dashboard routes
+        dashboardRoutes(dashboardService.value)
     }
 }
 
