@@ -30,11 +30,21 @@ private const val MAX_LIMIT = 100
  * All endpoints require JWT authentication.
  */
 fun Route.dashboardRoutes(dashboardService: DashboardService) {
+    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
+
     route("/api/dashboard") {
-        authenticate("auth-jwt") {
-            get("/summary") { call.handleGetSummary(dashboardService) }
-            get("/recent-transactions") { call.handleGetRecentTransactions(dashboardService) }
-            get("/low-stock") { call.handleGetLowStock(dashboardService) }
+        if (isDebugMode) {
+            authenticate("auth-jwt", "debug-bearer", optional = false) {
+                get("/summary") { call.handleGetSummary(dashboardService) }
+                get("/recent-transactions") { call.handleGetRecentTransactions(dashboardService) }
+                get("/low-stock") { call.handleGetLowStock(dashboardService) }
+            }
+        } else {
+            authenticate("auth-jwt") {
+                get("/summary") { call.handleGetSummary(dashboardService) }
+                get("/recent-transactions") { call.handleGetRecentTransactions(dashboardService) }
+                get("/low-stock") { call.handleGetLowStock(dashboardService) }
+            }
         }
     }
 }

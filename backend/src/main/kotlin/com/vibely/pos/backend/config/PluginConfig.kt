@@ -11,6 +11,9 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.AuthenticationConfig
+import io.ktor.server.auth.UserIdPrincipal
+import io.ktor.server.auth.bearer
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.calllogging.CallLogging
@@ -103,11 +106,11 @@ fun Application.configureStatusPages() {
  * Configures JWT authentication.
  */
 fun Application.configureAuthentication() {
+    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
+    val jwtSecret = System.getenv("JWT_SECRET") ?: "default-secret-key-change-in-production"
+
     install(Authentication) {
         jwt("auth-jwt") {
-            // Get JWT secret from environment variable
-            val jwtSecret = System.getenv("JWT_SECRET") ?: "default-secret-key-change-in-production"
-
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(jwtSecret))
@@ -120,6 +123,24 @@ fun Application.configureAuthentication() {
                 } else {
                     null
                 }
+            }
+        }
+
+        // Debug auth - simple bearer that accepts debug token
+        if (isDebugMode) {
+            runDebugMode()
+        }
+    }
+}
+
+private fun AuthenticationConfig.runDebugMode() {
+    println("⚠️ DEBUG MODE ENABLED ON BACKEND - Accepting debug-access-token via debug-bearer auth")
+    bearer("debug-bearer") {
+        authenticate { tokenCredential ->
+            if (tokenCredential.token == "debug-access-token") {
+                UserIdPrincipal("debug-user-123")
+            } else {
+                null
             }
         }
     }

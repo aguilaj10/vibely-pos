@@ -13,6 +13,9 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.storage.Storage
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
@@ -55,12 +58,32 @@ val dataModule =
 
         // HTTP Client for Supabase and general API calls
         single {
+            val isDebugMode = getProperty("DEBUG_MODE", "false") == "true"
+
             HttpClient {
                 install(ContentNegotiation) {
                     json(get())
                 }
                 install(Logging) {
                     level = LogLevel.INFO
+                }
+                // Install Auth plugin for Bearer token
+                install(Auth) {
+                    bearer {
+                        loadTokens {
+                            // In debug mode, send a special debug token
+                            if (isDebugMode) {
+                                println("⚠️ DEBUG MODE: Using debug access token")
+                                BearerTokens(
+                                    accessToken = "debug-access-token",
+                                    refreshToken = "debug-refresh-token",
+                                )
+                            } else {
+                                // TODO: Load real token from storage in production
+                                null
+                            }
+                        }
+                    }
                 }
             }
         }

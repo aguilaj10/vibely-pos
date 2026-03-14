@@ -1,6 +1,7 @@
 package com.vibely.pos.di
 
 import androidx.compose.runtime.Composable
+import com.vibely.pos.config.DebugConfig
 import com.vibely.pos.shared.di.sharedModules
 import org.koin.compose.KoinApplication
 import org.koin.core.module.Module
@@ -18,6 +19,12 @@ import org.koin.core.module.Module
 @Composable
 fun AppKoinContext(platformModules: List<Module> = emptyList(), content: @Composable () -> Unit) {
     KoinApplication(application = {
+        // Set properties from DebugConfig
+        properties(
+            mapOf(
+                "DEBUG_MODE" to DebugConfig.isDebugMode.toString(),
+            ),
+        )
         modules(sharedModules() + uiModule + platformModules)
     }) {
         content()
