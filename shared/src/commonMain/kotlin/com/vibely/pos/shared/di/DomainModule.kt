@@ -16,16 +16,37 @@ import com.vibely.pos.shared.domain.dashboard.usecase.GetLowStockProductsUseCase
 import com.vibely.pos.shared.domain.dashboard.usecase.GetRecentTransactionsUseCase
 import com.vibely.pos.shared.domain.inventory.usecase.GetAllProductsUseCase
 import com.vibely.pos.shared.domain.inventory.usecase.GetCategoriesUseCase
+import com.vibely.pos.shared.domain.purchaseorder.usecase.CreatePurchaseOrderUseCase
+import com.vibely.pos.shared.domain.purchaseorder.usecase.DeletePurchaseOrderUseCase
+import com.vibely.pos.shared.domain.purchaseorder.usecase.GetAllPurchaseOrdersUseCase
+import com.vibely.pos.shared.domain.purchaseorder.usecase.GetPurchaseOrderByIdUseCase
+import com.vibely.pos.shared.domain.purchaseorder.usecase.ReceivePurchaseOrderUseCase
+import com.vibely.pos.shared.domain.purchaseorder.usecase.UpdatePurchaseOrderStatusUseCase
+import com.vibely.pos.shared.domain.purchaseorder.usecase.UpdatePurchaseOrderUseCase
 import com.vibely.pos.shared.domain.sales.usecase.AddToCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.CompleteSaleUseCase
 import com.vibely.pos.shared.domain.sales.usecase.GetSalesUseCase
 import com.vibely.pos.shared.domain.sales.usecase.RemoveFromCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
+import com.vibely.pos.shared.domain.shift.usecase.CloseShiftUseCase
+import com.vibely.pos.shared.domain.shift.usecase.GetCurrentShiftUseCase
+import com.vibely.pos.shared.domain.shift.usecase.GetShiftHistoryUseCase
+import com.vibely.pos.shared.domain.shift.usecase.GetShiftSummaryUseCase
+import com.vibely.pos.shared.domain.shift.usecase.OpenShiftUseCase
 import com.vibely.pos.shared.domain.supplier.usecase.CreateSupplierUseCase
 import com.vibely.pos.shared.domain.supplier.usecase.DeleteSupplierUseCase
 import com.vibely.pos.shared.domain.supplier.usecase.GetAllSuppliersUseCase
 import com.vibely.pos.shared.domain.supplier.usecase.SearchSuppliersUseCase
 import com.vibely.pos.shared.domain.supplier.usecase.UpdateSupplierUseCase
+import com.vibely.pos.shared.domain.user.usecase.AssignRoleUseCase
+import com.vibely.pos.shared.domain.user.usecase.ChangePasswordUseCase
+import com.vibely.pos.shared.domain.user.usecase.CreateUserUseCase
+import com.vibely.pos.shared.domain.user.usecase.DeleteUserUseCase
+import com.vibely.pos.shared.domain.user.usecase.GetAllUsersUseCase
+import com.vibely.pos.shared.domain.user.usecase.GetUserByIdUseCase
+import com.vibely.pos.shared.domain.user.usecase.SearchUsersUseCase
+import com.vibely.pos.shared.domain.user.usecase.UpdateUserStatusUseCase
+import com.vibely.pos.shared.domain.user.usecase.UpdateUserUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -83,4 +104,31 @@ val domainModule =
         singleOf(::UpdateSupplierUseCase)
         singleOf(::DeleteSupplierUseCase)
         singleOf(::SearchSuppliersUseCase)
+
+        // PurchaseOrder use cases
+        singleOf(::GetAllPurchaseOrdersUseCase)
+        singleOf(::GetPurchaseOrderByIdUseCase)
+        singleOf(::CreatePurchaseOrderUseCase)
+        singleOf(::UpdatePurchaseOrderUseCase)
+        singleOf(::UpdatePurchaseOrderStatusUseCase)
+        singleOf(::DeletePurchaseOrderUseCase)
+        singleOf(::ReceivePurchaseOrderUseCase)
+
+        // Shift use cases
+        singleOf(::OpenShiftUseCase)
+        singleOf(::CloseShiftUseCase)
+        singleOf(::GetCurrentShiftUseCase)
+        singleOf(::GetShiftHistoryUseCase)
+        singleOf(::GetShiftSummaryUseCase)
+
+        // User management use cases
+        singleOf(::GetAllUsersUseCase)
+        singleOf(::GetUserByIdUseCase)
+        singleOf(::CreateUserUseCase)
+        singleOf(::UpdateUserUseCase)
+        singleOf(::UpdateUserStatusUseCase)
+        singleOf(::AssignRoleUseCase)
+        singleOf(::ChangePasswordUseCase)
+        singleOf(::DeleteUserUseCase)
+        singleOf(::SearchUsersUseCase)
     }

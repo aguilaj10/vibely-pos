@@ -8,7 +8,6 @@ import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
@@ -38,26 +37,24 @@ fun Route.customerRoutes(customerService: CustomerService) {
     route("/api/customers") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get { call.handleGetAllCustomers(customerService) }
-                get(PATH_ID) { call.handleGetById(customerService) }
-                post { call.handleCreateCustomer(customerService) }
-                put(PATH_ID) { call.handleUpdateCustomer(customerService) }
-                delete(PATH_ID) { call.handleDeleteCustomer(customerService) }
-                post(PATH_LOYALTY_POINTS) { call.handleAddLoyaltyPoints(customerService) }
-                get(PATH_PURCHASE_HISTORY) { call.handleGetPurchaseHistory(customerService) }
+                usePaths(customerService)
             }
         } else {
             authenticate("auth-jwt") {
-                get { call.handleGetAllCustomers(customerService) }
-                get(PATH_ID) { call.handleGetById(customerService) }
-                post { call.handleCreateCustomer(customerService) }
-                put(PATH_ID) { call.handleUpdateCustomer(customerService) }
-                delete(PATH_ID) { call.handleDeleteCustomer(customerService) }
-                post(PATH_LOYALTY_POINTS) { call.handleAddLoyaltyPoints(customerService) }
-                get(PATH_PURCHASE_HISTORY) { call.handleGetPurchaseHistory(customerService) }
+                usePaths(customerService)
             }
         }
     }
+}
+
+private fun Route.usePaths(customerService: CustomerService) {
+    get { call.handleGetAllCustomers(customerService) }
+    get(PATH_ID) { call.handleGetById(customerService) }
+    post { call.handleCreateCustomer(customerService) }
+    put(PATH_ID) { call.handleUpdateCustomer(customerService) }
+    delete(PATH_ID) { call.handleDeleteCustomer(customerService) }
+    post(PATH_LOYALTY_POINTS) { call.handleAddLoyaltyPoints(customerService) }
+    get(PATH_PURCHASE_HISTORY) { call.handleGetPurchaseHistory(customerService) }
 }
 
 private suspend fun ApplicationCall.handleGetAllCustomers(customerService: CustomerService) {

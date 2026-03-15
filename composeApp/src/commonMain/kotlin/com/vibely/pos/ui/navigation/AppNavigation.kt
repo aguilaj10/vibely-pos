@@ -19,10 +19,13 @@ import com.vibely.pos.ui.customers.CustomersScreen
 import com.vibely.pos.ui.dashboard.DashboardScreen
 import com.vibely.pos.ui.inventory.InventoryScreen
 import com.vibely.pos.ui.navigation.components.LeftSidebarNavigation
+import com.vibely.pos.ui.purchaseorders.PurchaseOrdersScreen
 import com.vibely.pos.ui.screens.PlaceholderScreen
 import com.vibely.pos.ui.screens.ThemeDemoScreen
 import com.vibely.pos.ui.screens.categories.CategoriesScreen
+import com.vibely.pos.ui.shifts.ShiftsScreen
 import com.vibely.pos.ui.suppliers.SuppliersScreen
+import com.vibely.pos.ui.users.UsersScreen
 
 /**
  * Main navigation controller for the application.
@@ -159,10 +162,8 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                         }
 
                         is Screen.PurchaseOrders -> NavEntry(key) {
-                            PlaceholderScreen(
-                                title = Screen.PurchaseOrders.title,
-                                icon = Screen.PurchaseOrders.icon,
-                                description = "Create and track purchase orders for restocking inventory.",
+                            PurchaseOrdersScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
                             )
                         }
 
@@ -173,18 +174,14 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                         }
 
                         is Screen.Users -> NavEntry(key) {
-                            PlaceholderScreen(
-                                title = Screen.Users.title,
-                                icon = Screen.Users.icon,
-                                description = "Manage system users, roles, and permissions.",
+                            UsersScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
                             )
                         }
 
                         is Screen.Shifts -> NavEntry(key) {
-                            PlaceholderScreen(
-                                title = Screen.Shifts.title,
-                                icon = Screen.Shifts.icon,
-                                description = "Manage cash register shifts, opening/closing procedures.",
+                            ShiftsScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
                             )
                         }
 

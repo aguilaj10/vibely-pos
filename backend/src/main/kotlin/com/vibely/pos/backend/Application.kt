@@ -13,16 +13,22 @@ import com.vibely.pos.backend.routes.customerRoutes
 import com.vibely.pos.backend.routes.dashboardRoutes
 import com.vibely.pos.backend.routes.inventoryRoutes
 import com.vibely.pos.backend.routes.productRoutes
+import com.vibely.pos.backend.routes.purchaseOrderRoutes
 import com.vibely.pos.backend.routes.salesRoutes
+import com.vibely.pos.backend.routes.shiftRoutes
 import com.vibely.pos.backend.routes.supplierRoutes
+import com.vibely.pos.backend.routes.userManagementRoutes
 import com.vibely.pos.backend.services.AuthService
 import com.vibely.pos.backend.services.CategoryService
 import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.InventoryService
 import com.vibely.pos.backend.services.ProductService
+import com.vibely.pos.backend.services.PurchaseOrderService
 import com.vibely.pos.backend.services.SaleService
+import com.vibely.pos.backend.services.ShiftService
 import com.vibely.pos.backend.services.SupplierService
+import com.vibely.pos.backend.services.UserManagementService
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
@@ -60,10 +66,8 @@ fun main() {
  * Configures the Ktor application with plugins, authentication, and routing.
  */
 fun Application.module() {
-    // Initialize Supabase client (validates environment variables)
     val supabaseClient = SupabaseConfig.client
 
-    // Install all plugins
     configureKoin()
     configureContentNegotiation()
     configureCORS()
@@ -71,14 +75,38 @@ fun Application.module() {
     configureStatusPages()
     configureAuthentication()
 
-    // Configure routing
     configureRouting(supabaseClient)
 }
 
-/**
- * Configures application routing with health checks and test endpoints.
- */
 private fun Application.configureRouting(supabaseClient: SupabaseClient) {
+    routing {
+        configureHealthRoutes(supabaseClient)
+        configureApiRoutes()
+    }
+}
+
+private fun Application.configureHealthRoutes(supabaseClient: SupabaseClient) = routing {
+    get("/") {
+        call.respondText("Vibely POS Backend API - Ready!")
+    }
+
+    get("/health") {
+        call.respond(
+            HttpStatusCode.OK,
+            mapOf(
+                STATUS_KEY to "healthy",
+                "service" to "vibely-pos-backend",
+                "supabase" to "connected"
+            )
+        )
+    }
+
+    get("/api/test/database") {
+        handleDatabaseTest(supabaseClient)
+    }
+}
+
+private fun Application.configureApiRoutes() {
     val authService: Lazy<AuthService> = inject()
     val dashboardService: Lazy<DashboardService> = inject()
     val productService: Lazy<ProductService> = inject()
@@ -87,60 +115,27 @@ private fun Application.configureRouting(supabaseClient: SupabaseClient) {
     val inventoryService: Lazy<InventoryService> = inject()
     val customerService: Lazy<CustomerService> = inject()
     val supplierService: Lazy<SupplierService> = inject()
-    
+    val purchaseOrderService: Lazy<PurchaseOrderService> = inject()
+    val shiftService: Lazy<ShiftService> = inject()
+    val userManagementService: Lazy<UserManagementService> = inject()
+
     routing {
-        get("/") {
-            call.respondText("Vibely POS Backend API - Ready!")
-        }
-
-        get("/health") {
-            call.respond(
-                HttpStatusCode.OK,
-                mapOf(
-                    STATUS_KEY to "healthy",
-                    "service" to "vibely-pos-backend",
-                    "supabase" to "connected"
-                )
-            )
-        }
-
-        // Test endpoint to verify Supabase database connectivity
-        get("/api/test/database") {
-            handleDatabaseTest(supabaseClient)
-        }
-
-        // Authentication routes
         authRoutes(authService.value)
-
-        // Dashboard routes
         dashboardRoutes(dashboardService.value)
-
-        // Product routes
         productRoutes(productService.value)
-
-        // Sales routes
         salesRoutes(saleService.value)
-
-        // Category routes
         categoryRoutes(categoryService.value)
-
-        // Inventory routes
         inventoryRoutes(inventoryService.value)
-
-        // Customer routes
         customerRoutes(customerService.value)
-
-        // Supplier routes
         supplierRoutes(supplierService.value)
+        purchaseOrderRoutes(purchaseOrderService.value)
+        shiftRoutes(shiftService.value)
+        userManagementRoutes(userManagementService.value)
     }
 }
 
-/**
- * Handles the database connectivity test endpoint.
- */
 private suspend fun RoutingContext.handleDatabaseTest(supabaseClient: SupabaseClient) {
     try {
-        // Try to query from users table to test connection
         supabaseClient.from("users").select()
 
         call.respond(

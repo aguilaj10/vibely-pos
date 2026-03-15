@@ -7,7 +7,6 @@ import com.vibely.pos.backend.services.SupplierService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal

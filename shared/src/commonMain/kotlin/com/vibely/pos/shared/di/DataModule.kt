@@ -12,20 +12,29 @@ import com.vibely.pos.shared.data.inventory.datasource.RemoteCategoryDataSource
 import com.vibely.pos.shared.data.inventory.datasource.RemoteInventoryDataSource
 import com.vibely.pos.shared.data.inventory.repository.CategoryRepositoryImpl
 import com.vibely.pos.shared.data.inventory.repository.InventoryRepositoryImpl
+import com.vibely.pos.shared.data.purchaseorder.datasource.RemotePurchaseOrderDataSource
+import com.vibely.pos.shared.data.purchaseorder.repository.PurchaseOrderRepositoryImpl
 import com.vibely.pos.shared.data.sales.datasource.RemoteProductDataSource
 import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
 import com.vibely.pos.shared.data.sales.repository.ProductRepositoryImpl
 import com.vibely.pos.shared.data.sales.repository.SaleRepositoryImpl
+import com.vibely.pos.shared.data.shift.datasource.RemoteShiftDataSource
+import com.vibely.pos.shared.data.shift.repository.ShiftRepositoryImpl
 import com.vibely.pos.shared.data.supplier.datasource.RemoteSupplierDataSource
 import com.vibely.pos.shared.data.supplier.repository.SupplierRepositoryImpl
+import com.vibely.pos.shared.data.user.datasource.RemoteUserDataSource
+import com.vibely.pos.shared.data.user.repository.UserRepositoryImpl
 import com.vibely.pos.shared.domain.auth.repository.AuthRepository
 import com.vibely.pos.shared.domain.customer.repository.CustomerRepository
 import com.vibely.pos.shared.domain.dashboard.repository.DashboardRepository
 import com.vibely.pos.shared.domain.inventory.repository.CategoryRepository
 import com.vibely.pos.shared.domain.inventory.repository.InventoryRepository
+import com.vibely.pos.shared.domain.purchaseorder.repository.PurchaseOrderRepository
 import com.vibely.pos.shared.domain.sales.repository.ProductRepository
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
+import com.vibely.pos.shared.domain.shift.repository.ShiftRepository
 import com.vibely.pos.shared.domain.supplier.repository.SupplierRepository
+import com.vibely.pos.shared.domain.user.repository.UserRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -197,4 +206,37 @@ val dataModule =
 
         // Supplier repositories
         singleOf(::SupplierRepositoryImpl) { bind<SupplierRepository>() }
+
+        // PurchaseOrder data sources
+        single {
+            RemotePurchaseOrderDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // PurchaseOrder repositories
+        singleOf(::PurchaseOrderRepositoryImpl) { bind<PurchaseOrderRepository>() }
+
+        // Shift data sources
+        single {
+            RemoteShiftDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Shift repositories
+        singleOf(::ShiftRepositoryImpl) { bind<ShiftRepository>() }
+
+        // User data sources
+        single {
+            RemoteUserDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // User repositories
+        singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
     }
