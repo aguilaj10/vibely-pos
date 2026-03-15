@@ -150,7 +150,7 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
 
 ## Phase 1: Authentication & Dashboard (Weeks 3-4) 🔐
 **Goal:** Implement user authentication and main dashboard screen
-**Status:** Week 3 ✅ 100% COMPLETE | Week 4 ⚠️ 0% COMPLETE (PENDING)
+**Status:** Week 3 ✅ 100% COMPLETE | Week 4 ✅ 100% COMPLETE
 
 ### Week 3: Authentication System ✅ COMPLETE
 
@@ -311,7 +311,7 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
 
 ## Phase 2: Core POS Features (Weeks 5-8) 🛒
 **Goal:** Implement checkout, inventory, and sales features
-**Status:** Week 5-6 ✅ 100% COMPLETE | Week 7-8 ⚠️ 0% COMPLETE (PENDING)
+**Status:** Week 5-6 ✅ 100% COMPLETE | Week 7-8 ⚠️ 60% COMPLETE (UI dialogs MISSING)
 
 ### Week 5-6: Checkout & Sales ✅ COMPLETE
 
@@ -367,14 +367,23 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
   - [ ] Print receipt (optional - Phase 4)
   - [x] Handle errors (insufficient stock, payment failure) ✅
 
-- [x] **UI - Sales List Screen** (✅ Design available in Figma) ✅ COMPLETE
+- [x] **UI - Sales List Screen** (✅ Design available in Figma) ⚠️ PARTIALLY COMPLETE
   - [x] Create SalesListScreen composable ✅
   - [x] Display sales in table (Invoice #, Date, Customer, Total, Status, Payment Method) ✅
   - [x] Add status badges (Completed, Cancelled, Refunded) ✅
   - [x] Implement date range filter ✅
   - [x] Add search by invoice number ✅
   - [x] Show sale details dialog on row click ✅
-  - [ ] Add "Refund" action button (changes status to Refunded) - Deferred to Phase 3
+  - [ ] **Add "Refund" action button → Refund confirmation dialog** ❌ MISSING
+    - [ ] Create RefundDialog composable with refund reason
+    - [ ] Connect refund button onClick to show dialog
+    - [ ] Connect to RefundSaleUseCase via ViewModel
+    - [ ] Update sale status to "Refunded"
+    - [ ] Create reverse inventory transaction (restock products)
+    - [ ] Show success/error toast after refund
+    - [ ] Commit database transaction on refund (atomic: status + inventory)
+    - [ ] Refresh sales list after successful refund
+    - [ ] Close dialog on completion
 
 **Testing:** ✅ COMPLETE
 - [x] Unit tests for CompleteSaleUseCase (7 tests - happy path + edge cases) ✅
@@ -392,7 +401,7 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
 - [x] Zero compilation errors ✅
 - [x] Zero type safety violations ✅
 
-### Week 7-8: Inventory & Categories ✅ COMPLETE
+### Week 7-8: Inventory & Categories ⚠️ PARTIALLY COMPLETE
 
 - [x] **Domain Layer - Inventory** ✅
   - [x] Create Category entity (id, name, description, color, icon, parent_id, is_active, product_count) ✅
@@ -434,26 +443,70 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
   - [x] Create CategoryService with CRUD operations ✅
   - [x] Create InventoryService for transaction queries ✅
 
-- [x] **UI - Inventory Management Screen** (✅ Design implemented from inventory.png) ✅
+- [x] **UI - Inventory Management Screen** (✅ Design implemented from inventory.png) ⚠️ PARTIALLY COMPLETE
   - [x] Create InventoryScreen composable ✅
   - [x] Create InventoryViewModel with StateFlow ✅
   - [x] Display products in table (SKU, Name, Category, Price, Stock, Size, Weight, Status, Actions) ✅
   - [x] Add stock status badges (Good - green, Medium - gray, Low - red) ✅
-  - [x] Implement "Add Product" button ✅
+  - [ ] **Implement "Add Product" button → Product form dialog** ❌ MISSING
+    - [ ] Create ProductFormDialog composable with form fields
+    - [ ] Wire up "Add Product" button click handler in InventoryScreen
+    - [ ] Connect to CreateProductUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh product list after successful creation
+    - [ ] Clear form and close dialog
   - [x] Add search by name/SKU ✅
   - [x] Display 4 KPI cards (Total Products, Low Stock, Total Value, Categories) ✅
-  - [x] Add edit/delete action buttons (FontAwesome icons) ✅
+  - [ ] **Wire up edit action button → Product edit dialog** ❌ MISSING
+    - [ ] Create/reuse ProductFormDialog with pre-filled data
+    - [ ] Connect edit button onClick to open dialog with product data
+    - [ ] Connect to UpdateProductUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh product list after successful update
+    - [ ] Close dialog on success
+  - [ ] **Wire up delete action button → Confirmation dialog** ❌ MISSING
+    - [ ] Create ConfirmationDialog composable (reusable)
+    - [ ] Connect delete button onClick to show confirmation
+    - [ ] Connect to DeleteProductUseCase via ViewModel
+    - [ ] Show success/error toast after deletion
+    - [ ] Commit database transaction on delete (soft delete, atomic)
+    - [ ] Refresh product list after successful deletion
+    - [ ] Close dialog on completion
   - [x] Use FontAwesome icons (faSearch, faPlus, faPencil, faTrash) ✅
 
-- [x] **UI - Category Management Screen** (✅ Design implemented from categories.png) ✅
+- [x] **UI - Category Management Screen** (✅ Design implemented from categories.png) ⚠️ PARTIALLY COMPLETE
   - [x] Create CategoriesScreen composable ✅
   - [x] Create CategoriesViewModel with StateFlow ✅
   - [x] Display categories in card grid + table view ✅
   - [x] Add color swatches per category ✅
-  - [x] Implement "Add Category" button ✅
+  - [ ] **Implement "Add Category" button → Category form dialog** ❌ MISSING
+    - [ ] Create CategoryFormDialog composable with form fields
+    - [ ] Wire up "Add Category" button click handler in CategoriesScreen
+    - [ ] Connect to CreateCategoryUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh category list after successful creation
+    - [ ] Clear form and close dialog
   - [x] Display 4 KPI cards (Total Categories, Total Products, Avg per Category, Largest Category) ✅
   - [x] Show product count per category ✅
-  - [x] Add edit/delete actions ✅
+  - [ ] **Wire up edit action → Category edit dialog** ❌ MISSING
+    - [ ] Create/reuse CategoryFormDialog with pre-filled data
+    - [ ] Connect edit button onClick to open dialog with category data
+    - [ ] Connect to UpdateCategoryUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh category list after successful update
+    - [ ] Close dialog on success
+  - [ ] **Wire up delete action → Confirmation dialog** ❌ MISSING
+    - [ ] Create/reuse ConfirmationDialog composable
+    - [ ] Connect delete button onClick to show confirmation
+    - [ ] Connect to DeleteCategoryUseCase via ViewModel (soft delete)
+    - [ ] Show success/error toast after deletion
+    - [ ] Commit database transaction on delete (atomic operation)
+    - [ ] Refresh category list after successful deletion
+    - [ ] Close dialog on completion
   - [x] Use FontAwesome icons (faFolder, faTags, faBoxes) ✅
 
 **Testing:** ✅
@@ -464,10 +517,22 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
 
 **Deliverables:**
 ✅ Complete checkout flow (search → cart → payment)
-✅ Sales history with search/filter
-✅ Product CRUD with stock management
-✅ Category management (hierarchical)
+⚠️ Sales history with search/filter (refund button MISSING)
+⚠️ Product CRUD with stock management (backend complete, UI dialogs MISSING)
+⚠️ Category management (backend complete, UI dialogs MISSING)
 ✅ 65%+ code coverage on sales/inventory logic
+
+**REMAINING WORK FOR PHASE 2:**
+❌ Product form dialog (Add/Edit) with validation
+❌ Category form dialog (Add/Edit) with validation
+❌ Confirmation dialogs for delete operations (Products, Categories)
+❌ Refund sale dialog with inventory restocking
+❌ Wire up all button onClick handlers to ViewModels
+❌ Database transaction commits on save/delete/refund operations
+❌ Success/error toast notifications
+❌ List refresh after CRUD operations
+
+**ESTIMATED REMAINING EFFORT:** 40 hours (2 developers × 20 hours)
 
 **Estimated Effort:** 200 hours (2 developers × 100 hours)
 
@@ -513,23 +578,69 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
   - [ ] POST /api/suppliers (create supplier)
   - [ ] PUT /api/suppliers/:id (update supplier)
 
-- [ ] **UI - Customer Management Screen** (✅ Design available in Figma)
+- [ ] **UI - Customer Management Screen** (✅ Design available in Figma) ❌ NOT STARTED
   - [ ] Create CustomersScreen composable
   - [ ] Display customers in table (Avatar, Name, Email, Phone, Loyalty Points, Tier, Total Spent)
   - [ ] Add tier badges (Bronze, Silver, Gold, Platinum with colors)
-  - [ ] Implement "Add Customer" button → Customer form dialog
+  - [ ] **Implement "Add Customer" button → Customer form dialog**
+    - [ ] Create CustomerFormDialog composable with form fields
+    - [ ] Wire up "Add Customer" button click handler
+    - [ ] Connect to CreateCustomerUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh customer list after successful creation
+    - [ ] Clear form and close dialog
   - [ ] Show customer details dialog with purchase history
   - [ ] Add "Add Points" button → Loyalty points dialog
   - [ ] Add search by name/email/phone
   - [ ] Filter by tier dropdown
+  - [ ] **Wire up edit action → Customer edit dialog**
+    - [ ] Create/reuse CustomerFormDialog with pre-filled data
+    - [ ] Connect edit button onClick to open dialog with customer data
+    - [ ] Connect to UpdateCustomerUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh customer list after successful update
+    - [ ] Close dialog on success
+  - [ ] **Wire up delete action → Confirmation dialog**
+    - [ ] Create/reuse ConfirmationDialog composable
+    - [ ] Connect delete button onClick to show confirmation
+    - [ ] Connect to DeleteCustomerUseCase via ViewModel (soft delete)
+    - [ ] Show success/error toast after deletion
+    - [ ] Commit database transaction on delete (atomic operation)
+    - [ ] Refresh customer list after successful deletion
+    - [ ] Close dialog on completion
 
-- [ ] **UI - Supplier Management Screen** (✅ Design available in Figma)
+- [ ] **UI - Supplier Management Screen** (✅ Design available in Figma) ❌ NOT STARTED
   - [ ] Create SuppliersScreen composable
   - [ ] Display suppliers in table (Name, Contact Person, Email, Phone, Status)
   - [ ] Add status badges (Active, Inactive)
-  - [ ] Implement "Add Supplier" button → Supplier form dialog
+  - [ ] **Implement "Add Supplier" button → Supplier form dialog**
+    - [ ] Create SupplierFormDialog composable with form fields
+    - [ ] Wire up "Add Supplier" button click handler
+    - [ ] Connect to CreateSupplierUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh supplier list after successful creation
+    - [ ] Clear form and close dialog
   - [ ] Show supplier details dialog
   - [ ] Add search by name
+  - [ ] **Wire up edit action → Supplier edit dialog**
+    - [ ] Create/reuse SupplierFormDialog with pre-filled data
+    - [ ] Connect edit button onClick to open dialog with supplier data
+    - [ ] Connect to UpdateSupplierUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh supplier list after successful update
+    - [ ] Close dialog on success
+  - [ ] **Wire up delete action → Confirmation dialog**
+    - [ ] Create/reuse ConfirmationDialog composable
+    - [ ] Connect delete button onClick to show confirmation
+    - [ ] Connect to DeleteSupplierUseCase via ViewModel (soft delete)
+    - [ ] Show success/error toast after deletion
+    - [ ] Commit database transaction on delete (atomic operation)
+    - [ ] Refresh supplier list after successful deletion
+    - [ ] Close dialog on completion
 
 **Testing:**
 - [ ] Unit tests for AddLoyaltyPointsUseCase
@@ -591,33 +702,106 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
   - [ ] GET /api/shifts/current (get current open shift)
   - [ ] GET /api/shifts/history (shift history with filters)
 
-- [ ] **UI - Purchase Orders Screen** (✅ Design available)
+- [ ] **UI - Purchase Orders Screen** (✅ Design available) ❌ NOT STARTED
   - [ ] Create PurchaseOrdersScreen composable
   - [ ] Display POs in table (PO #, Supplier, Date, Status, Total)
   - [ ] Add status badges (Draft/Pending/Approved/Received/Cancelled)
-  - [ ] Implement "Create PO" button → PO form dialog
-  - [ ] Add supplier selection dropdown
-  - [ ] Implement product line items (add/remove products)
+  - [ ] **Implement "Create PO" button → PO form dialog**
+    - [ ] Create PurchaseOrderFormDialog composable with form fields
+    - [ ] Wire up "Create PO" button click handler
+    - [ ] Add supplier selection dropdown
+    - [ ] Implement product line items (add/remove products dynamically)
+    - [ ] Connect to CreatePurchaseOrderUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation with line items)
+    - [ ] Refresh PO list after successful creation
+    - [ ] Clear form and close dialog
   - [ ] Show PO details dialog
-  - [ ] Add "Receive PO" button (updates inventory)
-  - [ ] Add status change workflow buttons
+  - [ ] **Add "Receive PO" button → Confirmation + inventory update**
+    - [ ] Create ReceivePODialog composable
+    - [ ] Connect to ReceivePurchaseOrderUseCase via ViewModel
+    - [ ] Update inventory stock levels (atomic database transaction)
+    - [ ] Show success/error toast after receiving
+    - [ ] Refresh PO list after successful receive
+    - [ ] Update PO status to "Received"
+  - [ ] **Add status change workflow buttons**
+    - [ ] Connect status buttons to UpdatePurchaseOrderStatusUseCase
+    - [ ] Show confirmation dialogs for status changes
+    - [ ] Commit database transaction on status update
+    - [ ] Refresh PO list after status change
+  - [ ] **Wire up edit action → PO edit dialog**
+    - [ ] Create/reuse PurchaseOrderFormDialog with pre-filled data
+    - [ ] Connect edit button onClick to open dialog with PO data
+    - [ ] Connect to UpdatePurchaseOrderUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh PO list after successful update
+    - [ ] Close dialog on success
+  - [ ] **Wire up delete/cancel action → Confirmation dialog**
+    - [ ] Create/reuse ConfirmationDialog composable
+    - [ ] Connect cancel button onClick to show confirmation
+    - [ ] Connect to CancelPurchaseOrderUseCase via ViewModel
+    - [ ] Show success/error toast after cancellation
+    - [ ] Commit database transaction on cancel (update status)
+    - [ ] Refresh PO list after successful cancellation
+    - [ ] Close dialog on completion
 
-- [ ] **UI - User Management Screen** (🎨 Design needed)
+- [ ] **UI - User Management Screen** (🎨 Design needed) ❌ NOT STARTED
   - [ ] Create UserManagementScreen composable
   - [ ] Display users in table (Name, Email, Role, Status)
   - [ ] Add role badges (Admin/Manager/Cashier/Warehouse/Viewer)
-  - [ ] Implement "Add User" button → User form dialog
-  - [ ] Add role assignment dropdown
+  - [ ] **Implement "Add User" button → User form dialog**
+    - [ ] Create UserFormDialog composable with form fields
+    - [ ] Wire up "Add User" button click handler
+    - [ ] Add role assignment dropdown
+    - [ ] Connect to CreateUserUseCase via ViewModel (with password validation)
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh user list after successful creation
+    - [ ] Clear form and close dialog
   - [ ] Show password reset functionality
   - [ ] Add status toggle (Active/Inactive/Suspended)
   - [ ] Display last login timestamp
   - [ ] Show activity logs per user
+  - [ ] **Wire up edit action → User edit dialog**
+    - [ ] Create/reuse UserFormDialog with pre-filled data
+    - [ ] Connect edit button onClick to open dialog with user data
+    - [ ] Connect to UpdateUserUseCase via ViewModel
+    - [ ] Show success/error toast after submission
+    - [ ] Commit database transaction on save (atomic operation)
+    - [ ] Refresh user list after successful update
+    - [ ] Close dialog on success
+  - [ ] **Wire up delete/deactivate action → Confirmation dialog**
+    - [ ] Create/reuse ConfirmationDialog composable
+    - [ ] Connect delete button onClick to show confirmation
+    - [ ] Connect to DeleteUserUseCase via ViewModel (soft delete)
+    - [ ] Show success/error toast after deletion
+    - [ ] Commit database transaction on delete (atomic operation)
+    - [ ] Refresh user list after successful deletion
+    - [ ] Close dialog on completion
 
-- [ ] **UI - Shift Management Screen** (🎨 Design needed)
+- [ ] **UI - Shift Management Screen** (🎨 Design needed) ❌ NOT STARTED
   - [ ] Create ShiftManagementScreen composable
   - [ ] Show current shift status card (Open/Closed)
-  - [ ] Implement "Open Shift" button → Opening balance dialog
-  - [ ] Implement "Close Shift" button → Reconciliation dialog:
+  - [ ] **Implement "Open Shift" button → Opening balance dialog**
+    - [ ] Create OpenShiftDialog composable with opening balance input
+    - [ ] Wire up "Open Shift" button click handler
+    - [ ] Connect to OpenShiftUseCase via ViewModel
+    - [ ] Show success/error toast after opening
+    - [ ] Commit database transaction on shift open (atomic operation)
+    - [ ] Refresh shift status display
+    - [ ] Close dialog on success
+  - [ ] **Implement "Close Shift" button → Reconciliation dialog**
+    - [ ] Create CloseShiftDialog composable with cash reconciliation
+    - [ ] Calculate expected cash (opening + sales - expenses)
+    - [ ] Cash breakdown input (bills, coins)
+    - [ ] Display variance (red if over/under)
+    - [ ] Notes field for discrepancies
+    - [ ] Connect to CloseShiftUseCase via ViewModel
+    - [ ] Show success/error toast after closing
+    - [ ] Commit database transaction on shift close (atomic operation with variance)
+    - [ ] Refresh shift status and history
+    - [ ] Close dialog on success
     - [ ] Show expected cash calculation
     - [ ] Cash breakdown input (bills, coins)
     - [ ] Display variance (red if over/under)
