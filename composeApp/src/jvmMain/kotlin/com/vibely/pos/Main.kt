@@ -1,7 +1,9 @@
 package com.vibely.pos
 
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import com.vibely.pos.config.DebugConfig
 
 fun main(args: Array<String>) {
@@ -20,6 +22,7 @@ fun main(args: Array<String>) {
         Window(
             onCloseRequest = ::exitApplication,
             title = "Vibely POS",
+            state = rememberWindowState(width = 1280.dp, height = 800.dp),
         ) {
             App()
         }

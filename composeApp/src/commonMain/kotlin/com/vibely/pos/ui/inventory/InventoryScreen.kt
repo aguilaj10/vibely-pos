@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.util.FormatUtils.formatCurrency
@@ -42,6 +43,7 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -57,11 +59,7 @@ import compose.icons.fontawesomeicons.solid.Wallet
 import org.koin.compose.koinInject
 
 @Composable
-fun InventoryScreen(
-    onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: InventoryViewModel = koinInject(),
-) {
+fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: InventoryViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -328,8 +326,8 @@ private fun TableHeader() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TableHeaderCell("SKU", modifier = Modifier.width(80.dp))
-        TableHeaderCell("Name", modifier = Modifier.weight(1f))
-        TableHeaderCell("Category", modifier = Modifier.width(100.dp))
+        TableHeaderCell("Name", modifier = Modifier.weight(0.8f))
+        TableHeaderCell("Category", modifier = Modifier.width(150.dp))
         TableHeaderCell("Price", modifier = Modifier.width(80.dp))
         TableHeaderCell("Stock", modifier = Modifier.width(60.dp))
         TableHeaderCell("Size", modifier = Modifier.width(60.dp))
@@ -361,10 +359,14 @@ private fun TableRow(product: Product, onEdit: () -> Unit, onDelete: () -> Unit)
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TableCell(product.sku, modifier = Modifier.width(80.dp))
-        TableCell(product.name, modifier = Modifier.weight(1f))
-        TableCell(product.categoryName ?: "Uncategorized", modifier = Modifier.width(100.dp))
-        TableCell(formatCurrency(product.sellingPrice), modifier = Modifier.width(80.dp))
-        TableCell(product.currentStock.toString(), modifier = Modifier.width(60.dp))
+        TableCell(product.name, modifier = Modifier.weight(0.8f))
+        TableCell(product.categoryName ?: "Uncategorized", modifier = Modifier.width(150.dp))
+        TableCell(
+            text = formatCurrency(product.sellingPrice),
+            modifier = Modifier.width(80.dp),
+            textAlign = TextAlign.End,
+        )
+        TableCell(product.currentStock.toString(), modifier = Modifier.width(60.dp), textAlign = TextAlign.End)
         TableCell(product.unit, modifier = Modifier.width(60.dp))
         TableCell("-", modifier = Modifier.width(80.dp))
 
@@ -402,12 +404,13 @@ private fun TableRow(product: Product, onEdit: () -> Unit, onDelete: () -> Unit)
 }
 
 @Composable
-private fun TableCell(text: String, modifier: Modifier = Modifier) {
+private fun TableCell(text: String, modifier: Modifier = Modifier, textAlign: TextAlign = TextAlign.Start) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier.padding(end = 8.dp),
+        textAlign = textAlign,
     )
 }
 
