@@ -9,6 +9,7 @@ import com.vibely.pos.shared.data.sales.dto.ProductDTO
 import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -193,7 +194,26 @@ class ProductService(
         val (from, to) = calculatePaginationRange(request.page, request.pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
             supabaseClient.from(TABLE_PRODUCTS)
-                .select {
+                .select(
+                    columns = Columns.list(
+                        "id",
+                        "sku",
+                        "barcode",
+                        "name",
+                        "description",
+                        "category_id",
+                        "cost_price",
+                        "selling_price",
+                        "current_stock",
+                        "min_stock_level",
+                        "unit",
+                        "image_url",
+                        "is_active",
+                        "created_at",
+                        "updated_at",
+                        "categories(name)",
+                    )
+                ) {
                     filter {
                         request.categoryId?.let { eq(DatabaseColumns.CATEGORY_ID, it) }
                         request.isActive?.let { eq(DatabaseColumns.IS_ACTIVE, it) }

@@ -159,7 +159,7 @@ private fun UsersHeader(
                     Icon(
                         imageVector = FontAwesomeIcons.Solid.Search,
                         contentDescription = "Search",
-                        tint = AppColors.TextSecondaryLight,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
                 trailingIcon = {
@@ -168,7 +168,7 @@ private fun UsersHeader(
                             Icon(
                                 imageVector = FontAwesomeIcons.Solid.Times,
                                 contentDescription = "Clear",
-                                tint = AppColors.TextSecondaryLight,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
@@ -213,13 +213,13 @@ private fun UsersHeader(
                         imageVector = FontAwesomeIcons.Solid.Times,
                         contentDescription = null,
                         modifier = Modifier.size(14.dp),
-                        tint = AppColors.TextSecondaryLight,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "Clear Filters",
                         style = MaterialTheme.typography.labelMedium,
-                        color = AppColors.TextSecondaryLight,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -235,7 +235,7 @@ private fun RoleFilterDropdown(selectedRole: UserRole?, onRoleChange: (UserRole?
         Surface(
             onClick = { expanded = true },
             shape = RoundedCornerShape(8.dp),
-            color = AppColors.NeutralLight200,
+            color = MaterialTheme.colorScheme.surfaceVariant,
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -244,14 +244,14 @@ private fun RoleFilterDropdown(selectedRole: UserRole?, onRoleChange: (UserRole?
                 Text(
                     text = selectedRole?.displayName() ?: "All Roles",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextPrimaryLight,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.ChevronDown,
                     contentDescription = null,
                     modifier = Modifier.size(12.dp),
-                    tint = AppColors.TextSecondaryLight,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -288,7 +288,7 @@ private fun StatusFilterDropdown(selectedStatus: UserStatus?, onStatusChange: (U
         Surface(
             onClick = { expanded = true },
             shape = RoundedCornerShape(8.dp),
-            color = AppColors.NeutralLight200,
+            color = MaterialTheme.colorScheme.surfaceVariant,
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -297,14 +297,14 @@ private fun StatusFilterDropdown(selectedStatus: UserStatus?, onStatusChange: (U
                 Text(
                     text = selectedStatus?.name?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "All Statuses",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextPrimaryLight,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.ChevronDown,
                     contentDescription = null,
                     modifier = Modifier.size(12.dp),
-                    tint = AppColors.TextSecondaryLight,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -345,7 +345,7 @@ private fun KpiCardsRow(totalUsers: Int, activeUsers: Int) {
             icon = FontAwesomeIcons.Solid.Users,
             label = "Total Users",
             value = totalUsers.toString(),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -380,7 +380,7 @@ private fun KpiCard(
                 imageVector = icon,
                 contentDescription = label,
                 modifier = Modifier.size(32.dp),
-                tint = AppColors.TextSecondaryLight,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -388,7 +388,7 @@ private fun KpiCard(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = AppColors.TextSecondaryLight,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
 
@@ -415,7 +415,7 @@ private fun UsersTable(users: List<User>, onEditUser: (String) -> Unit, onDelete
         Column(modifier = Modifier.fillMaxSize()) {
             TableHeader()
 
-            HorizontalDivider(color = AppColors.OutlineLight)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             if (users.isEmpty()) {
                 Box(
@@ -429,13 +429,13 @@ private fun UsersTable(users: List<User>, onEditUser: (String) -> Unit, onDelete
                             imageVector = FontAwesomeIcons.Solid.Users,
                             contentDescription = null,
                             modifier = Modifier.size(48.dp),
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "No users found",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -447,7 +447,7 @@ private fun UsersTable(users: List<User>, onEditUser: (String) -> Unit, onDelete
                             onEdit = { onEditUser(user.id) },
                             onDelete = { onDeleteUser(user.id) },
                         )
-                        HorizontalDivider(color = AppColors.OutlineLight)
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
             }
@@ -460,7 +460,7 @@ private fun TableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppColors.NeutralLight200)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -479,7 +479,7 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
         text = text,
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.SemiBold,
-        color = AppColors.TextSecondaryLight,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier,
     )
 }
@@ -515,7 +515,7 @@ private fun TableRow(user: User, onEdit: () -> Unit, onDelete: () -> Unit) {
                     imageVector = FontAwesomeIcons.Solid.Edit,
                     contentDescription = "Edit",
                     modifier = Modifier.size(16.dp),
-                    tint = AppColors.TextSecondaryLight,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -539,7 +539,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        color = AppColors.TextPrimaryLight,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier,
     )
 }

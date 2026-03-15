@@ -143,7 +143,12 @@ private fun AuthenticationConfig.runDebugMode() {
     bearer("debug-bearer") {
         authenticate { tokenCredential ->
             if (tokenCredential.token == "debug-access-token") {
-                UserIdPrincipal("debug-user-123")
+                val debugPayload = JWT.create()
+                    .withClaim("userId", "debug-user-123")
+                    .withClaim("email", "debug@vibely.pos")
+                    .withClaim("role", "admin")
+                    .sign(Algorithm.none())
+                JWTPrincipal(JWT.decode(debugPayload))
             } else {
                 null
             }

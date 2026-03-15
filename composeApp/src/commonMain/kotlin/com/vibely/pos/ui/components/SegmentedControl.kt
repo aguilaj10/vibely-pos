@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.vibely.pos.ui.theme.AppColors
 
 data class SegmentedSegment(val label: String, val enabled: Boolean = true)
 
@@ -33,8 +32,8 @@ fun SegmentedControl(segments: List<SegmentedSegment>, selectedIndex: Int, onSeg
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(AppColors.NeutralLight100)
-            .border(1.dp, AppColors.OutlineLight, RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
             .padding(4.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
@@ -53,7 +52,7 @@ fun SegmentedControl(segments: List<SegmentedSegment>, selectedIndex: Int, onSeg
 @Composable
 private fun SegmentedButton(label: String, selected: Boolean, enabled: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (selected) AppColors.SurfaceLight else Color.Transparent,
+        targetValue = if (selected) MaterialTheme.colorScheme.surface else Color.Transparent,
         animationSpec = tween(durationMillis = 200),
         label = "segmentBg",
     )
@@ -65,9 +64,9 @@ private fun SegmentedButton(label: String, selected: Boolean, enabled: Boolean, 
     )
 
     val textColor = when {
-        !enabled -> AppColors.TextDisabledLight
-        selected -> AppColors.Primary
-        else -> AppColors.TextSecondaryLight
+        !enabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+        selected -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Box(
@@ -80,7 +79,7 @@ private fun SegmentedButton(label: String, selected: Boolean, enabled: Boolean, 
                 if (selected) {
                     Modifier.border(
                         width = 1.dp,
-                        color = AppColors.OutlineLight,
+                        color = MaterialTheme.colorScheme.outline,
                         shape = RoundedCornerShape(6.dp),
                     )
                 } else {

@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.shift.entity.Shift
+import com.vibely.pos.shared.util.FormatUtils.formatCurrency
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -209,7 +210,7 @@ private fun ShiftInfoItem(label: String, value: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = AppColors.TextSecondaryLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
             text = value,
@@ -231,7 +232,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
             icon = FontAwesomeIcons.Solid.Clock,
             label = "Open Shifts",
             value = openShiftsCount.toString(),
-            valueColor = if (openShiftsCount > 0) AppColors.Success else AppColors.TextPrimaryLight,
+            valueColor = if (openShiftsCount > 0) AppColors.Success else MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -239,7 +240,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
             icon = FontAwesomeIcons.Solid.DollarSign,
             label = "Today's Sales",
             value = formatCurrency(todaysSales),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -268,7 +269,7 @@ private fun KpiCard(icon: ImageVector, label: String, value: String, valueColor:
                 imageVector = icon,
                 contentDescription = label,
                 modifier = Modifier.size(32.dp),
-                tint = AppColors.TextSecondaryLight,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -276,7 +277,7 @@ private fun KpiCard(icon: ImageVector, label: String, value: String, valueColor:
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = AppColors.TextSecondaryLight,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
 
@@ -303,7 +304,7 @@ private fun ShiftsTable(shifts: List<Shift>, onViewShift: (String) -> Unit, modi
         Column(modifier = Modifier.fillMaxSize()) {
             TableHeader()
 
-            HorizontalDivider(color = AppColors.OutlineLight)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             if (shifts.isEmpty()) {
                 Box(
@@ -317,13 +318,13 @@ private fun ShiftsTable(shifts: List<Shift>, onViewShift: (String) -> Unit, modi
                             imageVector = FontAwesomeIcons.Solid.Clock,
                             contentDescription = null,
                             modifier = Modifier.size(48.dp),
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "No shifts found",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -334,7 +335,7 @@ private fun ShiftsTable(shifts: List<Shift>, onViewShift: (String) -> Unit, modi
                             shift = shift,
                             onView = { onViewShift(shift.id) },
                         )
-                        HorizontalDivider(color = AppColors.OutlineLight)
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
             }
@@ -347,7 +348,7 @@ private fun TableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppColors.NeutralLight200)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -369,7 +370,7 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
         text = text,
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.SemiBold,
-        color = AppColors.TextSecondaryLight,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier,
     )
 }
@@ -405,7 +406,7 @@ private fun TableRow(shift: Shift, onView: () -> Unit) {
                     imageVector = FontAwesomeIcons.Solid.Eye,
                     contentDescription = "View",
                     modifier = Modifier.size(16.dp),
-                    tint = AppColors.TextSecondaryLight,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -417,7 +418,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        color = AppColors.TextPrimaryLight,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier,
     )
 }
@@ -425,7 +426,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun DiscrepancyCell(discrepancy: Double?, modifier: Modifier = Modifier) {
     val displayValue = discrepancy?.let { formatCurrency(it) } ?: "-"
-    val color = discrepancy?.let { getDiscrepancyColor(it) } ?: AppColors.TextSecondaryLight
+    val color = discrepancy?.let { getDiscrepancyColor(it) } ?: MaterialTheme.colorScheme.onSurfaceVariant
 
     Text(
         text = displayValue,
@@ -476,10 +477,9 @@ private fun formatDateTime(instant: Instant): String {
     return "${monthNames[month - 1]} $day, $year ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}"
 }
 
-private fun formatCurrency(amount: Double): String = "$%.2f".format(amount)
-
+@Composable
 private fun getDiscrepancyColor(discrepancy: Double): Color = when {
-    abs(discrepancy) < 0.01 -> AppColors.TextSecondaryLight
+    abs(discrepancy) < 0.01 -> MaterialTheme.colorScheme.onSurfaceVariant
     discrepancy > 0 -> AppColors.Success
     else -> AppColors.ErrorDark
 }

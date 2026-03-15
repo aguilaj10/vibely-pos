@@ -33,9 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.sales.entity.Product
+import com.vibely.pos.shared.util.FormatUtils.formatCurrency
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -141,7 +141,8 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
                     contentDescription = "Search",
-                    tint = AppColors.TextSecondaryLight,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
             trailingIcon = {
@@ -150,7 +151,7 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Boxes,
                             contentDescription = "Clear",
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -185,7 +186,7 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
             icon = FontAwesomeIcons.Solid.Boxes,
             label = "Total Products",
             value = totalProducts.toString(),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -201,7 +202,7 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
             icon = FontAwesomeIcons.Solid.Wallet,
             label = "Total Value",
             value = formatCurrency(totalValue),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -209,7 +210,7 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
             icon = FontAwesomeIcons.Solid.Tags,
             label = "Categories",
             value = categoriesCount.toString(),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
     }
@@ -228,34 +229,31 @@ private fun KpiCard(
         style = AppCardStyle.Elevated,
         elevation = 2.dp,
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        Box(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = valueColor,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                modifier = Modifier.size(32.dp),
-                tint = AppColors.TextSecondaryLight,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = AppColors.TextSecondaryLight,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineMedium,
-                color = valueColor,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
+                modifier = Modifier.size(16.dp).align(Alignment.TopEnd),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -276,7 +274,7 @@ private fun ProductsTable(
         Column(modifier = Modifier.fillMaxSize()) {
             TableHeader()
 
-            HorizontalDivider(color = AppColors.OutlineLight)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             if (products.isEmpty()) {
                 Box(
@@ -292,13 +290,13 @@ private fun ProductsTable(
                             imageVector = FontAwesomeIcons.Solid.Cube,
                             contentDescription = null,
                             modifier = Modifier.size(48.dp),
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "No products found",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -312,7 +310,7 @@ private fun ProductsTable(
                             onEdit = { onEditProduct(product.id) },
                             onDelete = { onDeleteProduct(product.id) },
                         )
-                        HorizontalDivider(color = AppColors.OutlineLight)
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
             }
@@ -325,7 +323,7 @@ private fun TableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppColors.NeutralLight200)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -347,7 +345,7 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
         text = text,
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.SemiBold,
-        color = AppColors.TextSecondaryLight,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier,
     )
 }
@@ -364,7 +362,7 @@ private fun TableRow(product: Product, onEdit: () -> Unit, onDelete: () -> Unit)
     ) {
         TableCell(product.sku, modifier = Modifier.width(80.dp))
         TableCell(product.name, modifier = Modifier.weight(1f))
-        TableCell(product.categoryId ?: "Uncategorized", modifier = Modifier.width(100.dp))
+        TableCell(product.categoryName ?: "Uncategorized", modifier = Modifier.width(100.dp))
         TableCell(formatCurrency(product.sellingPrice), modifier = Modifier.width(80.dp))
         TableCell(product.currentStock.toString(), modifier = Modifier.width(60.dp))
         TableCell(product.unit, modifier = Modifier.width(60.dp))
@@ -384,7 +382,7 @@ private fun TableRow(product: Product, onEdit: () -> Unit, onDelete: () -> Unit)
                     imageVector = FontAwesomeIcons.Solid.Edit,
                     contentDescription = "Edit",
                     modifier = Modifier.size(16.dp),
-                    tint = AppColors.TextSecondaryLight,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -408,7 +406,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        color = AppColors.TextPrimaryLight,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier,
     )
 }
@@ -434,10 +432,4 @@ private fun StatusChip(status: StockStatus, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
         )
     }
-}
-
-private fun formatCurrency(amount: Double): String {
-    val wholePart = amount.toInt()
-    val decimalPart = ((amount - wholePart) * 100).toInt()
-    return "$$wholePart.${decimalPart.toString().padStart(2, '0')}"
 }

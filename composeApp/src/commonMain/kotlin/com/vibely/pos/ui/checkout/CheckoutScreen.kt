@@ -145,7 +145,7 @@ private fun ProductSearchSection(
             text = "Products",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = AppColors.TextPrimaryLight,
+            color = MaterialTheme.colorScheme.onSurface,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -160,7 +160,7 @@ private fun ProductSearchSection(
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
                     contentDescription = "Search",
-                    tint = AppColors.TextSecondaryLight,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
             trailingIcon = {
@@ -169,7 +169,7 @@ private fun ProductSearchSection(
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Times,
                             contentDescription = "Clear",
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -196,7 +196,7 @@ private fun ProductSearchSection(
                     Text(
                         text = "No products found",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = AppColors.TextSecondaryLight,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -224,12 +224,12 @@ private fun ProductSearchSection(
                         Text(
                             text = "Search for products",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
                             text = "Type at least 2 characters to search",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -245,12 +245,12 @@ private fun ProductCard(product: Product, onClick: () -> Unit, modifier: Modifie
             .fillMaxWidth()
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = AppColors.SurfaceLight,
+            containerColor = MaterialTheme.colorScheme.surface,
         ),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
         border = androidx.compose.foundation.BorderStroke(
             width = 1.dp,
-            color = AppColors.OutlineLight,
+            color = MaterialTheme.colorScheme.outline,
         ),
     ) {
         Column(
@@ -268,7 +268,7 @@ private fun ProductCard(product: Product, onClick: () -> Unit, modifier: Modifie
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            color = AppColors.NeutralLight200,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
                         ),
                     contentAlignment = Alignment.Center,
@@ -276,7 +276,7 @@ private fun ProductCard(product: Product, onClick: () -> Unit, modifier: Modifie
                     Icon(
                         imageVector = FontAwesomeIcons.Solid.Cube,
                         contentDescription = null,
-                        tint = AppColors.TextSecondaryLight,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(40.dp),
                     )
                 }
@@ -286,7 +286,7 @@ private fun ProductCard(product: Product, onClick: () -> Unit, modifier: Modifie
                 text = product.name,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                color = AppColors.TextPrimaryLight,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -296,7 +296,7 @@ private fun ProductCard(product: Product, onClick: () -> Unit, modifier: Modifie
             Text(
                 text = product.categoryId ?: "Uncategorized",
                 style = MaterialTheme.typography.bodySmall,
-                color = AppColors.TextSecondaryLight,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -307,7 +307,7 @@ private fun ProductCard(product: Product, onClick: () -> Unit, modifier: Modifie
                 text = formatPrice(product.sellingPrice),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.TextPrimaryLight,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
@@ -328,7 +328,7 @@ private fun CartSidebar(
 ) {
     Surface(
         modifier = modifier,
-        color = AppColors.SurfaceLight,
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -344,11 +344,11 @@ private fun CartSidebar(
                     text = "Cart ($totalItems)",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimaryLight,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
 
-            HorizontalDivider(color = AppColors.OutlineLight)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             if (cartItems.isEmpty()) {
                 Box(
@@ -363,14 +363,14 @@ private fun CartSidebar(
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.ShoppingCart,
                             contentDescription = null,
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(64.dp),
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Cart is empty",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -392,7 +392,7 @@ private fun CartSidebar(
                 }
             }
 
-            HorizontalDivider(color = AppColors.OutlineLight)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             Column(
                 modifier = Modifier
@@ -408,13 +408,13 @@ private fun CartSidebar(
                         text = "Total",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = AppColors.TextPrimaryLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
                         text = formatPrice(totalAmount),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = AppColors.TextPrimaryLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
 
@@ -531,7 +531,7 @@ private fun CartItemCard(item: CartItem, onQuantityChange: (Int) -> Unit, onRemo
             Text(
                 text = "${formatPrice(item.unitPrice)} each",
                 style = MaterialTheme.typography.bodySmall,
-                color = AppColors.TextSecondaryLight,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -563,7 +563,7 @@ private fun PaymentDialog(totalAmount: Double, isProcessing: Boolean, onPaymentM
                 Text(
                     text = "Total Amount",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = AppColors.TextSecondaryLight,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Text(
@@ -609,7 +609,7 @@ private fun PaymentDialog(totalAmount: Double, isProcessing: Boolean, onPaymentM
                     Text(
                         text = "Processing payment...",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.TextSecondaryLight,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 

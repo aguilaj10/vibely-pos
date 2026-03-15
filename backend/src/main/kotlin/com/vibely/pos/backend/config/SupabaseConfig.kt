@@ -1,9 +1,16 @@
 package com.vibely.pos.backend.config
 
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.annotations.SupabaseInternal
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.HttpHeaders
+import io.github.jan.supabase.logging.LogLevel as SupabaseLogLevel
+import io.ktor.client.plugins.logging.LogLevel as KtorLogLevel
 
 /**
  * Configuration object for Supabase client initialization.
@@ -31,15 +38,34 @@ object SupabaseConfig {
     /**
      * Creates and configures a Supabase client instance.
      * Uses CIO engine for HTTP client and enables Postgrest module.
+     *
+     * In debug mode, enables verbose HTTP logging to see full PostgREST queries.
      */
+    @OptIn(SupabaseInternal::class)
     private fun createClient(): SupabaseClient {
+        val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
+
         return createSupabaseClient(
             supabaseUrl = supabaseUrl,
             supabaseKey = supabaseServiceKey
         ) {
-            install(Postgrest)
+            if (isDebugMode) {
+                defaultLogLevel = SupabaseLogLevel.DEBUG
 
-            // Configure HTTP client engine
+                httpConfig {
+                    install(Logging) {
+                        logger = Logger.DEFAULT
+                        level = KtorLogLevel.ALL
+
+                        sanitizeHeader { header ->
+                            header == HttpHeaders.Authorization ||
+                            header.equals("apikey", ignoreCase = true)
+                        }
+                    }
+                }
+            }
+
+            install(Postgrest)
             httpEngine = CIO.create()
         }
     }

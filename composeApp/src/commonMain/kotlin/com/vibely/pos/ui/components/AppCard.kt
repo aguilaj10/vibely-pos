@@ -102,7 +102,7 @@ fun AppCard(
                         containerColor = containerColor,
                         contentColor = contentColor,
                     ),
-                    border = border ?: BorderStroke(1.dp, AppColors.OutlineLight),
+                    border = border ?: BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 ) {
                     content()
                 }
@@ -114,7 +114,7 @@ fun AppCard(
                         containerColor = containerColor,
                         contentColor = contentColor,
                     ),
-                    border = border ?: BorderStroke(1.dp, AppColors.OutlineLight),
+                    border = border ?: BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 ) {
                     content()
                 }

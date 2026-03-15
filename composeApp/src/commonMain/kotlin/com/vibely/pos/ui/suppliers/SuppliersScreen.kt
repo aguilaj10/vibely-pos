@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.supplier.entity.Supplier
 import com.vibely.pos.ui.components.AppButton
@@ -134,7 +133,8 @@ private fun SuppliersHeader(searchQuery: String, onSearchQueryChange: (String) -
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
                     contentDescription = "Search",
-                    tint = AppColors.TextSecondaryLight,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
             trailingIcon = {
@@ -143,7 +143,7 @@ private fun SuppliersHeader(searchQuery: String, onSearchQueryChange: (String) -
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Truck,
                             contentDescription = "Clear",
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -178,7 +178,7 @@ private fun KpiCardsRow(totalSuppliers: Int, activeSuppliers: Int) {
             icon = FontAwesomeIcons.Solid.Truck,
             label = "Total Suppliers",
             value = totalSuppliers.toString(),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -205,34 +205,31 @@ private fun KpiCard(
         style = AppCardStyle.Elevated,
         elevation = 2.dp,
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        Box(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = valueColor,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                modifier = Modifier.size(32.dp),
-                tint = AppColors.TextSecondaryLight,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = AppColors.TextSecondaryLight,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineMedium,
-                color = valueColor,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
+                modifier = Modifier.size(16.dp).align(Alignment.TopEnd),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -253,7 +250,7 @@ private fun SuppliersTable(
         Column(modifier = Modifier.fillMaxSize()) {
             TableHeader()
 
-            HorizontalDivider(color = AppColors.OutlineLight)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             if (suppliers.isEmpty()) {
                 Box(
@@ -267,13 +264,13 @@ private fun SuppliersTable(
                             imageVector = FontAwesomeIcons.Solid.Truck,
                             contentDescription = null,
                             modifier = Modifier.size(48.dp),
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "No suppliers found",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -285,7 +282,7 @@ private fun SuppliersTable(
                             onEdit = { onEditSupplier(supplier.id) },
                             onDelete = { onDeleteSupplier(supplier.id) },
                         )
-                        HorizontalDivider(color = AppColors.OutlineLight)
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
             }
@@ -298,7 +295,7 @@ private fun TableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppColors.NeutralLight200)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -318,7 +315,7 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
         text = text,
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.SemiBold,
-        color = AppColors.TextSecondaryLight,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier,
     )
 }
@@ -351,7 +348,7 @@ private fun TableRow(supplier: Supplier, onEdit: () -> Unit, onDelete: () -> Uni
                     imageVector = FontAwesomeIcons.Solid.Edit,
                     contentDescription = "Edit",
                     modifier = Modifier.size(16.dp),
-                    tint = AppColors.TextSecondaryLight,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -375,7 +372,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        color = AppColors.TextPrimaryLight,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier,
     )
 }

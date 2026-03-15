@@ -31,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -119,7 +118,7 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
                         imageVector = FontAwesomeIcons.Solid.Search,
                         contentDescription = "Search",
                         modifier = Modifier.size(20.dp),
-                        tint = AppColors.TextSecondaryLight,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -146,7 +145,7 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.surface,
                     ),
                     shape = RoundedCornerShape(12.dp),
                     elevation = CardDefaults.cardElevation(
@@ -183,7 +182,7 @@ private fun SalesTableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppColors.BackgroundLight)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -192,35 +191,35 @@ private fun SalesTableHeader() {
             text = "Invoice #",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = AppColors.TextSecondaryLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f),
         )
         Text(
             text = "Date",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = AppColors.TextSecondaryLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f),
         )
         Text(
             text = "Total",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = AppColors.TextSecondaryLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(0.8f),
         )
         Text(
             text = "Payment",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = AppColors.TextSecondaryLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(0.8f),
         )
         Text(
             text = "Status",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = AppColors.TextSecondaryLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(0.8f),
         )
     }
@@ -241,14 +240,14 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit) {
                 text = sale.invoiceNumber,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = AppColors.TextPrimaryDark,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
             )
 
             Text(
                 text = formatDate(sale.saleDate),
                 style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextSecondaryLight,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
             )
 
@@ -256,7 +255,7 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit) {
                 text = formatPrice(sale.totalAmount),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = AppColors.TextPrimaryDark,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(0.8f),
             )
 
@@ -272,7 +271,7 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit) {
         }
 
         HorizontalDivider(
-            color = AppColors.OutlineLight,
+            color = MaterialTheme.colorScheme.outline,
             thickness = 1.dp,
         )
     }
@@ -348,7 +347,7 @@ private fun LoadingState() {
             Text(
                 text = "Loading sales...",
                 style = MaterialTheme.typography.bodyLarge,
-                color = AppColors.TextSecondaryLight,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

@@ -146,9 +146,9 @@ private fun FilledTextField(
             keyboardActions = keyboardActions,
             isError = isError,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = AppColors.NeutralLight100,
-                unfocusedContainerColor = AppColors.NeutralLight100,
-                disabledContainerColor = AppColors.NeutralLight200,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 focusedIndicatorColor = borderColor,
                 unfocusedIndicatorColor = Color.Transparent,
                 cursorColor = AppColors.Primary,

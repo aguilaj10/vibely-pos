@@ -16,6 +16,7 @@ import kotlin.time.Instant
  * @param name Product name.
  * @param description Optional product description.
  * @param categoryId Optional reference to product category.
+ * @param categoryName Optional display name of the product category.
  * @param costPrice Purchase/cost price of the product.
  * @param sellingPrice Retail selling price.
  * @param currentStock Current quantity in stock.
@@ -33,6 +34,7 @@ data class Product(
     val name: String,
     val description: String?,
     val categoryId: String?,
+    val categoryName: String?,
     val costPrice: Double,
     val sellingPrice: Double,
     val currentStock: Int,
@@ -165,6 +167,7 @@ data class Product(
             barcode: String? = null,
             description: String? = null,
             categoryId: String? = null,
+            categoryName: String? = null,
             unit: String = "unit",
             imageUrl: String? = null,
             isActive: Boolean = true,
@@ -177,6 +180,7 @@ data class Product(
             name = name,
             description = description,
             categoryId = categoryId,
+            categoryName = categoryName,
             costPrice = costPrice,
             sellingPrice = sellingPrice,
             currentStock = currentStock,

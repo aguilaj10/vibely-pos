@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.vibely.pos.ui.theme.AppColors
 
 data class TableColumn(
     val key: String,
@@ -69,8 +68,8 @@ fun <T> DataTable(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .border(1.dp, AppColors.OutlineLight, RoundedCornerShape(10.dp))
-            .background(AppColors.SurfaceLight),
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surface),
     ) {
         TableHeader(
             columns = columns,
@@ -93,7 +92,7 @@ fun <T> DataTable(
             hasActions = actionsColumn != null,
         )
 
-        HorizontalDivider(color = AppColors.OutlineLight, thickness = 1.dp)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
 
         if (data.isEmpty() && !isLoading) {
             if (emptyContent != null) {
@@ -108,7 +107,7 @@ fun <T> DataTable(
                     Text(
                         text = "No data available",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.TextSecondaryLight,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -122,7 +121,7 @@ fun <T> DataTable(
                     actionsContent = actionsColumn?.let { { it(item) } },
                 )
                 if (index < data.size - 1) {
-                    HorizontalDivider(color = AppColors.OutlineLight.copy(alpha = 0.5f), thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), thickness = 1.dp)
                 }
             }
         }
@@ -134,7 +133,7 @@ private fun TableHeader(columns: List<TableColumn>, sortState: SortState, onSort
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppColors.NeutralLight100)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -179,7 +178,7 @@ private fun TableHeaderCell(column: TableColumn, sortState: SortState, onSort: (
                 modifier = Modifier
                     .height(16.dp)
                     .width(16.dp),
-                tint = AppColors.TextSecondaryLight,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.width(4.dp))
         }
@@ -187,7 +186,7 @@ private fun TableHeaderCell(column: TableColumn, sortState: SortState, onSort: (
             text = column.label,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = if (isSorted) AppColors.Primary else AppColors.TextSecondaryLight,
+            color = if (isSorted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (column.sortable) {
             Spacer(modifier = Modifier.width(4.dp))
@@ -198,7 +197,7 @@ private fun TableHeaderCell(column: TableColumn, sortState: SortState, onSort: (
                     else -> "↓"
                 },
                 style = MaterialTheme.typography.labelMedium,
-                color = AppColors.Primary,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
     }
@@ -215,7 +214,7 @@ private fun <T> TableRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppColors.SurfaceLight)
+            .background(MaterialTheme.colorScheme.surface)
             .then(
                 if (onRowClick != null) {
                     Modifier.clickable { onRowClick(item) }
@@ -247,7 +246,7 @@ private fun <T> TableRow(
 }
 
 @Composable
-fun DataTableCell(text: String, modifier: Modifier = Modifier, color: Color = AppColors.TextPrimaryLight) {
+fun DataTableCell(text: String, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.onSurface) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,

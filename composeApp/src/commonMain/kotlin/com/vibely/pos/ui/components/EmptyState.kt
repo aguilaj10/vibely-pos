@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vibely.pos.ui.theme.AppColors
 
 enum class EmptyStateSize {
     Small,
@@ -50,7 +49,7 @@ fun EmptyState(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(iconSize),
-                tint = AppColors.NeutralLight500,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(spacing))
         }
@@ -58,7 +57,7 @@ fun EmptyState(
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
-            color = AppColors.TextPrimaryLight,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
         )
 
@@ -67,7 +66,7 @@ fun EmptyState(
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextSecondaryLight,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
         }

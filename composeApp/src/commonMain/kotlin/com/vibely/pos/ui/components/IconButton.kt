@@ -71,7 +71,7 @@ fun AppIconButton(
             .background(containerColor)
             .then(
                 if (variant == AppIconButtonVariant.Default && !enabled) {
-                    Modifier.border(1.dp, AppColors.OutlineLight, RoundedCornerShape(cornerRadius))
+                    Modifier.border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(cornerRadius))
                 } else {
                     Modifier
                 },
@@ -143,16 +143,16 @@ private fun getButtonColors(variant: AppIconButtonVariant, enabled: Boolean, isP
     return when (variant) {
         AppIconButtonVariant.Default -> {
             val bg = if (!enabled) {
-                AppColors.NeutralLight100
+                MaterialTheme.colorScheme.surfaceVariant
             } else if (isPressed) {
-                AppColors.NeutralLight300.copy(alpha = pressedAlpha)
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
             } else {
-                AppColors.SurfaceLight
+                MaterialTheme.colorScheme.surface
             }
             val icon = if (!enabled) {
-                AppColors.NeutralLight500
+                MaterialTheme.colorScheme.onSurfaceVariant
             } else {
-                AppColors.TextPrimaryLight
+                MaterialTheme.colorScheme.onSurface
             }
             bg to icon
         }
@@ -201,7 +201,7 @@ private fun getButtonColors(variant: AppIconButtonVariant, enabled: Boolean, isP
             bg to icon
         }
         AppIconButtonVariant.Ghost -> {
-            Color.Transparent to AppColors.TextPrimaryLight
+            Color.Transparent to MaterialTheme.colorScheme.onSurface
         }
     }
 }

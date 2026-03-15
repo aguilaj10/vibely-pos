@@ -7,7 +7,189 @@
 
 ## 🚨 Critical Rules (Never Violate)
 
-### 1. Preserve KDoc Documentation
+### 1. DRY Principle - Don't Repeat Yourself
+
+**✅ ALWAYS extract duplicated code** into shared utilities, extension functions, or common modules.
+
+```kotlin
+// ❌ WRONG - Duplicated formatCurrency across multiple files
+// InventoryScreen.kt
+private fun formatCurrency(amount: Double): String {
+    val wholePart = amount.toInt()
+    val decimalPart = ((amount - wholePart) * 100).toInt()
+    return "$$wholePart.${decimalPart.toString().padStart(2, '0')}"
+}
+
+// ShiftsScreen.kt
+private fun formatCurrency(amount: Double): String {  // DUPLICATE!
+    val wholePart = amount.toInt()
+    val decimalPart = ((amount - wholePart) * 100).toInt()
+    return "$$wholePart.${decimalPart.toString().padStart(2, '0')}"
+}
+
+// ✅ CORRECT - Extract to shared utility
+// shared/src/commonMain/kotlin/com/vibely/pos/shared/utils/FormatUtils.kt
+object FormatUtils {
+    fun formatCurrency(amount: Double): String {
+        val wholePart = amount.toInt()
+        val decimalPart = ((amount - wholePart) * 100).toInt()
+        return "$$wholePart.${decimalPart.toString().padStart(2, '0')}"
+    }
+}
+
+// Usage in screens
+import com.vibely.pos.shared.utils.FormatUtils.formatCurrency
+```
+
+**When you find duplicated code:**
+1. Extract to appropriate shared location (shared/utils, domain/extensions, ui/components)
+2. Consider if it's domain logic (→ shared module) or UI helper (→ ui/utils)
+3. Update all usages to reference the shared implementation
+4. Run tests to ensure behavior is preserved
+
+**Common extraction locations:**
+- **shared/utils/** - Business logic utilities (formatting, validation, calculations)
+- **composeApp/ui/utils/** - UI-only helpers (color manipulation, layout)
+- **shared/domain/extensions/** - Extension functions for domain entities
+- **composeApp/ui/components/** - Reusable UI components
+
+---
+
+### 2. Architecture Principles - Clean Architecture & Unidirectional Data Flow
+
+**✅ ALWAYS follow these architectural principles:**
+
+#### Single Responsibility Principle (SRP)
+Each class/function should have ONE reason to change.
+
+```kotlin
+// ❌ WRONG - God class doing everything
+class ProductManager {
+    fun getProducts(): List<Product> { /* fetch from API */ }
+    fun validateProduct(product: Product): Boolean { /* validation */ }
+    fun formatPrice(price: Double): String { /* formatting */ }
+    fun calculateDiscount(price: Double): Double { /* business logic */ }
+}
+
+// ✅ CORRECT - Separated concerns
+class ProductRepository {
+    suspend fun getProducts(): Result<List<Product>> { /* data layer */ }
+}
+
+class ProductValidator {
+    fun validate(product: Product): ValidationResult { /* domain logic */ }
+}
+
+object FormatUtils {
+    fun formatCurrency(amount: Double): String { /* presentation */ }
+}
+
+class DiscountCalculator {
+    fun calculate(price: Double, discountRate: Double): Double { /* domain logic */ }
+}
+```
+
+#### Unidirectional Data Flow (UDF)
+Data flows in ONE direction: UI → ViewModel → Repository → DataSource
+
+```kotlin
+// ✅ CORRECT - Unidirectional flow
+@Composable
+fun ProductScreen(viewModel: ProductViewModel) {
+    val state by viewModel.state.collectAsState()
+    
+    // 1. User action flows DOWN
+    Button(onClick = { viewModel.loadProducts() }) {
+        Text("Refresh")
+    }
+    
+    // 2. State flows UP from ViewModel
+    when (state) {
+        is Loading -> LoadingIndicator()
+        is Success -> ProductList(state.products)
+        is Error -> ErrorMessage(state.message)
+    }
+}
+
+class ProductViewModel(private val repository: ProductRepository) : ViewModel() {
+    private val _state = MutableStateFlow<ProductState>(Loading)
+    val state: StateFlow<ProductState> = _state.asStateFlow()
+    
+    // 3. ViewModel calls Repository
+    fun loadProducts() {
+        viewModelScope.launch {
+            _state.value = Loading
+            when (val result = repository.getProducts()) {
+                is Success -> _state.value = Success(result.data)
+                is Error -> _state.value = Error(result.message)
+            }
+        }
+    }
+}
+```
+
+#### Layer Separation
+**UI Layer** (composeApp) → **Domain Layer** (shared/domain) → **Data Layer** (shared/data)
+
+```kotlin
+// ❌ WRONG - UI directly accessing data source
+@Composable
+fun ProductScreen() {
+    val products = remember { mutableStateOf<List<Product>>(emptyList()) }
+    
+    LaunchedEffect(Unit) {
+        // UI should NOT know about HTTP clients or databases!
+        val response = httpClient.get("/api/products")
+        products.value = response.body()
+    }
+}
+
+// ✅ CORRECT - Proper layer separation
+// UI → ViewModel
+@Composable
+fun ProductScreen(viewModel: ProductViewModel) {
+    val state by viewModel.state.collectAsState()
+    ProductList(state.products)
+}
+
+// ViewModel → Use Case (optional) → Repository
+class ProductViewModel(private val getProductsUseCase: GetProductsUseCase) {
+    fun loadProducts() = viewModelScope.launch {
+        getProductsUseCase().collect { result ->
+            _state.value = result
+        }
+    }
+}
+
+// Use Case → Repository
+class GetProductsUseCase(private val repository: ProductRepository) {
+    operator fun invoke(): Flow<Result<List<Product>>> = flow {
+        emit(Loading)
+        emit(repository.getProducts())
+    }
+}
+
+// Repository → Data Source
+class ProductRepositoryImpl(
+    private val remoteDataSource: RemoteProductDataSource,
+    private val localDataSource: LocalProductDataSource
+) : ProductRepository {
+    override suspend fun getProducts(): Result<List<Product>> {
+        return remoteDataSource.getProducts()
+            .map { dtos -> dtos.map { it.toDomain() } }
+    }
+}
+```
+
+**Layer rules:**
+- ❌ UI must NOT import data sources (HttpClient, database DAOs)
+- ❌ Domain must NOT import UI (Composables, ViewModels) or framework code (Ktor, Supabase)
+- ❌ Data sources must NOT contain business logic
+- ✅ Dependencies flow inward: UI → Domain ← Data
+
+---
+
+### 3. Preserve KDoc Documentation
 
 **✅ ALWAYS preserve KDoc** on public API classes, functions, and properties.
 

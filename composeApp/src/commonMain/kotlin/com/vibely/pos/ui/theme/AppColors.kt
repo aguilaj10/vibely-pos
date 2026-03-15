@@ -88,7 +88,7 @@ object AppColors {
 
     // Background Colors - Light Mode (Figma: Off-white)
     val BackgroundLight = Color(0xFFF8FAFC) // Off-white #F8FAFC
-    val BackgroundDark = Color(0xFF0F172A) // Dark blue-black
+    val BackgroundDark = Color(0xFF1E1E1E) // Dark gray (proper dark mode)
 
     // Outline Colors (Figma: Light gray #E5E7EB)
     val OutlineLight = Color(0xFFE5E7EB)

@@ -18,6 +18,9 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.route
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger("CategoryRoutes")
 
 private const val ERROR_KEY = "error"
 private const val ERROR_UNAUTHORIZED = "User not authenticated"
@@ -73,11 +76,16 @@ private suspend fun ApplicationCall.handleGetAllCategories(categoryService: Cate
     val pageSize = request.queryParameters["page_size"]?.toIntOrNull() ?: DEFAULT_PAGE_SIZE
 
     when (val result = categoryService.getAllCategories(userId, isActive, page, pageSize)) {
-        is Result.Success -> respond(HttpStatusCode.OK, result.data)
-        is Result.Error -> respond(
-            HttpStatusCode.InternalServerError,
-            mapOf(ERROR_KEY to result.message)
-        )
+        is Result.Success -> {
+            respond(HttpStatusCode.OK, result.data)
+        }
+        is Result.Error -> {
+            logger.error("Failed to fetch categories: ${result.message}", result.cause)
+            respond(
+                HttpStatusCode.InternalServerError,
+                mapOf(ERROR_KEY to result.message)
+            )
+        }
     }
 }
 

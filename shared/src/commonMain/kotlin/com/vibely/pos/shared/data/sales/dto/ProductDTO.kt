@@ -17,6 +17,8 @@ data class ProductDTO(
     val description: String? = null,
     @SerialName("category_id")
     val categoryId: String? = null,
+    @SerialName("category_name")
+    val categoryName: String? = null,
     @SerialName("cost_price")
     val costPrice: Double,
     @SerialName("selling_price")

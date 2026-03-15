@@ -1,7 +1,9 @@
 package com.vibely.pos.ui.dashboard.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
@@ -38,36 +40,31 @@ fun MetricCard(icon: ImageVector, label: String, value: String, color: Color, mo
         style = AppCardStyle.Elevated,
         elevation = 2.dp,
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            // Icon
+        Box(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = AppColors.TextSecondaryLight,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = color,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.size(16.dp).align(Alignment.TopEnd),
                 tint = color,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Label
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = AppColors.TextSecondaryLight,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Value
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineMedium,
-                color = color,
-                textAlign = TextAlign.Center,
             )
         }
     }

@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.inventory.entity.Category
@@ -144,7 +143,8 @@ private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) 
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
                     contentDescription = "Search",
-                    tint = AppColors.TextSecondaryLight,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
             trailingIcon = {
@@ -153,7 +153,7 @@ private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) 
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Search,
                             contentDescription = "Clear",
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -188,7 +188,7 @@ private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory
             icon = FontAwesomeIcons.Solid.Tags,
             label = "Total Categories",
             value = totalCategories.toString(),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -196,7 +196,7 @@ private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory
             icon = FontAwesomeIcons.Solid.Boxes,
             label = "Total Products",
             value = totalProducts.toString(),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -204,7 +204,7 @@ private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory
             icon = FontAwesomeIcons.Solid.Folder,
             label = "Avg per Category",
             value = avgPerCategory.toString(),
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
 
@@ -212,7 +212,7 @@ private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory
             icon = FontAwesomeIcons.Solid.Tags,
             label = "Largest Category",
             value = if (largestCategory.length > 12) largestCategory.take(12) + "..." else largestCategory,
-            valueColor = AppColors.TextPrimaryLight,
+            valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
     }
@@ -231,36 +231,33 @@ private fun KpiCard(
         style = AppCardStyle.Elevated,
         elevation = 2.dp,
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        Box(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = valueColor,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                modifier = Modifier.size(32.dp),
-                tint = AppColors.TextSecondaryLight,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = AppColors.TextSecondaryLight,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineMedium,
-                color = valueColor,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.size(16.dp).align(Alignment.TopEnd),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -283,7 +280,7 @@ private fun CategoriesContent(
                     text = "Top Categories",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppColors.TextPrimaryLight,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
 
@@ -301,7 +298,7 @@ private fun CategoriesContent(
                     text = "All Categories",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppColors.TextPrimaryLight,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
 
@@ -327,13 +324,13 @@ private fun CategoriesContent(
                             imageVector = FontAwesomeIcons.Solid.Folder,
                             contentDescription = null,
                             modifier = Modifier.size(48.dp),
-                            tint = AppColors.TextSecondaryLight,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "No categories found",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -366,7 +363,7 @@ private fun TopCategoryCard(category: Category, onEdit: () -> Unit, onDelete: ()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = AppColors.SurfaceLight),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -386,7 +383,7 @@ private fun TopCategoryCard(category: Category, onEdit: () -> Unit, onDelete: ()
                         imageVector = FontAwesomeIcons.Solid.Folder,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
-                        tint = AppColors.SurfaceLight,
+                        tint = MaterialTheme.colorScheme.surface,
                     )
                 }
 
@@ -397,21 +394,21 @@ private fun TopCategoryCard(category: Category, onEdit: () -> Unit, onDelete: ()
                         text = category.name,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = AppColors.TextPrimaryLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         text = "${category.productCount} products",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AppColors.TextSecondaryLight,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     val desc = category.description
                     if (!desc.isNullOrBlank()) {
                         Text(
                             text = desc,
                             style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.TextSecondaryLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -432,7 +429,7 @@ private fun TopCategoryCard(category: Category, onEdit: () -> Unit, onDelete: ()
                         imageVector = FontAwesomeIcons.Solid.Edit,
                         contentDescription = "Edit",
                         modifier = Modifier.size(14.dp),
-                        tint = AppColors.TextSecondaryLight,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -461,7 +458,7 @@ private fun CategoriesTable(categories: List<Category>, onEditCategory: (String)
         Column(modifier = Modifier.fillMaxWidth()) {
             TableHeader()
 
-            HorizontalDivider(color = AppColors.OutlineLight)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             if (categories.isEmpty()) {
                 Box(
@@ -473,7 +470,7 @@ private fun CategoriesTable(categories: List<Category>, onEditCategory: (String)
                     Text(
                         text = "No categories to display",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = AppColors.TextSecondaryLight,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             } else {
@@ -486,7 +483,7 @@ private fun CategoriesTable(categories: List<Category>, onEditCategory: (String)
                             onEdit = { onEditCategory(category.id) },
                             onDelete = { onDeleteCategory(category.id) },
                         )
-                        HorizontalDivider(color = AppColors.OutlineLight)
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
             }
@@ -499,7 +496,7 @@ private fun TableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppColors.NeutralLight200)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -517,7 +514,7 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
         text = text,
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.SemiBold,
-        color = AppColors.TextSecondaryLight,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier,
     )
 }
@@ -546,7 +543,7 @@ private fun TableRow(category: Category, onEdit: () -> Unit, onDelete: () -> Uni
                     imageVector = FontAwesomeIcons.Solid.Edit,
                     contentDescription = "Edit",
                     modifier = Modifier.size(16.dp),
-                    tint = AppColors.TextSecondaryLight,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -570,7 +567,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        color = AppColors.TextPrimaryLight,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
@@ -593,7 +590,7 @@ private fun ColorCell(color: String?, modifier: Modifier = Modifier) {
         Text(
             text = color ?: "-",
             style = MaterialTheme.typography.bodySmall,
-            color = AppColors.TextSecondaryLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
