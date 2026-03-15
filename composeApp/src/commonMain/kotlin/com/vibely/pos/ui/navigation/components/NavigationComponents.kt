@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.navigation.Screen
-import com.vibely.pos.ui.theme.AppColors
 
 /**
  * Left sidebar navigation for desktop/tablet layouts.
@@ -51,6 +50,7 @@ import com.vibely.pos.ui.theme.AppColors
 @Composable
 fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen, modifier: Modifier = Modifier) {
     val sidebarScreens = listOf(
+        Screen.Dashboard,
         Screen.Checkout,
         Screen.Inventory,
         Screen.Categories,
@@ -65,7 +65,7 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
         modifier = modifier
             .fillMaxHeight()
             .width(240.dp),
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -80,17 +80,17 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
                     text = "POS",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.Primary,
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "Point of Sale",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.TextSecondaryLight,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
-            HorizontalDivider(color = AppColors.NeutralLight300)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             // Navigation Items - Scrollable
             LazyColumn(
@@ -117,8 +117,8 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
  */
 @Composable
 private fun SidebarNavItem(screen: Screen, isSelected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (isSelected) AppColors.Primary else Color.Transparent
-    val contentColor = if (isSelected) Color.White else AppColors.TextPrimaryLight
+    val backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+    val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
 
     Box(
         modifier = Modifier

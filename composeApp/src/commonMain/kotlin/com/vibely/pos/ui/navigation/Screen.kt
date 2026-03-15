@@ -3,7 +3,7 @@ package com.vibely.pos.ui.navigation
 import androidx.compose.ui.graphics.vector.ImageVector
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.solid.Boxes
+import compose.icons.fontawesomeicons.solid.Box
 import compose.icons.fontawesomeicons.solid.ChartBar
 import compose.icons.fontawesomeicons.solid.ChartLine
 import compose.icons.fontawesomeicons.solid.ClipboardList
@@ -55,7 +55,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     /**
      * Inventory screen - manage products and stock levels.
      */
-    data object Inventory : Screen("inventory", "Inventory", FontAwesomeIcons.Solid.Boxes)
+    data object Inventory : Screen("inventory", "Inventory", FontAwesomeIcons.Solid.Box)
 
     /**
      * Categories screen - manage product categories.

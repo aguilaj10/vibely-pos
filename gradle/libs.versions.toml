@@ -30,7 +30,6 @@ ktor = "3.4.1"
 lifecycleViewmodelNav3 = "2.10.0-beta01"
 logback = "1.5.32"
 nav3Core = "1.1.0-alpha04"
-composeNavigation = "2.9.0"
 supabase = "3.4.1"
 
 [libraries]
@@ -49,7 +48,6 @@ androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecyc
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform"}
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform"}
@@ -57,7 +55,7 @@ compose-material3 = { module = "org.jetbrains.compose.material3:material3", vers
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform"}
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform"}
 compose-icons-fontawesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "composeIcons" }
-material3-windowsize = { module = "org.jetbrains.compose.material3:material3-window-size-class", version = "1.7.3" }
+material3-windowsize = { module = "org.jetbrains.compose.material3:material3-window-size-class", version = "1.9.0" }
 cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptography-kotlin" }
 cryptography-provider-optimal = { module = "dev.whyoleg.cryptography:cryptography-provider-optimal", version.ref = "cryptography-kotlin" }
 jwt = { module = "com.auth0:java-jwt", version.ref = "jwt" }

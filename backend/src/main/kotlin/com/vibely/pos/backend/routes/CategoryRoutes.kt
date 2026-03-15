@@ -39,7 +39,7 @@ fun Route.categoryRoutes(categoryService: CategoryService) {
     route("/api/categories") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get { call.handleGetAll(categoryService) }
+                get { call.handleGetAllCategories(categoryService) }
                 get(PATH_ID) { call.handleGetById(categoryService) }
                 post { call.handleCreateCategory(categoryService) }
                 put(PATH_ID) { call.handleUpdateCategory(categoryService) }
@@ -47,7 +47,7 @@ fun Route.categoryRoutes(categoryService: CategoryService) {
             }
         } else {
             authenticate("auth-jwt") {
-                get { call.handleGetAll(categoryService) }
+                get { call.handleGetAllCategories(categoryService) }
                 get(PATH_ID) { call.handleGetById(categoryService) }
                 post { call.handleCreateCategory(categoryService) }
                 put(PATH_ID) { call.handleUpdateCategory(categoryService) }
@@ -57,7 +57,7 @@ fun Route.categoryRoutes(categoryService: CategoryService) {
     }
 }
 
-private suspend fun ApplicationCall.handleGetAll(categoryService: CategoryService) {
+private suspend fun ApplicationCall.handleGetAllCategories(categoryService: CategoryService) {
     val userId = principal<JWTPrincipal>()
         ?.payload
         ?.getClaim(CLAIM_USER_ID)

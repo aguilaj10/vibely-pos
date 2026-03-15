@@ -37,7 +37,7 @@ fun Route.salesRoutes(saleService: SaleService) {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
                 post { call.handleCreateSale(saleService) }
-                get { call.handleGetAll(saleService) }
+                get { call.handleGetAllSales(saleService) }
                 get("/{id}") { call.handleGetById(saleService) }
                 get("/{id}/items") { call.handleGetItems(saleService) }
                 put("/{id}/status") { call.handleUpdateStatus(saleService) }
@@ -45,7 +45,7 @@ fun Route.salesRoutes(saleService: SaleService) {
         } else {
             authenticate("auth-jwt") {
                 post { call.handleCreateSale(saleService) }
-                get { call.handleGetAll(saleService) }
+                get { call.handleGetAllSales(saleService) }
                 get("/{id}") { call.handleGetById(saleService) }
                 get("/{id}/items") { call.handleGetItems(saleService) }
                 put("/{id}/status") { call.handleUpdateStatus(saleService) }
@@ -72,7 +72,7 @@ private suspend fun ApplicationCall.handleCreateSale(saleService: SaleService) {
     }
 }
 
-private suspend fun ApplicationCall.handleGetAll(saleService: SaleService) {
+private suspend fun ApplicationCall.handleGetAllSales(saleService: SaleService) {
     val startDate = request.queryParameters["start_date"]
     val endDate = request.queryParameters["end_date"]
     val status = request.queryParameters["status"]

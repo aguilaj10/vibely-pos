@@ -47,7 +47,7 @@ fun Route.productRoutes(productService: ProductService) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
                 get("/search") { call.handleSearch(productService) }
                 get(PATH_ID) { call.handleGetById(productService) }
-                get { call.handleGetAll(productService) }
+                get { call.handleGetAllProducts(productService) }
                 post { call.handleCreateProduct(productService) }
                 put(PATH_ID) { call.handleUpdateProduct(productService) }
                 delete(PATH_ID) { call.handleDeleteProduct(productService) }
@@ -57,7 +57,7 @@ fun Route.productRoutes(productService: ProductService) {
             authenticate("auth-jwt") {
                 get("/search") { call.handleSearch(productService) }
                 get(PATH_ID) { call.handleGetById(productService) }
-                get { call.handleGetAll(productService) }
+                get { call.handleGetAllProducts(productService) }
                 post { call.handleCreateProduct(productService) }
                 put(PATH_ID) { call.handleUpdateProduct(productService) }
                 delete(PATH_ID) { call.handleDeleteProduct(productService) }
@@ -93,7 +93,7 @@ private suspend fun ApplicationCall.handleGetById(productService: ProductService
     }
 }
 
-private suspend fun ApplicationCall.handleGetAll(productService: ProductService) {
+private suspend fun ApplicationCall.handleGetAllProducts(productService: ProductService) {
     val categoryId = request.queryParameters["category_id"]
     val isActive = request.queryParameters["is_active"]?.toBoolean()
     val lowStockOnly = request.queryParameters["low_stock"]?.toBoolean() ?: false

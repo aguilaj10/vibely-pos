@@ -38,7 +38,7 @@ fun Route.customerRoutes(customerService: CustomerService) {
     route("/api/customers") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get { call.handleGetAll(customerService) }
+                get { call.handleGetAllCustomers(customerService) }
                 get(PATH_ID) { call.handleGetById(customerService) }
                 post { call.handleCreateCustomer(customerService) }
                 put(PATH_ID) { call.handleUpdateCustomer(customerService) }
@@ -48,7 +48,7 @@ fun Route.customerRoutes(customerService: CustomerService) {
             }
         } else {
             authenticate("auth-jwt") {
-                get { call.handleGetAll(customerService) }
+                get { call.handleGetAllCustomers(customerService) }
                 get(PATH_ID) { call.handleGetById(customerService) }
                 post { call.handleCreateCustomer(customerService) }
                 put(PATH_ID) { call.handleUpdateCustomer(customerService) }
@@ -60,7 +60,7 @@ fun Route.customerRoutes(customerService: CustomerService) {
     }
 }
 
-private suspend fun ApplicationCall.handleGetAll(customerService: CustomerService) {
+private suspend fun ApplicationCall.handleGetAllCustomers(customerService: CustomerService) {
     val userId = principal<JWTPrincipal>()
         ?.payload
         ?.getClaim(CLAIM_USER_ID)

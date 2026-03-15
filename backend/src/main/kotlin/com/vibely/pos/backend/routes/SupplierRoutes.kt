@@ -35,7 +35,7 @@ fun Route.supplierRoutes(supplierService: SupplierService) {
     route("/api/suppliers") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get { call.handleGetAll(supplierService) }
+                get { call.handleGetAllSuppliers(supplierService) }
                 get(PATH_ID) { call.handleGetById(supplierService) }
                 post { call.handleCreateSupplier(supplierService) }
                 put(PATH_ID) { call.handleUpdateSupplier(supplierService) }
@@ -43,7 +43,7 @@ fun Route.supplierRoutes(supplierService: SupplierService) {
             }
         } else {
             authenticate("auth-jwt") {
-                get { call.handleGetAll(supplierService) }
+                get { call.handleGetAllSuppliers(supplierService) }
                 get(PATH_ID) { call.handleGetById(supplierService) }
                 post { call.handleCreateSupplier(supplierService) }
                 put(PATH_ID) { call.handleUpdateSupplier(supplierService) }
@@ -53,7 +53,7 @@ fun Route.supplierRoutes(supplierService: SupplierService) {
     }
 }
 
-private suspend fun ApplicationCall.handleGetAll(supplierService: SupplierService) {
+private suspend fun ApplicationCall.handleGetAllSuppliers(supplierService: SupplierService) {
     val userId = principal<JWTPrincipal>()
         ?.payload
         ?.getClaim(CLAIM_USER_ID)
