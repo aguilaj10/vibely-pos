@@ -8,11 +8,15 @@ import com.vibely.pos.backend.config.configureContentNegotiation
 import com.vibely.pos.backend.config.configureKoin
 import com.vibely.pos.backend.config.configureStatusPages
 import com.vibely.pos.backend.routes.authRoutes
+import com.vibely.pos.backend.routes.categoryRoutes
 import com.vibely.pos.backend.routes.dashboardRoutes
+import com.vibely.pos.backend.routes.inventoryRoutes
 import com.vibely.pos.backend.routes.productRoutes
 import com.vibely.pos.backend.routes.salesRoutes
 import com.vibely.pos.backend.services.AuthService
+import com.vibely.pos.backend.services.CategoryService
 import com.vibely.pos.backend.services.DashboardService
+import com.vibely.pos.backend.services.InventoryService
 import com.vibely.pos.backend.services.ProductService
 import com.vibely.pos.backend.services.SaleService
 import io.github.jan.supabase.SupabaseClient
@@ -75,6 +79,8 @@ private fun Application.configureRouting(supabaseClient: SupabaseClient) {
     val dashboardService: Lazy<DashboardService> = inject()
     val productService: Lazy<ProductService> = inject()
     val saleService: Lazy<SaleService> = inject()
+    val categoryService: Lazy<CategoryService> = inject()
+    val inventoryService: Lazy<InventoryService> = inject()
     
     routing {
         get("/") {
@@ -108,6 +114,12 @@ private fun Application.configureRouting(supabaseClient: SupabaseClient) {
 
         // Sales routes
         salesRoutes(saleService.value)
+
+        // Category routes
+        categoryRoutes(categoryService.value)
+
+        // Inventory routes
+        inventoryRoutes(inventoryService.value)
     }
 }
 

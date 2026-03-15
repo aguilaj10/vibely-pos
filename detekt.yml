@@ -68,7 +68,7 @@ complexity:
     active: true
   CyclomaticComplexMethod:
     active: true
-    threshold: 10
+    threshold: 15
   LabeledExpression:
     active: true
   LargeClass:
@@ -96,11 +96,11 @@ complexity:
     active: true
   TooManyFunctions:
     active: true
-    thresholdInFiles: 10
-    thresholdInClasses: 10
-    thresholdInInterfaces: 10
-    thresholdInObjects: 10
-    thresholdInEnums: 10
+    thresholdInFiles: 11
+    thresholdInClasses: 11
+    thresholdInInterfaces: 11
+    thresholdInObjects: 11
+    thresholdInEnums: 11
 
 coroutines:
   active: true

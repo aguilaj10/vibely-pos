@@ -6,12 +6,18 @@ import com.vibely.pos.shared.data.auth.datasource.RemoteAuthDataSource
 import com.vibely.pos.shared.data.auth.repository.AuthRepositoryImpl
 import com.vibely.pos.shared.data.dashboard.datasource.RemoteDashboardDataSource
 import com.vibely.pos.shared.data.dashboard.repository.DashboardRepositoryImpl
+import com.vibely.pos.shared.data.inventory.datasource.RemoteCategoryDataSource
+import com.vibely.pos.shared.data.inventory.datasource.RemoteInventoryDataSource
+import com.vibely.pos.shared.data.inventory.repository.CategoryRepositoryImpl
+import com.vibely.pos.shared.data.inventory.repository.InventoryRepositoryImpl
 import com.vibely.pos.shared.data.sales.datasource.RemoteProductDataSource
 import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
 import com.vibely.pos.shared.data.sales.repository.ProductRepositoryImpl
 import com.vibely.pos.shared.data.sales.repository.SaleRepositoryImpl
 import com.vibely.pos.shared.domain.auth.repository.AuthRepository
 import com.vibely.pos.shared.domain.dashboard.repository.DashboardRepository
+import com.vibely.pos.shared.domain.inventory.repository.CategoryRepository
+import com.vibely.pos.shared.domain.inventory.repository.InventoryRepository
 import com.vibely.pos.shared.domain.sales.repository.ProductRepository
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import io.github.jan.supabase.SupabaseClient
@@ -145,4 +151,22 @@ val dataModule =
         // Sales repositories
         singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
         singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
+
+        // Inventory data sources
+        single {
+            RemoteInventoryDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+        single {
+            RemoteCategoryDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Inventory repositories
+        singleOf(::InventoryRepositoryImpl) { bind<InventoryRepository>() }
+        singleOf(::CategoryRepositoryImpl) { bind<CategoryRepository>() }
     }

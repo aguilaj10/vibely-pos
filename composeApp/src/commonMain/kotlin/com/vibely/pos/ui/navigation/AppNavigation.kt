@@ -13,9 +13,11 @@ import androidx.compose.ui.Modifier
 import com.vibely.pos.config.DebugConfig
 import com.vibely.pos.ui.auth.LoginScreen
 import com.vibely.pos.ui.dashboard.DashboardScreen
+import com.vibely.pos.ui.inventory.InventoryScreen
 import com.vibely.pos.ui.navigation.components.BottomNavigationBar
 import com.vibely.pos.ui.screens.PlaceholderScreen
 import com.vibely.pos.ui.screens.ThemeDemoScreen
+import com.vibely.pos.ui.screens.categories.CategoriesScreen
 
 /**
  * Main navigation controller for the application.
@@ -124,15 +126,11 @@ private fun AuthenticatedScreenLayout(currentScreen: Screen, onNavigate: (Screen
                 )
 
                 // Inventory screens
-                Screen.Inventory -> PlaceholderScreen(
-                    title = Screen.Inventory.title,
-                    icon = Screen.Inventory.icon,
-                    description = "Manage products, stock levels, and inventory adjustments.",
+                Screen.Inventory -> InventoryScreen(
+                    onNavigate = onNavigate,
                 )
-                Screen.Categories -> PlaceholderScreen(
-                    title = Screen.Categories.title,
-                    icon = Screen.Categories.icon,
-                    description = "Organize products into categories for better management.",
+                Screen.Categories -> CategoriesScreen(
+                    onNavigate = onNavigate,
                 )
 
                 // Purchasing screens
