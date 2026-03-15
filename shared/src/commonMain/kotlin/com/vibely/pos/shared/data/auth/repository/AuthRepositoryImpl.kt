@@ -6,6 +6,7 @@ import com.vibely.pos.shared.data.auth.dto.LoginRequestDTO
 import com.vibely.pos.shared.data.auth.dto.RefreshTokenRequestDTO
 import com.vibely.pos.shared.data.auth.mapper.AuthTokenMapper
 import com.vibely.pos.shared.data.auth.mapper.UserMapper
+import com.vibely.pos.shared.data.common.BaseRepository
 import com.vibely.pos.shared.domain.auth.entity.User
 import com.vibely.pos.shared.domain.auth.repository.AuthRepository
 import com.vibely.pos.shared.domain.auth.valueobject.AuthToken
@@ -22,7 +23,9 @@ import com.vibely.pos.shared.domain.result.map
  * @param remoteDataSource Remote data source for backend API calls.
  * @param localDataSource Local data source for token storage.
  */
-class AuthRepositoryImpl(private val remoteDataSource: RemoteAuthDataSource, private val localDataSource: LocalAuthDataSource) : AuthRepository {
+class AuthRepositoryImpl(private val remoteDataSource: RemoteAuthDataSource, private val localDataSource: LocalAuthDataSource) :
+    BaseRepository(),
+    AuthRepository {
 
     override suspend fun login(credentials: Credentials): Result<AuthToken> {
         val request = LoginRequestDTO(

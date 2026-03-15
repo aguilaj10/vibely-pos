@@ -16,7 +16,7 @@ private const val ERROR_FETCH_FAILED = "Failed to fetch inventory transactions"
  */
 class InventoryService(
     private val supabaseClient: SupabaseClient,
-) {
+) : BaseService() {
     /**
      * Retrieves inventory transactions with optional filtering and pagination.
      *
@@ -28,8 +28,9 @@ class InventoryService(
         userId: String,
         request: GetTransactionsRequest
     ): Result<List<JsonObject>> {
-        return try {
-            val transactions = supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS)
+        val (from, to) = calculatePaginationRange(request.page, request.pageSize)
+        return executeQuery(ERROR_FETCH_FAILED) {
+            supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS)
                 .select {
                     filter {
                         eq(DatabaseColumns.USER_ID, userId)
@@ -39,18 +40,9 @@ class InventoryService(
                         request.endDate?.let { lte(DatabaseColumns.CREATED_AT, it) }
                     }
                     order(DatabaseColumns.CREATED_AT, Order.DESCENDING)
-                    range(
-                        from = ((request.page - 1) * request.pageSize).toLong(),
-                        to = (request.page * request.pageSize - 1).toLong()
-                    )
+                    range(from, to)
                 }
                 .decodeList<JsonObject>()
-
-            Result.Success(transactions)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
-            Result.Error("$ERROR_FETCH_FAILED: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
-            Result.Error("$ERROR_FETCH_FAILED: ${e.message}", cause = e)
         }
     }
 }

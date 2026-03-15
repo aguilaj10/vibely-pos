@@ -1,20 +1,20 @@
 package com.vibely.pos.shared.data.inventory.repository
 
+import com.vibely.pos.shared.data.common.BaseRepository
 import com.vibely.pos.shared.data.inventory.datasource.RemoteCategoryDataSource
 import com.vibely.pos.shared.data.inventory.mapper.CategoryMapper
 import com.vibely.pos.shared.domain.inventory.entity.Category
 import com.vibely.pos.shared.domain.inventory.repository.CategoryRepository
 import com.vibely.pos.shared.domain.result.Result
-import com.vibely.pos.shared.domain.result.map
 
-class CategoryRepositoryImpl(private val remoteDataSource: RemoteCategoryDataSource) : CategoryRepository {
+class CategoryRepositoryImpl(private val remoteDataSource: RemoteCategoryDataSource) :
+    BaseRepository(),
+    CategoryRepository {
 
     override suspend fun getAll(isActive: Boolean?, page: Int, pageSize: Int): Result<List<Category>> =
-        remoteDataSource.getAll(isActive, page, pageSize)
-            .map { dtos -> dtos.map { CategoryMapper.toDomain(it) } }
+        mapList(remoteDataSource.getAll(isActive, page, pageSize), CategoryMapper::toDomain)
 
-    override suspend fun getById(id: String): Result<Category> = remoteDataSource.getById(id)
-        .map { CategoryMapper.toDomain(it) }
+    override suspend fun getById(id: String): Result<Category> = mapSingle(remoteDataSource.getById(id), CategoryMapper::toDomain)
 
     override suspend fun create(category: Category): Result<Category> {
         TODO("Not implemented - will be added in inventory management phase")

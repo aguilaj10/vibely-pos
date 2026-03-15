@@ -7,8 +7,10 @@ import com.vibely.pos.shared.data.sales.dto.SaleDTO
 import com.vibely.pos.shared.data.sales.dto.SaleItemDTO
 import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
+import kotlinx.serialization.SerializationException
 
 private const val TABLE_SALES = "sales"
 private const val TABLE_SALE_ITEMS = "sale_items"
@@ -43,9 +45,9 @@ class SaleService(
             creationHelper.deductStockAndLogTransactions(request, sale, cashierId)
             
             Result.Success(sale)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
+        } catch (e: RestException) {
             Result.Error("$ERROR_CREATE_SALE: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
+        } catch (e: SerializationException) {
             Result.Error("$ERROR_CREATE_SALE: ${e.message}", cause = e)
         }
     }
@@ -74,9 +76,9 @@ class SaleService(
                 .decodeList<SaleDTO>()
 
             Result.Success(sales)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
+        } catch (e: RestException) {
             Result.Error("$ERROR_FETCH_SALES: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
+        } catch (e: SerializationException) {
             Result.Error("$ERROR_FETCH_SALES: ${e.message}", cause = e)
         }
     }
@@ -98,9 +100,9 @@ class SaleService(
                 .decodeSingle<SaleDTO>()
 
             Result.Success(sale)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
+        } catch (e: RestException) {
             Result.Error(ERROR_SALE_NOT_FOUND, cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
+        } catch (e: SerializationException) {
             Result.Error(ERROR_SALE_NOT_FOUND, cause = e)
         }
     }
@@ -122,9 +124,9 @@ class SaleService(
                 .decodeList<SaleItemDTO>()
 
             Result.Success(items)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
+        } catch (e: RestException) {
             Result.Error("$ERROR_FETCH_ITEMS: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
+        } catch (e: SerializationException) {
             Result.Error("$ERROR_FETCH_ITEMS: ${e.message}", cause = e)
         }
     }
@@ -148,9 +150,9 @@ class SaleService(
                 .decodeSingle<SaleDTO>()
 
             Result.Success(sale)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
+        } catch (e: RestException) {
             Result.Error("$ERROR_UPDATE_STATUS: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
+        } catch (e: SerializationException) {
             Result.Error("$ERROR_UPDATE_STATUS: ${e.message}", cause = e)
         }
     }

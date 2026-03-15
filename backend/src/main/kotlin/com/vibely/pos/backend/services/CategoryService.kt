@@ -23,7 +23,7 @@ private const val ERROR_DELETE_FAILED = "Failed to delete category"
  */
 class CategoryService(
     private val supabaseClient: SupabaseClient,
-) {
+) : BaseService() {
     /**
      * Retrieves all categories with optional filtering and pagination.
      *
@@ -39,26 +39,18 @@ class CategoryService(
         page: Int,
         pageSize: Int
     ): Result<List<JsonObject>> {
-        return try {
-            val categories = supabaseClient.from(TABLE_CATEGORIES)
+        val (from, to) = calculatePaginationRange(page, pageSize)
+        return executeQuery(ERROR_FETCH_FAILED) {
+            supabaseClient.from(TABLE_CATEGORIES)
                 .select {
                     filter {
                         eq(DatabaseColumns.USER_ID, userId)
                         isActive?.let { eq(DatabaseColumns.IS_ACTIVE, it) }
                     }
                     order(DatabaseColumns.NAME, Order.ASCENDING)
-                    range(
-                        from = ((page - 1) * pageSize).toLong(),
-                        to = (page * pageSize - 1).toLong()
-                    )
+                    range(from, to)
                 }
                 .decodeList<JsonObject>()
-
-            Result.Success(categories)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
-            Result.Error("$ERROR_FETCH_FAILED: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
-            Result.Error("$ERROR_FETCH_FAILED: ${e.message}", cause = e)
         }
     }
 
@@ -70,8 +62,8 @@ class CategoryService(
      * @return Result containing the category or error
      */
     suspend fun getCategoryById(userId: String, categoryId: String): Result<JsonObject> {
-        return try {
-            val category = supabaseClient.from(TABLE_CATEGORIES)
+        return executeQuery(ERROR_CATEGORY_NOT_FOUND) {
+            supabaseClient.from(TABLE_CATEGORIES)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
@@ -79,12 +71,6 @@ class CategoryService(
                     }
                 }
                 .decodeSingle<JsonObject>()
-
-            Result.Success(category)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
-            Result.Error(ERROR_CATEGORY_NOT_FOUND, cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
-            Result.Error(ERROR_CATEGORY_NOT_FOUND, cause = e)
         }
     }
 
@@ -99,7 +85,7 @@ class CategoryService(
         userId: String,
         request: CreateCategoryRequest
     ): Result<JsonObject> {
-        return try {
+        return executeQuery(ERROR_CREATE_FAILED) {
             val data = buildJsonObject {
                 put(DatabaseColumns.USER_ID, userId)
                 put(DatabaseColumns.NAME, request.name)
@@ -109,17 +95,11 @@ class CategoryService(
                 put(DatabaseColumns.IS_ACTIVE, request.isActive)
             }
 
-            val category = supabaseClient.from(TABLE_CATEGORIES)
+            supabaseClient.from(TABLE_CATEGORIES)
                 .insert(data) {
                     select()
                 }
                 .decodeSingle<JsonObject>()
-
-            Result.Success(category)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
-            Result.Error("$ERROR_CREATE_FAILED: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
-            Result.Error("$ERROR_CREATE_FAILED: ${e.message}", cause = e)
         }
     }
 
@@ -136,7 +116,7 @@ class CategoryService(
         categoryId: String,
         request: UpdateCategoryRequest
     ): Result<JsonObject> {
-        return try {
+        return executeQuery(ERROR_UPDATE_FAILED) {
             val data = buildJsonObject {
                 request.name?.let { put(DatabaseColumns.NAME, it) }
                 request.description?.let { put(DatabaseColumns.DESCRIPTION, it) }
@@ -145,7 +125,7 @@ class CategoryService(
                 request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
             }
 
-            val category = supabaseClient.from(TABLE_CATEGORIES)
+            supabaseClient.from(TABLE_CATEGORIES)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
@@ -154,12 +134,6 @@ class CategoryService(
                     select()
                 }
                 .decodeSingle<JsonObject>()
-
-            Result.Success(category)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
-            Result.Error("$ERROR_UPDATE_FAILED: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
-            Result.Error("$ERROR_UPDATE_FAILED: ${e.message}", cause = e)
         }
     }
 
@@ -171,7 +145,7 @@ class CategoryService(
      * @return Result indicating success or error
      */
     suspend fun deleteCategory(userId: String, categoryId: String): Result<Unit> {
-        return try {
+        return executeQuery(ERROR_DELETE_FAILED) {
             supabaseClient.from(TABLE_CATEGORIES)
                 .delete() {
                     filter {
@@ -179,12 +153,6 @@ class CategoryService(
                         eq(DatabaseColumns.USER_ID, userId)
                     }
                 }
-
-            Result.Success(Unit)
-        } catch (e: io.github.jan.supabase.exceptions.RestException) {
-            Result.Error("$ERROR_DELETE_FAILED: ${e.message}", cause = e)
-        } catch (e: kotlinx.serialization.SerializationException) {
-            Result.Error("$ERROR_DELETE_FAILED: ${e.message}", cause = e)
         }
     }
 }

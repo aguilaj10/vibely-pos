@@ -1,5 +1,6 @@
 package com.vibely.pos.shared.data.dashboard.repository
 
+import com.vibely.pos.shared.data.common.BaseRepository
 import com.vibely.pos.shared.data.dashboard.datasource.RemoteDashboardDataSource
 import com.vibely.pos.shared.data.dashboard.mapper.DashboardSummaryMapper
 import com.vibely.pos.shared.data.dashboard.mapper.LowStockProductMapper
@@ -9,7 +10,6 @@ import com.vibely.pos.shared.domain.dashboard.entity.LowStockProduct
 import com.vibely.pos.shared.domain.dashboard.entity.RecentTransaction
 import com.vibely.pos.shared.domain.dashboard.repository.DashboardRepository
 import com.vibely.pos.shared.domain.result.Result
-import com.vibely.pos.shared.domain.result.map
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
@@ -20,7 +20,9 @@ import kotlin.time.Duration.Companion.minutes
  *
  * @param remoteDataSource Remote data source for backend API calls.
  */
-class DashboardRepositoryImpl(private val remoteDataSource: RemoteDashboardDataSource) : DashboardRepository {
+class DashboardRepositoryImpl(private val remoteDataSource: RemoteDashboardDataSource) :
+    BaseRepository(),
+    DashboardRepository {
 
     // Cache for dashboard summary with 5-minute TTL
     private var cachedSummary: DashboardSummary? = null
@@ -38,7 +40,6 @@ class DashboardRepositoryImpl(private val remoteDataSource: RemoteDashboardDataS
     private val cacheTTL = 5.minutes
 
     override suspend fun getDashboardSummary(): Result<DashboardSummary> {
-        // Check cache validity
         val now = Clock.System.now().toEpochMilliseconds()
         val cachedSummaryLocal = cachedSummary
         val summaryFetchedAtLocal = summaryFetchedAt
@@ -46,24 +47,19 @@ class DashboardRepositoryImpl(private val remoteDataSource: RemoteDashboardDataS
         if (cachedSummaryLocal != null && summaryFetchedAtLocal != null) {
             val cacheAge = now - summaryFetchedAtLocal
             if (cacheAge < cacheTTL.inWholeMilliseconds) {
-                // Cache is still valid
                 return Result.Success(cachedSummaryLocal)
             }
         }
 
-        // Cache miss or expired - fetch from backend
-        return remoteDataSource.getDashboardSummary()
-            .map { dto ->
-                val summary = DashboardSummaryMapper.toDomain(dto)
-                // Update cache
-                cachedSummary = summary
-                summaryFetchedAt = now
-                summary
-            }
+        val result = mapSingle(remoteDataSource.getDashboardSummary(), DashboardSummaryMapper::toDomain)
+        if (result is Result.Success) {
+            cachedSummary = result.data
+            summaryFetchedAt = now
+        }
+        return result
     }
 
     override suspend fun getRecentTransactions(limit: Int): Result<List<RecentTransaction>> {
-        // Validate limit
         if (limit < 1 || limit > 100) {
             return Result.Error(
                 message = "Limit must be between 1 and 100",
@@ -71,7 +67,6 @@ class DashboardRepositoryImpl(private val remoteDataSource: RemoteDashboardDataS
             )
         }
 
-        // Check cache validity
         val now = Clock.System.now().toEpochMilliseconds()
         val cachedTransactionsLocal = cachedTransactions
         val transactionsFetchedAtLocal = transactionsFetchedAt
@@ -80,25 +75,20 @@ class DashboardRepositoryImpl(private val remoteDataSource: RemoteDashboardDataS
         if (cachedTransactionsLocal != null && transactionsFetchedAtLocal != null && cachedTransactionsLimitLocal == limit) {
             val cacheAge = now - transactionsFetchedAtLocal
             if (cacheAge < cacheTTL.inWholeMilliseconds) {
-                // Cache is still valid
                 return Result.Success(cachedTransactionsLocal)
             }
         }
 
-        // Cache miss or expired - fetch from backend
-        return remoteDataSource.getRecentTransactions(limit)
-            .map { dtoList ->
-                val transactions = dtoList.map { dto -> RecentTransactionMapper.toDomain(dto) }
-                // Update cache
-                cachedTransactions = transactions
-                transactionsFetchedAt = now
-                cachedTransactionsLimit = limit
-                transactions
-            }
+        val result = mapList(remoteDataSource.getRecentTransactions(limit), RecentTransactionMapper::toDomain)
+        if (result is Result.Success) {
+            cachedTransactions = result.data
+            transactionsFetchedAt = now
+            cachedTransactionsLimit = limit
+        }
+        return result
     }
 
     override suspend fun getLowStockProducts(): Result<List<LowStockProduct>> {
-        // Check cache validity
         val now = Clock.System.now().toEpochMilliseconds()
         val cachedLowStockProductsLocal = cachedLowStockProducts
         val lowStockFetchedAtLocal = lowStockFetchedAt
@@ -106,20 +96,16 @@ class DashboardRepositoryImpl(private val remoteDataSource: RemoteDashboardDataS
         if (cachedLowStockProductsLocal != null && lowStockFetchedAtLocal != null) {
             val cacheAge = now - lowStockFetchedAtLocal
             if (cacheAge < cacheTTL.inWholeMilliseconds) {
-                // Cache is still valid
                 return Result.Success(cachedLowStockProductsLocal)
             }
         }
 
-        // Cache miss or expired - fetch from backend
-        return remoteDataSource.getLowStockProducts()
-            .map { dtoList ->
-                val products = dtoList.map { dto -> LowStockProductMapper.toDomain(dto) }
-                // Update cache
-                cachedLowStockProducts = products
-                lowStockFetchedAt = now
-                products
-            }
+        val result = mapList(remoteDataSource.getLowStockProducts(), LowStockProductMapper::toDomain)
+        if (result is Result.Success) {
+            cachedLowStockProducts = result.data
+            lowStockFetchedAt = now
+        }
+        return result
     }
 
     override suspend fun refreshDashboard(): Result<Unit> {

@@ -8,10 +8,8 @@ import com.vibely.pos.backend.dto.request.UpdateProductRequest
 import com.vibely.pos.shared.data.sales.dto.ProductDTO
 import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -140,7 +138,7 @@ private suspend fun updateStock(
  */
 class ProductService(
     private val supabaseClient: SupabaseClient,
-) {
+) : BaseService() {
     /**
      * Searches products by name, SKU, or barcode.
      *
@@ -148,9 +146,9 @@ class ProductService(
      * @return Result containing list of matching products
      */
     suspend fun search(query: String): Result<List<ProductDTO>> {
-        return try {
+        return executeQuery(ERROR_SEARCH_FAILED) {
             val searchPattern = "%$query%"
-            val products = supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TABLE_PRODUCTS)
                 .select {
                     filter {
                         eq(DatabaseColumns.IS_ACTIVE, true)
@@ -164,12 +162,6 @@ class ProductService(
                     limit(SEARCH_RESULT_LIMIT)
                 }
                 .decodeList<ProductDTO>()
-
-            Result.Success(products)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_SEARCH_FAILED: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_SEARCH_FAILED: ${e.message}", cause = e)
         }
     }
 
@@ -180,20 +172,14 @@ class ProductService(
      * @return Result containing the product or error
      */
     suspend fun getById(id: String): Result<ProductDTO> {
-        return try {
-            val product = supabaseClient.from(TABLE_PRODUCTS)
+        return executeQuery(ERROR_PRODUCT_NOT_FOUND) {
+            supabaseClient.from(TABLE_PRODUCTS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, id)
                     }
                 }
                 .decodeSingle<ProductDTO>()
-
-            Result.Success(product)
-        } catch (e: RestException) {
-            Result.Error(ERROR_PRODUCT_NOT_FOUND, cause = e)
-        } catch (e: SerializationException) {
-            Result.Error(ERROR_PRODUCT_NOT_FOUND, cause = e)
         }
     }
 
@@ -204,8 +190,9 @@ class ProductService(
      * @return Result containing list of products
      */
     suspend fun getAll(request: GetAllProductsRequest): Result<List<ProductDTO>> {
-        return try {
-            val products = supabaseClient.from(TABLE_PRODUCTS)
+        val (from, to) = calculatePaginationRange(request.page, request.pageSize)
+        return executeQuery(ERROR_FETCH_FAILED) {
+            supabaseClient.from(TABLE_PRODUCTS)
                 .select {
                     filter {
                         request.categoryId?.let { eq(DatabaseColumns.CATEGORY_ID, it) }
@@ -215,18 +202,9 @@ class ProductService(
                         }
                     }
                     order(DatabaseColumns.NAME, Order.ASCENDING)
-                    range(
-                        from = ((request.page - 1) * request.pageSize).toLong(),
-                        to = (request.page * request.pageSize - 1).toLong()
-                    )
+                    range(from, to)
                 }
                 .decodeList<ProductDTO>()
-
-            Result.Success(products)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_FETCH_FAILED: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_FETCH_FAILED: ${e.message}", cause = e)
         }
     }
 
@@ -241,20 +219,14 @@ class ProductService(
         userId: String,
         request: CreateProductRequest
     ): Result<JsonObject> {
-        return try {
+        return executeQuery(ERROR_CREATE_FAILED) {
             val data = buildProductCreateData(userId, request)
 
-            val product = supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TABLE_PRODUCTS)
                 .insert(data) {
                     select()
                 }
                 .decodeSingle<JsonObject>()
-
-            Result.Success(product)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_CREATE_FAILED: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_CREATE_FAILED: ${e.message}", cause = e)
         }
     }
 
@@ -271,10 +243,10 @@ class ProductService(
         productId: String,
         request: UpdateProductRequest
     ): Result<JsonObject> {
-        return try {
+        return executeQuery(ERROR_UPDATE_FAILED) {
             val data = buildProductUpdateData(request)
 
-            val product = supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TABLE_PRODUCTS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, productId)
@@ -283,12 +255,6 @@ class ProductService(
                     select()
                 }
                 .decodeSingle<JsonObject>()
-
-            Result.Success(product)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_UPDATE_FAILED: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_UPDATE_FAILED: ${e.message}", cause = e)
         }
     }
 
@@ -300,7 +266,7 @@ class ProductService(
      * @return Result indicating success or error
      */
     suspend fun deleteProduct(userId: String, productId: String): Result<Unit> {
-        return try {
+        return executeQuery(ERROR_DELETE_FAILED) {
             supabaseClient.from(TABLE_PRODUCTS)
                 .delete {
                     filter {
@@ -308,12 +274,6 @@ class ProductService(
                         eq(DatabaseColumns.USER_ID, userId)
                     }
                 }
-
-            Result.Success(Unit)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_DELETE_FAILED: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_DELETE_FAILED: ${e.message}", cause = e)
         }
     }
 
@@ -330,17 +290,13 @@ class ProductService(
         productId: String,
         request: AdjustStockRequest
     ): Result<JsonObject> {
-        return try {
+        return executeQuery(ERROR_STOCK_ADJUST_FAILED) {
             val currentProduct = fetchProduct(supabaseClient, userId, productId)
             val newStockValue = currentProduct.currentStock + request.quantity
             val updatedProduct = updateStock(supabaseClient, userId, productId, newStockValue)
             val transactionParams = InventoryTransactionParams(userId, productId, request, newStockValue)
             insertInventoryTransaction(supabaseClient, transactionParams)
-            Result.Success(updatedProduct)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_STOCK_ADJUST_FAILED: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_STOCK_ADJUST_FAILED: ${e.message}", cause = e)
+            updatedProduct
         }
     }
 }

@@ -1,19 +1,21 @@
 package com.vibely.pos.shared.data.sales.repository
 
+import com.vibely.pos.shared.data.common.BaseRepository
 import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
 import com.vibely.pos.shared.data.sales.dto.CreateSaleItemRequest
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.data.sales.mapper.SaleItemMapper
 import com.vibely.pos.shared.data.sales.mapper.SaleMapper
 import com.vibely.pos.shared.domain.result.Result
-import com.vibely.pos.shared.domain.result.map
 import com.vibely.pos.shared.domain.sales.entity.Sale
 import com.vibely.pos.shared.domain.sales.entity.SaleItem
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.sales.valueobject.SaleStatus
 import kotlin.time.Instant
 
-class SaleRepositoryImpl(private val remoteDataSource: RemoteSaleDataSource) : SaleRepository {
+class SaleRepositoryImpl(private val remoteDataSource: RemoteSaleDataSource) :
+    BaseRepository(),
+    SaleRepository {
 
     override suspend fun create(sale: Sale, items: List<SaleItem>): Result<Sale> {
         val request = CreateSaleRequest(
@@ -34,26 +36,24 @@ class SaleRepositoryImpl(private val remoteDataSource: RemoteSaleDataSource) : S
             },
         )
 
-        return remoteDataSource.createSale(request)
-            .map { SaleMapper.toDomain(it) }
+        return mapSingle(remoteDataSource.createSale(request), SaleMapper::toDomain)
     }
 
-    override suspend fun getAll(startDate: Instant?, endDate: Instant?, status: SaleStatus?, page: Int, pageSize: Int): Result<List<Sale>> =
+    override suspend fun getAll(startDate: Instant?, endDate: Instant?, status: SaleStatus?, page: Int, pageSize: Int): Result<List<Sale>> = mapList(
         remoteDataSource.getAllSales(
             startDate = startDate?.toString(),
             endDate = endDate?.toString(),
             status = status?.name?.lowercase(),
             page = page,
             pageSize = pageSize,
-        ).map { dtoList -> dtoList.map { SaleMapper.toDomain(it) } }
+        ),
+        SaleMapper::toDomain,
+    )
 
-    override suspend fun getById(id: String): Result<Sale> = remoteDataSource.getSaleById(id)
-        .map { SaleMapper.toDomain(it) }
+    override suspend fun getById(id: String): Result<Sale> = mapSingle(remoteDataSource.getSaleById(id), SaleMapper::toDomain)
 
-    override suspend fun getItems(saleId: String): Result<List<SaleItem>> = remoteDataSource.getSaleItems(saleId)
-        .map { dtoList -> dtoList.map { SaleItemMapper.toDomain(it) } }
+    override suspend fun getItems(saleId: String): Result<List<SaleItem>> = mapList(remoteDataSource.getSaleItems(saleId), SaleItemMapper::toDomain)
 
     override suspend fun updateStatus(saleId: String, status: SaleStatus): Result<Sale> =
-        remoteDataSource.updateSaleStatus(saleId, status.name.lowercase())
-            .map { SaleMapper.toDomain(it) }
+        mapSingle(remoteDataSource.updateSaleStatus(saleId, status.name.lowercase()), SaleMapper::toDomain)
 }
