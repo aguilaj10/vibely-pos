@@ -12,12 +12,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.vibely.pos.config.DebugConfig
 import com.vibely.pos.ui.auth.LoginScreen
+import com.vibely.pos.ui.customers.CustomersScreen
 import com.vibely.pos.ui.dashboard.DashboardScreen
 import com.vibely.pos.ui.inventory.InventoryScreen
 import com.vibely.pos.ui.navigation.components.BottomNavigationBar
 import com.vibely.pos.ui.screens.PlaceholderScreen
 import com.vibely.pos.ui.screens.ThemeDemoScreen
 import com.vibely.pos.ui.screens.categories.CategoriesScreen
+import com.vibely.pos.ui.suppliers.SuppliersScreen
 
 /**
  * Main navigation controller for the application.
@@ -134,10 +136,8 @@ private fun AuthenticatedScreenLayout(currentScreen: Screen, onNavigate: (Screen
                 )
 
                 // Purchasing screens
-                Screen.Suppliers -> PlaceholderScreen(
-                    title = Screen.Suppliers.title,
-                    icon = Screen.Suppliers.icon,
-                    description = "Manage supplier information and contact details.",
+                Screen.Suppliers -> SuppliersScreen(
+                    onNavigate = onNavigate,
                 )
                 Screen.PurchaseOrders -> PlaceholderScreen(
                     title = Screen.PurchaseOrders.title,
@@ -146,10 +146,8 @@ private fun AuthenticatedScreenLayout(currentScreen: Screen, onNavigate: (Screen
                 )
 
                 // People screens
-                Screen.Customers -> PlaceholderScreen(
-                    title = Screen.Customers.title,
-                    icon = Screen.Customers.icon,
-                    description = "Manage customer profiles, purchase history, and loyalty programs.",
+                Screen.Customers -> CustomersScreen(
+                    onNavigate = onNavigate,
                 )
                 Screen.Users -> PlaceholderScreen(
                     title = Screen.Users.title,

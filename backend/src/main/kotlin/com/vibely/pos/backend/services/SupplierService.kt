@@ -1,0 +1,125 @@
+@file:Suppress("UndocumentedPublicClass", "UndocumentedPublicFunction", "LongParameterList", "StringLiteralDuplication", "MaxLineLength")
+package com.vibely.pos.backend.services
+
+import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.dto.request.CreateSupplierRequest
+import com.vibely.pos.backend.dto.request.UpdateSupplierRequest
+import com.vibely.pos.shared.data.supplier.dto.SupplierDTO
+import com.vibely.pos.shared.domain.result.Result
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Order
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+
+private const val TABLE_SUPPLIERS = "suppliers"
+private const val ERROR_FETCH_FAILED = "Failed to fetch suppliers"
+private const val ERROR_SUPPLIER_NOT_FOUND = "Supplier not found"
+private const val ERROR_CREATE_FAILED = "Failed to create supplier"
+private const val ERROR_UPDATE_FAILED = "Failed to update supplier"
+private const val ERROR_DELETE_FAILED = "Failed to delete supplier"
+
+class SupplierService(private val supabaseClient: SupabaseClient) : BaseService() {
+
+    suspend fun getAllSuppliers(
+        userId: String,
+        isActive: Boolean?,
+        searchQuery: String?,
+        page: Int,
+        pageSize: Int
+    ): Result<List<SupplierDTO>> {
+        val (from, to) = calculatePaginationRange(page, pageSize)
+        return executeQuery(ERROR_FETCH_FAILED) {
+            supabaseClient.from(TABLE_SUPPLIERS)
+                .select {
+                    filter {
+                        eq(DatabaseColumns.USER_ID, userId)
+                        isActive?.let { eq(DatabaseColumns.IS_ACTIVE, it) }
+                        searchQuery?.let { query ->
+                            val searchPattern = "%$query%"
+                            or {
+                                ilike(DatabaseColumns.NAME, searchPattern)
+                                ilike("contact_person", searchPattern)
+                                ilike("email", searchPattern)
+                                ilike("phone", searchPattern)
+                                ilike("code", searchPattern)
+                            }
+                        }
+                    }
+                    order(DatabaseColumns.NAME, Order.ASCENDING)
+                    range(from, to)
+                }
+                .decodeList<SupplierDTO>()
+        }
+    }
+
+    suspend fun getSupplierById(userId: String, supplierId: String): Result<SupplierDTO> {
+        return executeQuery(ERROR_SUPPLIER_NOT_FOUND) {
+            supabaseClient.from(TABLE_SUPPLIERS)
+                .select {
+                    filter {
+                        eq(DatabaseColumns.ID, supplierId)
+                        eq(DatabaseColumns.USER_ID, userId)
+                    }
+                }
+                .decodeSingle<SupplierDTO>()
+        }
+    }
+
+    suspend fun createSupplier(userId: String, request: CreateSupplierRequest): Result<SupplierDTO> {
+        return executeQuery(ERROR_CREATE_FAILED) {
+            val data = buildJsonObject {
+                put(DatabaseColumns.USER_ID, userId)
+                put("code", request.code)
+                put(DatabaseColumns.NAME, request.name)
+                request.contactPerson?.let { put("contact_person", it) }
+                request.email?.let { put("email", it) }
+                request.phone?.let { put("phone", it) }
+                request.address?.let { put("address", it) }
+                put(DatabaseColumns.IS_ACTIVE, request.isActive)
+            }
+
+            supabaseClient.from(TABLE_SUPPLIERS)
+                .insert(data) {
+                    select()
+                }
+                .decodeSingle<SupplierDTO>()
+        }
+    }
+
+    suspend fun updateSupplier(userId: String, supplierId: String, request: UpdateSupplierRequest): Result<SupplierDTO> {
+        return executeQuery(ERROR_UPDATE_FAILED) {
+            val data = buildJsonObject {
+                request.code?.let { put("code", it) }
+                request.name?.let { put(DatabaseColumns.NAME, it) }
+                request.contactPerson?.let { put("contact_person", it) }
+                request.email?.let { put("email", it) }
+                request.phone?.let { put("phone", it) }
+                request.address?.let { put("address", it) }
+                request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
+            }
+
+            supabaseClient.from(TABLE_SUPPLIERS)
+                .update(data) {
+                    filter {
+                        eq(DatabaseColumns.ID, supplierId)
+                        eq(DatabaseColumns.USER_ID, userId)
+                    }
+                    select()
+                }
+                .decodeSingle<SupplierDTO>()
+        }
+    }
+
+    suspend fun deleteSupplier(userId: String, supplierId: String): Result<Unit> {
+        return executeQuery(ERROR_DELETE_FAILED) {
+            supabaseClient.from(TABLE_SUPPLIERS)
+                .delete {
+                    filter {
+                        eq(DatabaseColumns.ID, supplierId)
+                        eq(DatabaseColumns.USER_ID, userId)
+                    }
+                }
+        }
+    }
+}

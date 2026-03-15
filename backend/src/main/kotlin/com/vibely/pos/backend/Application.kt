@@ -9,16 +9,20 @@ import com.vibely.pos.backend.config.configureKoin
 import com.vibely.pos.backend.config.configureStatusPages
 import com.vibely.pos.backend.routes.authRoutes
 import com.vibely.pos.backend.routes.categoryRoutes
+import com.vibely.pos.backend.routes.customerRoutes
 import com.vibely.pos.backend.routes.dashboardRoutes
 import com.vibely.pos.backend.routes.inventoryRoutes
 import com.vibely.pos.backend.routes.productRoutes
 import com.vibely.pos.backend.routes.salesRoutes
+import com.vibely.pos.backend.routes.supplierRoutes
 import com.vibely.pos.backend.services.AuthService
 import com.vibely.pos.backend.services.CategoryService
+import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.InventoryService
 import com.vibely.pos.backend.services.ProductService
 import com.vibely.pos.backend.services.SaleService
+import com.vibely.pos.backend.services.SupplierService
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
@@ -81,6 +85,8 @@ private fun Application.configureRouting(supabaseClient: SupabaseClient) {
     val saleService: Lazy<SaleService> = inject()
     val categoryService: Lazy<CategoryService> = inject()
     val inventoryService: Lazy<InventoryService> = inject()
+    val customerService: Lazy<CustomerService> = inject()
+    val supplierService: Lazy<SupplierService> = inject()
     
     routing {
         get("/") {
@@ -120,6 +126,12 @@ private fun Application.configureRouting(supabaseClient: SupabaseClient) {
 
         // Inventory routes
         inventoryRoutes(inventoryService.value)
+
+        // Customer routes
+        customerRoutes(customerService.value)
+
+        // Supplier routes
+        supplierRoutes(supplierService.value)
     }
 }
 

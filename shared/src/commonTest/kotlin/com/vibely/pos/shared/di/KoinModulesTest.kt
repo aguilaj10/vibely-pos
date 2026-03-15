@@ -23,18 +23,25 @@ import kotlin.test.assertNotNull
 @OptIn(ExperimentalNativeApi::class)
 class KoinModulesTest {
     /**
-     * Verifies the structure and consistency of all Koin modules.
+     * Verifies the structure and consistency of domain and data modules together.
      *
-     * Uses Koin's checkModules feature to check:
-     * - All declared dependencies can be resolved
-     * - No missing dependencies
-     * - Constructor injection is valid
+     * Domain module use cases require repository implementations from data module.
+     * This follows Clean Architecture: Domain defines interfaces, Data implements them.
      */
     @Test
     fun `verify domain module structure`() {
         koinApplication {
-            modules(domainModule)
-            checkModules()
+            properties(
+                mapOf(
+                    "SUPABASE_URL" to "https://test.supabase.co",
+                    "SUPABASE_ANON_KEY" to "test-anon-key",
+                ),
+            )
+            modules(domainModule, dataModule)
+            checkModules {
+                withInstance<String>()
+                withInstance<HttpClientEngine>()
+            }
         }
     }
 
@@ -102,15 +109,12 @@ class KoinModulesTest {
 
         val koin = koinApp.koin
 
-        // Verify JSON configuration is available
         val json = koin.get<Json>()
         assertNotNull(json, "Json instance should be provided")
 
-        // Verify HTTP client is available
         val httpClient = koin.get<HttpClient>()
         assertNotNull(httpClient, "HttpClient should be provided")
 
-        // Verify Supabase client is available
         val supabaseClient = koin.get<SupabaseClient>()
         assertNotNull(supabaseClient, "SupabaseClient should be provided")
     }
@@ -148,28 +152,15 @@ class KoinModulesTest {
 
         assertNotNull(koinApp.koin, "Koin should start with all modules")
 
-        // Verify we can get instances from each layer
         val json = koinApp.koin.getOrNull<Json>()
         assertNotNull(json, "Should be able to resolve dependencies from data module")
     }
 
     /**
      * Tests that the module hierarchy follows Clean Architecture principles.
-     *
-     * Domain should not depend on Data or Presentation.
-     * Data can depend on Domain.
-     * Presentation can depend on Domain.
      */
     @Test
     fun `modules follow clean architecture hierarchy`() {
-        // Domain module should work independently
-        val domainOnly =
-            koinApplication {
-                modules(domainModule)
-            }
-        assertNotNull(domainOnly.koin, "Domain module should have no external dependencies")
-
-        // Data module should work with domain
         val dataWithDomain =
             koinApplication {
                 properties(
@@ -182,7 +173,6 @@ class KoinModulesTest {
             }
         assertNotNull(dataWithDomain.koin, "Data module should work with domain module")
 
-        // Presentation module should work with domain
         val presentationWithDomain =
             koinApplication {
                 modules(domainModule, presentationModule)

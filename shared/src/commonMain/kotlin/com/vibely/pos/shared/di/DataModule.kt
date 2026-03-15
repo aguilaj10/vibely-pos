@@ -4,6 +4,8 @@ import com.vibely.pos.shared.data.auth.datasource.InMemoryAuthDataSource
 import com.vibely.pos.shared.data.auth.datasource.LocalAuthDataSource
 import com.vibely.pos.shared.data.auth.datasource.RemoteAuthDataSource
 import com.vibely.pos.shared.data.auth.repository.AuthRepositoryImpl
+import com.vibely.pos.shared.data.customer.datasource.RemoteCustomerDataSource
+import com.vibely.pos.shared.data.customer.repository.CustomerRepositoryImpl
 import com.vibely.pos.shared.data.dashboard.datasource.RemoteDashboardDataSource
 import com.vibely.pos.shared.data.dashboard.repository.DashboardRepositoryImpl
 import com.vibely.pos.shared.data.inventory.datasource.RemoteCategoryDataSource
@@ -14,12 +16,16 @@ import com.vibely.pos.shared.data.sales.datasource.RemoteProductDataSource
 import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
 import com.vibely.pos.shared.data.sales.repository.ProductRepositoryImpl
 import com.vibely.pos.shared.data.sales.repository.SaleRepositoryImpl
+import com.vibely.pos.shared.data.supplier.datasource.RemoteSupplierDataSource
+import com.vibely.pos.shared.data.supplier.repository.SupplierRepositoryImpl
 import com.vibely.pos.shared.domain.auth.repository.AuthRepository
+import com.vibely.pos.shared.domain.customer.repository.CustomerRepository
 import com.vibely.pos.shared.domain.dashboard.repository.DashboardRepository
 import com.vibely.pos.shared.domain.inventory.repository.CategoryRepository
 import com.vibely.pos.shared.domain.inventory.repository.InventoryRepository
 import com.vibely.pos.shared.domain.sales.repository.ProductRepository
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
+import com.vibely.pos.shared.domain.supplier.repository.SupplierRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -169,4 +175,26 @@ val dataModule =
         // Inventory repositories
         singleOf(::InventoryRepositoryImpl) { bind<InventoryRepository>() }
         singleOf(::CategoryRepositoryImpl) { bind<CategoryRepository>() }
+
+        // Customer data sources
+        single {
+            RemoteCustomerDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Customer repositories
+        singleOf(::CustomerRepositoryImpl) { bind<CustomerRepository>() }
+
+        // Supplier data sources
+        single {
+            RemoteSupplierDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Supplier repositories
+        singleOf(::SupplierRepositoryImpl) { bind<SupplierRepository>() }
     }
