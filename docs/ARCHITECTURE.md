@@ -415,3 +415,128 @@ plugins {
 - [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/)
 - [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [Material 3 Design](https://m3.material.io/)
+
+---
+
+## Backend Authentication
+
+### AuthService
+
+JWT-based authentication with BCrypt password hashing:
+
+- **Token Types:** Access (15 min) + Refresh (7 days)
+- **Password:** BCrypt with cost factor 12
+- **Security:** Token blacklisting, user status validation
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/auth/login | Authenticate with email/password |
+| POST | /api/auth/logout | Invalidate session |
+| GET | /api/auth/me | Get authenticated user |
+| POST | /api/auth/refresh | Refresh access token |
+
+### Database Tables
+
+- `refresh_tokens` - Store refresh tokens with expiration
+- `token_blacklist` - Store invalidated tokens
+
+---
+
+## Backend Plugins
+
+Ktor plugins configured in Application.kt:
+
+| Plugin | Purpose |
+|--------|---------|
+| ContentNegotiation | JSON serialization (kotlinx.serialization) |
+| CORS | Cross-origin requests |
+| CallLogging | HTTP request logging |
+| StatusPages | Global error handling |
+| Authentication | JWT validation (HMAC256) |
+
+### Supabase Client
+
+- Lazy-initialized singleton
+- Postgrest module for database operations
+- CIO HTTP engine
+
+### Environment Variables
+
+```bash
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-key
+JWT_SECRET=your-secret-key
+```
+
+---
+
+## Theme System
+
+Material 3-based design system for retail environments:
+
+### AppColors
+
+- **Primary:** Indigo (0xFF6366F1) - Trust, professionalism
+- **Secondary:** Emerald (0xFF10B981) - Success, growth
+- **Tertiary:** Amber (0xFFF59E0B) - Energy, attention
+- **Status:** Success, Warning, Error, Info variants
+
+### AppTypography
+
+- Display (57/45/36sp), Headline (32/28/24sp), Title (22/16/14sp)
+- Body (16/14/12sp), Label (14/12/11sp)
+- POS-specific: PriceDisplay (48sp), NumericInput (32sp)
+
+### AppShapes
+
+- ExtraSmall (4dp), Small (8dp), Medium (12dp), Large (16dp), ExtraLarge (24dp)
+- POS-specific: ProductCard, ActionButton, InputField
+
+---
+
+## Code Quality
+
+### Tools
+
+- **Spotless:** ktlint formatting
+- **Detekt:** Static analysis
+- **Kover:** Code coverage
+
+### Koin-Detekt Rules
+
+58 specialized rules across 6 categories:
+
+| Category | Rules | Purpose |
+|----------|-------|---------|
+| Service Locator | 6 | Prevent KoinComponent anti-pattern |
+| Module DSL | 14 | Best practices for module definitions |
+| Scope Management | 8 | Memory leak prevention |
+| Platform-Specific | 8 | Android/Compose patterns |
+| Architecture | 4 | API usage correctness |
+| Annotations | 18 | Koin annotations validation |
+
+### Common Fixes
+
+```kotlin
+// ❌ Bad - KoinComponent
+class MyRepo : KoinComponent {
+    private val api: Api by inject()
+}
+
+// ✅ Good - Constructor injection
+class MyRepo(private val api: Api)
+
+// ❌ Bad - UseCase as singleton
+single { LoginUseCase(get()) }
+
+// ✅ Good - UseCase as factory
+factory { LoginUseCase(get()) }
+```
+
+### Run Checks
+
+```bash
+./gradlew spotlessApply detekt
+```

@@ -179,13 +179,31 @@ open build/reports/kover/html/index.html
 
 ### Continuous Integration
 
-The project uses GitHub Actions for CI/CD with the following checks:
+The project uses GitHub Actions for CI/CD with parallel jobs:
 
-- **Code Quality** - Spotless formatting and Detekt static analysis
-- **Multi-platform Builds** - Desktop (JVM), Android, iOS, Web (JS/Wasm)
-- **Automated Testing** - Unit tests on all platforms
-- **Code Coverage** - Kover reports with badge generation
-- **Parallel Execution** - Fast feedback with parallel jobs
+| Job | Purpose | Runtime |
+|-----|---------|---------|
+| Code Quality | Spotless + Detekt checks | ~2 min |
+| Build Desktop | JVM/JAR builds | ~5 min |
+| Build Android | Debug APK | ~5 min |
+| Build iOS | ARM64 Simulator | ~5 min |
+| Build Web | JS/Wasm bundles | ~5 min |
+| Test Coverage | Kover reports | ~3 min |
+
+**Pipeline Features:**
+- Parallel execution for fast feedback
+- Gradle caching (4GB heap)
+- Coverage badge generation
+- Artifacts retention (7-30 days)
+
+**Local Testing:**
+```bash
+# Full CI simulation
+./gradlew spotlessCheck detekt build test koverXmlReport
+
+# Quick check
+./gradlew spotlessCheck detekt
+```
 
 All checks must pass before merging.
 
