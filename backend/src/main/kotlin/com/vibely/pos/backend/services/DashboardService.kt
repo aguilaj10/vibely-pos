@@ -39,7 +39,7 @@ private const val CENTS_PER_DOLLAR = 100
  */
 class DashboardService(
     private val supabaseClient: SupabaseClient,
-) {
+) : BaseService() {
     /**
      * Gets the dashboard summary containing today's sales, transaction count,
      * low stock count, and active shift information.

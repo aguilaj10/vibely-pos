@@ -25,7 +25,7 @@ private const val ERROR_UPDATE_STATUS = "Failed to update sale status"
  */
 class SaleService(
     private val supabaseClient: SupabaseClient,
-) {
+) : BaseService() {
     private val creationHelper = SaleCreationHelper(supabaseClient)
     
     /**
@@ -36,7 +36,7 @@ class SaleService(
      * @return Result containing created sale or error
      */
     suspend fun createSale(request: CreateSaleRequest, cashierId: String): Result<SaleDTO> {
-        return try {
+        return executeQuery(ERROR_CREATE_SALE) {
             val saleItemsData = creationHelper.validateAndBuildSaleItems(request)
             val subtotal = saleItemsData.second
             
@@ -44,11 +44,7 @@ class SaleService(
             creationHelper.insertSaleItems(saleItemsData.first, sale.id)
             creationHelper.deductStockAndLogTransactions(request, sale, cashierId)
             
-            Result.Success(sale)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_CREATE_SALE: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_CREATE_SALE: ${e.message}", cause = e)
+            sale
         }
     }
 
@@ -59,8 +55,8 @@ class SaleService(
      * @return Result containing list of sales
      */
     suspend fun getAll(request: GetAllSalesRequest): Result<List<SaleDTO>> {
-        return try {
-            val sales = supabaseClient.from(TABLE_SALES)
+        return executeQuery(ERROR_FETCH_SALES) {
+            supabaseClient.from(TABLE_SALES)
                 .select {
                     filter {
                         request.startDate?.let { gte(DatabaseColumns.SALE_DATE, it) }
@@ -74,12 +70,6 @@ class SaleService(
                     )
                 }
                 .decodeList<SaleDTO>()
-
-            Result.Success(sales)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_FETCH_SALES: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_FETCH_SALES: ${e.message}", cause = e)
         }
     }
 
@@ -90,20 +80,14 @@ class SaleService(
      * @return Result containing the sale or error
      */
     suspend fun getById(id: String): Result<SaleDTO> {
-        return try {
-            val sale = supabaseClient.from(TABLE_SALES)
+        return executeQuery(ERROR_SALE_NOT_FOUND) {
+            supabaseClient.from(TABLE_SALES)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, id)
                     }
                 }
                 .decodeSingle<SaleDTO>()
-
-            Result.Success(sale)
-        } catch (e: RestException) {
-            Result.Error(ERROR_SALE_NOT_FOUND, cause = e)
-        } catch (e: SerializationException) {
-            Result.Error(ERROR_SALE_NOT_FOUND, cause = e)
         }
     }
 
@@ -114,20 +98,14 @@ class SaleService(
      * @return Result containing list of sale items
      */
     suspend fun getItems(saleId: String): Result<List<SaleItemDTO>> {
-        return try {
-            val items = supabaseClient.from(TABLE_SALE_ITEMS)
+        return executeQuery(ERROR_FETCH_ITEMS) {
+            supabaseClient.from(TABLE_SALE_ITEMS)
                 .select {
                     filter {
                         eq(DatabaseColumns.SALE_ID, saleId)
                     }
                 }
                 .decodeList<SaleItemDTO>()
-
-            Result.Success(items)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_FETCH_ITEMS: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_FETCH_ITEMS: ${e.message}", cause = e)
         }
     }
 
@@ -139,8 +117,8 @@ class SaleService(
      * @return Result containing updated sale or error
      */
     suspend fun updateStatus(saleId: String, status: String): Result<SaleDTO> {
-        return try {
-            val sale = supabaseClient.from(TABLE_SALES)
+        return executeQuery(ERROR_UPDATE_STATUS) {
+            supabaseClient.from(TABLE_SALES)
                 .update(mapOf(DatabaseColumns.STATUS to status)) {
                     filter {
                         eq(DatabaseColumns.ID, saleId)
@@ -148,12 +126,6 @@ class SaleService(
                     select()
                 }
                 .decodeSingle<SaleDTO>()
-
-            Result.Success(sale)
-        } catch (e: RestException) {
-            Result.Error("$ERROR_UPDATE_STATUS: ${e.message}", cause = e)
-        } catch (e: SerializationException) {
-            Result.Error("$ERROR_UPDATE_STATUS: ${e.message}", cause = e)
         }
     }
 }
