@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing to Vibely POS! This document provides guidelines and workflows for contributors.
 
+> **📌 IMPORTANT**: Read [CODING_STANDARDS.md](CODING_STANDARDS.md) for detailed code quality requirements before making changes.
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)
@@ -90,6 +92,8 @@ git push origin --delete feature/your-feature-name
 ```
 
 ## Code Standards
+
+> **📖 Full standards**: See [CODING_STANDARDS.md](CODING_STANDARDS.md) for comprehensive coding standards including KDoc requirements, deprecated library checks, and the Boy Scout rule.
 
 ### Code Formatting
 

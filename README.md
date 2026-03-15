@@ -86,6 +86,7 @@ vibely-pos/
 
 ## Documentation
 
+- [Coding Standards](CODING_STANDARDS.md) - Code quality requirements and best practices
 - [Architecture](docs/ARCHITECTURE.md) - System design and technical decisions
 - [Database Schema](docs/DATABASE.md) - Data model and relationships
 - [Contributing](CONTRIBUTING.md) - Development workflow and guidelines
@@ -209,12 +210,16 @@ All checks must pass before merging.
 
 ## Contributing
 
-We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details on:
+We welcome contributions! Please read:
 
-- Git workflow (Git Flow)
-- Code style and conventions
-- Pull request process
-- Testing requirements
+- [**Coding Standards**](CODING_STANDARDS.md) - Code quality requirements (KDoc, deprecated libraries, Boy Scout rule)
+- [**Contributing Guide**](CONTRIBUTING.md) - Git workflow, PR process, commit conventions
+
+Key standards:
+- Preserve KDoc on public APIs
+- Verify libraries are NOT deprecated before use
+- Clean code as you touch it (Boy Scout rule)
+- Run `./gradlew spotlessApply detekt` before committing
 
 ## License
 
