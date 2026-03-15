@@ -9,6 +9,13 @@ object DatabaseColumns {
     const val IS_ACTIVE = "is_active"
 
     const val NAME = "name"
+    const val FULL_NAME = "full_name"
+    const val EMAIL = "email"
+    const val PHONE = "phone"
+    const val CUSTOMER_CODE = "customer_code"
+    const val LOYALTY_POINTS = "loyalty_points"
+    const val LOYALTY_TIER = "loyalty_tier"
+    const val TOTAL_PURCHASES = "total_purchases"
     const val SKU = "sku"
     const val BARCODE = "barcode"
     const val DESCRIPTION = "description"
@@ -42,4 +49,9 @@ object DatabaseColumns {
     const val BLACKLISTED_AT = "blacklisted_at"
 
     const val CLOSED_AT = "closed_at"
+
+    // Loyalty tier thresholds
+    const val PLATINUM_THRESHOLD = 5000
+    const val GOLD_THRESHOLD = 2000
+    const val SILVER_THRESHOLD = 500
 }

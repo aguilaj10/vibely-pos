@@ -152,7 +152,7 @@ private fun UsersHeader(
             AppTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                modifier = Modifier.width(320.dp),
+                modifier = Modifier.width(480.dp),
                 variant = AppTextFieldVariant.Outlined,
                 placeholder = "Search by name or email...",
                 leadingIcon = {

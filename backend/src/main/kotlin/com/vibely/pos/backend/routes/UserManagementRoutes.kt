@@ -12,7 +12,6 @@ import com.vibely.pos.backend.services.UserManagementService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
@@ -65,16 +64,14 @@ private fun Route.configureUserRoutes(userManagementService: UserManagementServi
     get(PATH_ID) { call.handleGetById(userManagementService) }
     post { call.handleCreateUser(userManagementService) }
     put(PATH_ID) { call.handleUpdateUser(userManagementService) }
-    patch("/{id}/status") { call.handleUpdateStatus(userManagementService) }
-    patch("/{id}/role") { call.handleAssignRole(userManagementService) }
-    post("/{id}/change-password") { call.handleChangePassword(userManagementService) }
-    post("/{id}/reset-password") { call.handleResetPassword(userManagementService) }
+    patch("$PATH_ID/status") { call.handleUpdateStatus(userManagementService) }
+    patch("$PATH_ID/role") { call.handleAssignRole(userManagementService) }
+    post("$PATH_ID/change-password") { call.handleChangePassword(userManagementService) }
+    post("$PATH_ID/reset-password") { call.handleResetPassword(userManagementService) }
     delete(PATH_ID) { call.handleDeleteUser(userManagementService) }
 }
 
 private suspend fun ApplicationCall.handleGetAllUsers(userManagementService: UserManagementService) {
-    val userId = extractUserId() ?: return
-
     val role = request.queryParameters["role"]
     val status = request.queryParameters["status"]
     val page = request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
@@ -87,8 +84,6 @@ private suspend fun ApplicationCall.handleGetAllUsers(userManagementService: Use
 }
 
 private suspend fun ApplicationCall.handleSearchUsers(userManagementService: UserManagementService) {
-    val userId = extractUserId() ?: return
-
     val query = request.queryParameters["q"] ?: ""
 
     when (val result = userManagementService.searchUsers(query)) {

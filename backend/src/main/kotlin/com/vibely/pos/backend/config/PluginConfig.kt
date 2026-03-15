@@ -144,7 +144,7 @@ private fun AuthenticationConfig.runDebugMode() {
         authenticate { tokenCredential ->
             if (tokenCredential.token == "debug-access-token") {
                 val debugPayload = JWT.create()
-                    .withClaim("userId", "debug-user-123")
+                    .withClaim("userId", "a2259bb8-d02d-4384-bf2f-bbfca16bade5")
                     .withClaim("email", "debug@vibely.pos")
                     .withClaim("role", "admin")
                     .sign(Algorithm.none())

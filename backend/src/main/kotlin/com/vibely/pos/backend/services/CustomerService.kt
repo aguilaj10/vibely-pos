@@ -1,4 +1,4 @@
-@file:Suppress("UndocumentedPublicClass", "UndocumentedPublicFunction", "LongParameterList", "StringLiteralDuplication", "MagicNumber", "MaxLineLength")
+@file:Suppress("UndocumentedPublicClass", "UndocumentedPublicFunction", "LongParameterList")
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
@@ -43,16 +43,14 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
                         searchQuery?.let { query ->
                             val searchPattern = "%$query%"
                             or {
-                                ilike(DatabaseColumns.NAME, searchPattern)
-                                ilike("first_name", searchPattern)
-                                ilike("last_name", searchPattern)
-                                ilike("email", searchPattern)
-                                ilike("phone", searchPattern)
-                                ilike("code", searchPattern)
+                                ilike(DatabaseColumns.FULL_NAME, searchPattern)
+                                ilike(DatabaseColumns.EMAIL, searchPattern)
+                                ilike(DatabaseColumns.PHONE, searchPattern)
+                                ilike(DatabaseColumns.CUSTOMER_CODE, searchPattern)
                             }
                         }
                     }
-                    order(DatabaseColumns.NAME, Order.ASCENDING)
+                    order(DatabaseColumns.FULL_NAME, Order.ASCENDING)
                     range(from, to)
                 }
                 .decodeList<CustomerDTO>()
@@ -76,14 +74,13 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
         return executeQuery(ERROR_CREATE_FAILED) {
             val data = buildJsonObject {
                 put(DatabaseColumns.USER_ID, userId)
-                put("code", request.code)
-                put("first_name", request.firstName)
-                put("last_name", request.lastName)
-                request.email?.let { put("email", it) }
-                request.phone?.let { put("phone", it) }
-                put("loyalty_points", request.loyaltyPoints)
-                request.loyaltyTier?.let { put("loyalty_tier", it) }
-                put("total_purchases", request.totalPurchases)
+                put(DatabaseColumns.CUSTOMER_CODE, request.code)
+                put(DatabaseColumns.FULL_NAME, "${request.firstName} ${request.lastName}".trim())
+                request.email?.let { put(DatabaseColumns.EMAIL, it) }
+                request.phone?.let { put(DatabaseColumns.PHONE, it) }
+                put(DatabaseColumns.LOYALTY_POINTS, request.loyaltyPoints)
+                request.loyaltyTier?.let { put(DatabaseColumns.LOYALTY_TIER, it) }
+                put(DatabaseColumns.TOTAL_PURCHASES, request.totalPurchases)
                 put(DatabaseColumns.IS_ACTIVE, request.isActive)
             }
 
@@ -95,17 +92,22 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
         }
     }
 
-    suspend fun updateCustomer(userId: String, customerId: String, request: UpdateCustomerRequest): Result<CustomerDTO> {
+    suspend fun updateCustomer(
+        userId: String,
+        customerId: String,
+        request: UpdateCustomerRequest,
+    ): Result<CustomerDTO> {
         return executeQuery(ERROR_UPDATE_FAILED) {
             val data = buildJsonObject {
-                request.code?.let { put("code", it) }
-                request.firstName?.let { put("first_name", it) }
-                request.lastName?.let { put("last_name", it) }
-                request.email?.let { put("email", it) }
-                request.phone?.let { put("phone", it) }
-                request.loyaltyPoints?.let { put("loyalty_points", it) }
-                request.loyaltyTier?.let { put("loyalty_tier", it) }
-                request.totalPurchases?.let { put("total_purchases", it) }
+                request.code?.let { put(DatabaseColumns.CUSTOMER_CODE, it) }
+                if (request.firstName != null && request.lastName != null) {
+                    put(DatabaseColumns.FULL_NAME, "${request.firstName} ${request.lastName}".trim())
+                }
+                request.email?.let { put(DatabaseColumns.EMAIL, it) }
+                request.phone?.let { put(DatabaseColumns.PHONE, it) }
+                request.loyaltyPoints?.let { put(DatabaseColumns.LOYALTY_POINTS, it) }
+                request.loyaltyTier?.let { put(DatabaseColumns.LOYALTY_TIER, it) }
+                request.totalPurchases?.let { put(DatabaseColumns.TOTAL_PURCHASES, it) }
                 request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
             }
 
@@ -133,7 +135,11 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
         }
     }
 
-    suspend fun addLoyaltyPoints(userId: String, customerId: String, request: AddLoyaltyPointsRequest): Result<CustomerDTO> {
+    suspend fun addLoyaltyPoints(
+        userId: String,
+        customerId: String,
+        request: AddLoyaltyPointsRequest,
+    ): Result<CustomerDTO> {
         return executeQuery(ERROR_LOYALTY_FAILED) {
             val currentCustomer = supabaseClient.from(TABLE_CUSTOMERS)
                 .select {
@@ -148,8 +154,8 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
             val newTier = calculateLoyaltyTier(newPoints)
 
             val data = buildJsonObject {
-                put("loyalty_points", newPoints)
-                put("loyalty_tier", newTier)
+                put(DatabaseColumns.LOYALTY_POINTS, newPoints)
+                put(DatabaseColumns.LOYALTY_TIER, newTier)
             }
 
             supabaseClient.from(TABLE_CUSTOMERS)
@@ -165,7 +171,6 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
     }
 
     suspend fun getPurchaseHistory(
-        userId: String,
         customerId: String,
         page: Int,
         pageSize: Int
@@ -185,9 +190,9 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
     }
 
     private fun calculateLoyaltyTier(points: Int): String = when {
-        points >= 5000 -> "Platinum"
-        points >= 2000 -> "Gold"
-        points >= 500 -> "Silver"
+        points >= DatabaseColumns.PLATINUM_THRESHOLD -> "Platinum"
+        points >= DatabaseColumns.GOLD_THRESHOLD -> "Gold"
+        points >= DatabaseColumns.SILVER_THRESHOLD -> "Silver"
         else -> "Bronze"
     }
 }

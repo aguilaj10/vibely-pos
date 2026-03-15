@@ -16,7 +16,7 @@ object DebugUser {
      * @return Mock user with admin privileges
      */
     fun createMockUser(): User = User.create(
-        id = "debug-user-123",
+        id = "a2259bb8-d02d-4384-bf2f-bbfca16bade5",
         email = Email.create("dev@vibely.pos"),
         fullName = "Debug Developer",
         role = UserRole.ADMIN,

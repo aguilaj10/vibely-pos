@@ -127,7 +127,7 @@ private fun CustomersHeader(searchQuery: String, onSearchQueryChange: (String) -
         AppTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            modifier = Modifier.width(320.dp),
+            modifier = Modifier.width(480.dp),
             variant = AppTextFieldVariant.Outlined,
             placeholder = "Search by name, email, or phone...",
             leadingIcon = {

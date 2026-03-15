@@ -92,7 +92,7 @@ fun DashboardScreen(
                             imageVector = FontAwesomeIcons.Solid.ChartLine,
                             contentDescription = null,
                             modifier = Modifier.size(28.dp),
-                            tint = AppColors.Primary,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                         Text(
                             text = "Dashboard",

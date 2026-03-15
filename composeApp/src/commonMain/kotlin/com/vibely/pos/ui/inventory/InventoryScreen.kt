@@ -134,7 +134,7 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
         AppTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            modifier = Modifier.width(320.dp),
+            modifier = Modifier.width(480.dp),
             variant = AppTextFieldVariant.Outlined,
             placeholder = "Search by name or SKU...",
             leadingIcon = {
@@ -407,7 +407,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
         text = text,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier,
+        modifier = modifier.padding(end = 8.dp),
     )
 }
 
