@@ -9,8 +9,12 @@ import com.vibely.pos.backend.config.configureKoin
 import com.vibely.pos.backend.config.configureStatusPages
 import com.vibely.pos.backend.routes.authRoutes
 import com.vibely.pos.backend.routes.dashboardRoutes
+import com.vibely.pos.backend.routes.productRoutes
+import com.vibely.pos.backend.routes.salesRoutes
 import com.vibely.pos.backend.services.AuthService
 import com.vibely.pos.backend.services.DashboardService
+import com.vibely.pos.backend.services.ProductService
+import com.vibely.pos.backend.services.SaleService
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
@@ -66,11 +70,12 @@ fun Application.module() {
 /**
  * Configures application routing with health checks and test endpoints.
  */
-private fun Application.configureRouting(
-    supabaseClient: SupabaseClient,
-    authService: Lazy<AuthService> = inject<AuthService>(),
-    dashboardService: Lazy<DashboardService> = inject<DashboardService>(),
-) {
+private fun Application.configureRouting(supabaseClient: SupabaseClient) {
+    val authService: Lazy<AuthService> = inject()
+    val dashboardService: Lazy<DashboardService> = inject()
+    val productService: Lazy<ProductService> = inject()
+    val saleService: Lazy<SaleService> = inject()
+    
     routing {
         get("/") {
             call.respondText("Vibely POS Backend API - Ready!")
@@ -97,6 +102,12 @@ private fun Application.configureRouting(
 
         // Dashboard routes
         dashboardRoutes(dashboardService.value)
+
+        // Product routes
+        productRoutes(productService.value)
+
+        // Sales routes
+        salesRoutes(saleService.value)
     }
 }
 

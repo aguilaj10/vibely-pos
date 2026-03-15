@@ -55,3 +55,4 @@ composeResources/
 
 # Kotlin Language Server
 .kotlin-language-server/
+/docs/PHASE2_IMPLEMENTATION_PLAN.md

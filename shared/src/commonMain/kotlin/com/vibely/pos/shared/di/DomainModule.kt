@@ -7,6 +7,11 @@ import com.vibely.pos.shared.domain.auth.usecase.RefreshTokenUseCase
 import com.vibely.pos.shared.domain.dashboard.usecase.GetDashboardSummaryUseCase
 import com.vibely.pos.shared.domain.dashboard.usecase.GetLowStockProductsUseCase
 import com.vibely.pos.shared.domain.dashboard.usecase.GetRecentTransactionsUseCase
+import com.vibely.pos.shared.domain.sales.usecase.AddToCartUseCase
+import com.vibely.pos.shared.domain.sales.usecase.CompleteSaleUseCase
+import com.vibely.pos.shared.domain.sales.usecase.GetSalesUseCase
+import com.vibely.pos.shared.domain.sales.usecase.RemoveFromCartUseCase
+import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -38,9 +43,10 @@ val domainModule =
         singleOf(::GetRecentTransactionsUseCase)
         singleOf(::GetLowStockProductsUseCase)
 
-        // Other use cases will be registered here as they are implemented
-        // Example:
-        // singleOf(::GetProductsUseCase)
-        // singleOf(::CreateOrderUseCase)
-        // singleOf(::ProcessPaymentUseCase)
+        // Sales use cases
+        singleOf(::SearchProductsUseCase)
+        singleOf(::AddToCartUseCase)
+        singleOf(::RemoveFromCartUseCase)
+        singleOf(::CompleteSaleUseCase)
+        singleOf(::GetSalesUseCase)
     }

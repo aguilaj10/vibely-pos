@@ -6,8 +6,14 @@ import com.vibely.pos.shared.data.auth.datasource.RemoteAuthDataSource
 import com.vibely.pos.shared.data.auth.repository.AuthRepositoryImpl
 import com.vibely.pos.shared.data.dashboard.datasource.RemoteDashboardDataSource
 import com.vibely.pos.shared.data.dashboard.repository.DashboardRepositoryImpl
+import com.vibely.pos.shared.data.sales.datasource.RemoteProductDataSource
+import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
+import com.vibely.pos.shared.data.sales.repository.ProductRepositoryImpl
+import com.vibely.pos.shared.data.sales.repository.SaleRepositoryImpl
 import com.vibely.pos.shared.domain.auth.repository.AuthRepository
 import com.vibely.pos.shared.domain.dashboard.repository.DashboardRepository
+import com.vibely.pos.shared.domain.sales.repository.ProductRepository
+import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -122,8 +128,21 @@ val dataModule =
         // Dashboard repository
         singleOf(::DashboardRepositoryImpl) { bind<DashboardRepository>() }
 
-        // Other repository implementations will be registered here
-        // Example:
-        // singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
-        // singleOf(::OrderRepositoryImpl) { bind<OrderRepository>() }
+        // Sales data sources
+        single {
+            RemoteProductDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+        single {
+            RemoteSaleDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Sales repositories
+        singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
+        singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
     }
