@@ -1,5 +1,8 @@
 package com.vibely.pos.backend.services
 
+import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.dto.request.CreateCategoryRequest
+import com.vibely.pos.backend.dto.request.UpdateCategoryRequest
 import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -9,13 +12,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 private const val TABLE_CATEGORIES = "categories"
-private const val COLUMN_NAME = "name"
-private const val COLUMN_DESCRIPTION = "description"
-private const val COLUMN_COLOR = "color"
-private const val COLUMN_ICON = "icon"
-private const val COLUMN_IS_ACTIVE = "is_active"
-private const val COLUMN_USER_ID = "user_id"
-private const val COLUMN_ID = "id"
 private const val ERROR_FETCH_FAILED = "Failed to fetch categories"
 private const val ERROR_CATEGORY_NOT_FOUND = "Category not found"
 private const val ERROR_CREATE_FAILED = "Failed to create category"
@@ -28,40 +24,6 @@ private const val ERROR_DELETE_FAILED = "Failed to delete category"
 class CategoryService(
     private val supabaseClient: SupabaseClient,
 ) {
-    /**
-     * Request parameters for creating a category.
-     *
-     * @property name Category name
-     * @property description Optional description
-     * @property color Optional color hex code
-     * @property icon Optional icon name
-     * @property isActive Whether category is active
-     */
-    data class CreateCategoryRequest(
-        val name: String,
-        val description: String?,
-        val color: String?,
-        val icon: String?,
-        val isActive: Boolean
-    )
-
-    /**
-     * Request parameters for updating a category.
-     *
-     * @property name Optional new name
-     * @property description Optional new description
-     * @property color Optional new color
-     * @property icon Optional new icon
-     * @property isActive Optional new active status
-     */
-    data class UpdateCategoryRequest(
-        val name: String?,
-        val description: String?,
-        val color: String?,
-        val icon: String?,
-        val isActive: Boolean?
-    )
-
     /**
      * Retrieves all categories with optional filtering and pagination.
      *
@@ -81,10 +43,10 @@ class CategoryService(
             val categories = supabaseClient.from(TABLE_CATEGORIES)
                 .select {
                     filter {
-                        eq(COLUMN_USER_ID, userId)
-                        isActive?.let { eq(COLUMN_IS_ACTIVE, it) }
+                        eq(DatabaseColumns.USER_ID, userId)
+                        isActive?.let { eq(DatabaseColumns.IS_ACTIVE, it) }
                     }
-                    order(COLUMN_NAME, Order.ASCENDING)
+                    order(DatabaseColumns.NAME, Order.ASCENDING)
                     range(
                         from = ((page - 1) * pageSize).toLong(),
                         to = (page * pageSize - 1).toLong()
@@ -112,8 +74,8 @@ class CategoryService(
             val category = supabaseClient.from(TABLE_CATEGORIES)
                 .select {
                     filter {
-                        eq(COLUMN_ID, categoryId)
-                        eq(COLUMN_USER_ID, userId)
+                        eq(DatabaseColumns.ID, categoryId)
+                        eq(DatabaseColumns.USER_ID, userId)
                     }
                 }
                 .decodeSingle<JsonObject>()
@@ -139,12 +101,12 @@ class CategoryService(
     ): Result<JsonObject> {
         return try {
             val data = buildJsonObject {
-                put(COLUMN_USER_ID, userId)
-                put(COLUMN_NAME, request.name)
-                request.description?.let { put(COLUMN_DESCRIPTION, it) }
-                request.color?.let { put(COLUMN_COLOR, it) }
-                request.icon?.let { put(COLUMN_ICON, it) }
-                put(COLUMN_IS_ACTIVE, request.isActive)
+                put(DatabaseColumns.USER_ID, userId)
+                put(DatabaseColumns.NAME, request.name)
+                request.description?.let { put(DatabaseColumns.DESCRIPTION, it) }
+                request.color?.let { put(DatabaseColumns.COLOR, it) }
+                request.icon?.let { put(DatabaseColumns.ICON, it) }
+                put(DatabaseColumns.IS_ACTIVE, request.isActive)
             }
 
             val category = supabaseClient.from(TABLE_CATEGORIES)
@@ -176,18 +138,18 @@ class CategoryService(
     ): Result<JsonObject> {
         return try {
             val data = buildJsonObject {
-                request.name?.let { put(COLUMN_NAME, it) }
-                request.description?.let { put(COLUMN_DESCRIPTION, it) }
-                request.color?.let { put(COLUMN_COLOR, it) }
-                request.icon?.let { put(COLUMN_ICON, it) }
-                request.isActive?.let { put(COLUMN_IS_ACTIVE, it) }
+                request.name?.let { put(DatabaseColumns.NAME, it) }
+                request.description?.let { put(DatabaseColumns.DESCRIPTION, it) }
+                request.color?.let { put(DatabaseColumns.COLOR, it) }
+                request.icon?.let { put(DatabaseColumns.ICON, it) }
+                request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
             }
 
             val category = supabaseClient.from(TABLE_CATEGORIES)
                 .update(data) {
                     filter {
-                        eq(COLUMN_ID, categoryId)
-                        eq(COLUMN_USER_ID, userId)
+                        eq(DatabaseColumns.ID, categoryId)
+                        eq(DatabaseColumns.USER_ID, userId)
                     }
                     select()
                 }
@@ -213,8 +175,8 @@ class CategoryService(
             supabaseClient.from(TABLE_CATEGORIES)
                 .delete() {
                     filter {
-                        eq(COLUMN_ID, categoryId)
-                        eq(COLUMN_USER_ID, userId)
+                        eq(DatabaseColumns.ID, categoryId)
+                        eq(DatabaseColumns.USER_ID, userId)
                     }
                 }
 

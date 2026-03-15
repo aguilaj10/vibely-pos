@@ -8,6 +8,7 @@ import org.koin.dsl.koinApplication
 import org.koin.test.check.checkModules
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 /**
@@ -122,7 +123,7 @@ class KoinModulesTest {
         val modules = sharedModules()
 
         assertNotNull(modules, "Shared modules list should not be null")
-        assert(modules.size == 3) { "Expected 3 modules (domain, data, presentation), got ${modules.size}" }
+        assertEquals(modules.size, 3, "Expected 3 modules (domain, data, presentation), got ${modules.size}")
     }
 
     /**

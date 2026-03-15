@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.services
 
+import com.vibely.pos.backend.common.DatabaseColumns
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.data.sales.dto.ProductDTO
 import com.vibely.pos.shared.data.sales.dto.SaleDTO
@@ -17,8 +18,6 @@ private const val TABLE_SALES = "sales"
 private const val TABLE_SALE_ITEMS = "sale_items"
 private const val TABLE_PRODUCTS = "products"
 private const val TABLE_INVENTORY_TRANSACTIONS = "inventory_transactions"
-private const val COLUMN_ID = "id"
-private const val COLUMN_CURRENT_STOCK = "current_stock"
 private const val STATUS_COMPLETED = "completed"
 private const val TRANSACTION_TYPE_SALE = "sale"
 private const val REFERENCE_TYPE_SALE = "sale"
@@ -65,7 +64,7 @@ internal class SaleCreationHelper(
         return supabaseClient.from(TABLE_PRODUCTS)
             .select {
                 filter {
-                    eq(COLUMN_ID, productId)
+                    eq(DatabaseColumns.ID, productId)
                 }
             }
             .decodeSingle<ProductDTO>()
@@ -114,9 +113,9 @@ internal class SaleCreationHelper(
             val product = fetchProduct(item.productId)
 
             supabaseClient.from(TABLE_PRODUCTS)
-                .update(mapOf(COLUMN_CURRENT_STOCK to (product.currentStock - item.quantity))) {
+                .update(mapOf(DatabaseColumns.CURRENT_STOCK to (product.currentStock - item.quantity))) {
                     filter {
-                        eq(COLUMN_ID, item.productId)
+                        eq(DatabaseColumns.ID, item.productId)
                     }
                 }
 
@@ -136,7 +135,7 @@ internal class SaleCreationHelper(
 
     private suspend fun generateInvoiceNumber(): String {
         val sales = supabaseClient.from(TABLE_SALES)
-            .select(Columns.list(COLUMN_ID))
+            .select(Columns.list(DatabaseColumns.ID))
             .decodeList<Map<String, String>>()
 
         val localDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())

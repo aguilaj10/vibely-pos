@@ -3,6 +3,7 @@ package com.vibely.pos.backend.services
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
+import com.vibely.pos.backend.common.DatabaseColumns
 import com.vibely.pos.shared.util.TimeUtil
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
@@ -17,11 +18,6 @@ import kotlin.time.Instant
 
 private const val REFRESH_TOKENS = "refresh_tokens"
 private const val TOKEN_BLACKLIST = "token_blacklist"
-private const val COLUMN_TOKEN = "token"
-private const val COLUMN_USER_ID = "user_id"
-private const val COLUMN_EXPIRES_AT = "expires_at"
-private const val COLUMN_CREATED_AT = "created_at"
-private const val COLUMN_BLACKLISTED_AT = "blacklisted_at"
 private const val CLAIM_USER_ID = "userId"
 private const val CLAIM_TYPE = "type"
 private const val SECONDS_PER_MILLISECOND = 1000
@@ -107,9 +103,9 @@ class TokenService(
      */
     suspend fun isTokenBlacklisted(token: String): Boolean {
         val result = supabaseClient.from(TOKEN_BLACKLIST)
-            .select(columns = Columns.list(COLUMN_TOKEN)) {
+            .select(columns = Columns.list(DatabaseColumns.TOKEN)) {
                 filter {
-                    eq(COLUMN_TOKEN, token)
+                    eq(DatabaseColumns.TOKEN, token)
                 }
             }
 
@@ -124,10 +120,10 @@ class TokenService(
 
         supabaseClient.from(TOKEN_BLACKLIST).insert(
             mapOf(
-                COLUMN_TOKEN to accessToken,
-                COLUMN_USER_ID to userId,
-                COLUMN_EXPIRES_AT to expiresAt.toString(),
-                COLUMN_BLACKLISTED_AT to TimeUtil.now().toString()
+                DatabaseColumns.TOKEN to accessToken,
+                DatabaseColumns.USER_ID to userId,
+                DatabaseColumns.EXPIRES_AT to expiresAt.toString(),
+                DatabaseColumns.BLACKLISTED_AT to TimeUtil.now().toString()
             )
         )
     }
@@ -140,10 +136,10 @@ class TokenService(
 
         supabaseClient.from(REFRESH_TOKENS).insert(
             mapOf(
-                COLUMN_USER_ID to userId,
-                COLUMN_TOKEN to refreshToken,
-                COLUMN_EXPIRES_AT to expiresAt.toString(),
-                COLUMN_CREATED_AT to TimeUtil.now().toString()
+                DatabaseColumns.USER_ID to userId,
+                DatabaseColumns.TOKEN to refreshToken,
+                DatabaseColumns.EXPIRES_AT to expiresAt.toString(),
+                DatabaseColumns.CREATED_AT to TimeUtil.now().toString()
             )
         )
     }
@@ -156,7 +152,7 @@ class TokenService(
             val result = supabaseClient.from(REFRESH_TOKENS)
                 .select {
                     filter {
-                        eq(COLUMN_TOKEN, token)
+                        eq(DatabaseColumns.TOKEN, token)
                     }
                     limit(1)
                 }
@@ -175,7 +171,7 @@ class TokenService(
             supabaseClient.from(REFRESH_TOKENS)
                 .delete {
                     filter {
-                        eq(COLUMN_TOKEN, token)
+                        eq(DatabaseColumns.TOKEN, token)
                     }
                 }
         } catch (e: RestException) {
@@ -190,7 +186,7 @@ class TokenService(
         supabaseClient.from(REFRESH_TOKENS)
             .delete {
                 filter {
-                    eq(COLUMN_USER_ID, userId)
+                    eq(DatabaseColumns.USER_ID, userId)
                 }
             }
     }

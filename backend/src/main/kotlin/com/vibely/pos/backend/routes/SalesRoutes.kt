@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.dto.request.GetAllSalesRequest
 import com.vibely.pos.backend.services.SaleService
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.domain.result.Result
@@ -78,7 +79,7 @@ private suspend fun ApplicationCall.handleGetAll(saleService: SaleService) {
     val page = request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
     val pageSize = request.queryParameters["page_size"]?.toIntOrNull() ?: DEFAULT_PAGE_SIZE
 
-    val getAllRequest = SaleService.GetAllRequest(
+    val getAllRequest = GetAllSalesRequest(
         startDate = startDate,
         endDate = endDate,
         status = status,

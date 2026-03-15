@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.dto.request.GetTransactionsRequest
 import com.vibely.pos.backend.services.InventoryService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
@@ -59,7 +60,7 @@ private suspend fun ApplicationCall.handleGetTransactions(inventoryService: Inve
 
     when (val result = inventoryService.getTransactions(
         userId = userId,
-        request = InventoryService.GetTransactionsRequest(
+        request = GetTransactionsRequest(
             productId = productId,
             type = type,
             startDate = startDate,

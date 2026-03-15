@@ -1,5 +1,7 @@
 package com.vibely.pos.backend.services
 
+import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.dto.request.GetAllSalesRequest
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.data.sales.dto.SaleDTO
 import com.vibely.pos.shared.data.sales.dto.SaleItemDTO
@@ -10,10 +12,6 @@ import io.github.jan.supabase.postgrest.query.Order
 
 private const val TABLE_SALES = "sales"
 private const val TABLE_SALE_ITEMS = "sale_items"
-private const val COLUMN_SALE_DATE = "sale_date"
-private const val COLUMN_STATUS = "status"
-private const val COLUMN_ID = "id"
-private const val COLUMN_SALE_ID = "sale_id"
 private const val ERROR_CREATE_SALE = "Failed to create sale"
 private const val ERROR_FETCH_SALES = "Failed to fetch sales"
 private const val ERROR_SALE_NOT_FOUND = "Sale not found"
@@ -27,23 +25,6 @@ class SaleService(
     private val supabaseClient: SupabaseClient,
 ) {
     private val creationHelper = SaleCreationHelper(supabaseClient)
-    
-    /**
-     * Request parameters for fetching sales with filtering and pagination.
-     *
-     * @property startDate Optional start date filter
-     * @property endDate Optional end date filter
-     * @property status Optional status filter
-     * @property page Page number (1-indexed)
-     * @property pageSize Number of items per page
-     */
-    data class GetAllRequest(
-        val startDate: String? = null,
-        val endDate: String? = null,
-        val status: String? = null,
-        val page: Int = 1,
-        val pageSize: Int = 50
-    )
     
     /**
      * Creates a new sale with items and updates inventory.
@@ -75,16 +56,16 @@ class SaleService(
      * @param request Request parameters for filtering and pagination
      * @return Result containing list of sales
      */
-    suspend fun getAll(request: GetAllRequest): Result<List<SaleDTO>> {
+    suspend fun getAll(request: GetAllSalesRequest): Result<List<SaleDTO>> {
         return try {
             val sales = supabaseClient.from(TABLE_SALES)
                 .select {
                     filter {
-                        request.startDate?.let { gte(COLUMN_SALE_DATE, it) }
-                        request.endDate?.let { lte(COLUMN_SALE_DATE, it) }
-                        request.status?.let { eq(COLUMN_STATUS, it) }
+                        request.startDate?.let { gte(DatabaseColumns.SALE_DATE, it) }
+                        request.endDate?.let { lte(DatabaseColumns.SALE_DATE, it) }
+                        request.status?.let { eq(DatabaseColumns.STATUS, it) }
                     }
-                    order(COLUMN_SALE_DATE, Order.DESCENDING)
+                    order(DatabaseColumns.SALE_DATE, Order.DESCENDING)
                     range(
                         from = ((request.page - 1) * request.pageSize).toLong(),
                         to = (request.page * request.pageSize - 1).toLong()
@@ -111,7 +92,7 @@ class SaleService(
             val sale = supabaseClient.from(TABLE_SALES)
                 .select {
                     filter {
-                        eq(COLUMN_ID, id)
+                        eq(DatabaseColumns.ID, id)
                     }
                 }
                 .decodeSingle<SaleDTO>()
@@ -135,7 +116,7 @@ class SaleService(
             val items = supabaseClient.from(TABLE_SALE_ITEMS)
                 .select {
                     filter {
-                        eq(COLUMN_SALE_ID, saleId)
+                        eq(DatabaseColumns.SALE_ID, saleId)
                     }
                 }
                 .decodeList<SaleItemDTO>()
@@ -158,9 +139,9 @@ class SaleService(
     suspend fun updateStatus(saleId: String, status: String): Result<SaleDTO> {
         return try {
             val sale = supabaseClient.from(TABLE_SALES)
-                .update(mapOf(COLUMN_STATUS to status)) {
+                .update(mapOf(DatabaseColumns.STATUS to status)) {
                     filter {
-                        eq(COLUMN_ID, saleId)
+                        eq(DatabaseColumns.ID, saleId)
                     }
                     select()
                 }

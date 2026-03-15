@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.services
 
+import com.vibely.pos.backend.common.DatabaseColumns
 import com.vibely.pos.shared.data.dashboard.dto.ActiveShiftInfoDTO
 import com.vibely.pos.shared.data.dashboard.dto.DashboardSummaryDTO
 import com.vibely.pos.shared.data.dashboard.dto.LowStockProductDTO
@@ -21,12 +22,6 @@ import kotlinx.datetime.todayIn
 private const val TABLE_SALES = "sales"
 private const val TABLE_CASH_SHIFTS = "cash_shifts"
 private const val VIEW_LOW_STOCK_PRODUCTS = "low_stock_products"
-
-// Database column names
-private const val COLUMN_STATUS = "status"
-private const val COLUMN_SALE_DATE = "sale_date"
-private const val COLUMN_CURRENT_STOCK = "current_stock"
-private const val COLUMN_CLOSED_AT = "closed_at"
 
 // Status values
 private const val STATUS_COMPLETED = "completed"
@@ -75,8 +70,8 @@ class DashboardService(
         val salesResult = supabaseClient.from(TABLE_SALES)
             .select(columns = Columns.list("total_amount")) {
                 filter {
-                    eq(COLUMN_STATUS, STATUS_COMPLETED)
-                    gte(COLUMN_SALE_DATE, today)
+                    eq(DatabaseColumns.STATUS, STATUS_COMPLETED)
+                    gte(DatabaseColumns.SALE_DATE, today)
                 }
             }
             .decodeList<SaleTotalRow>()
@@ -93,8 +88,8 @@ class DashboardService(
         val transactions = supabaseClient.from(TABLE_SALES)
             .select(columns = Columns.list("id")) {
                 filter {
-                    eq(COLUMN_STATUS, STATUS_COMPLETED)
-                    gte(COLUMN_SALE_DATE, today)
+                    eq(DatabaseColumns.STATUS, STATUS_COMPLETED)
+                    gte(DatabaseColumns.SALE_DATE, today)
                 }
             }
             .decodeList<SaleIdRow>()
@@ -131,7 +126,7 @@ class DashboardService(
             supabaseClient.from(TABLE_CASH_SHIFTS)
                 .select(columns = activeShiftColumns) {
                     filter {
-                        exact(COLUMN_CLOSED_AT, null)
+                        exact(DatabaseColumns.CLOSED_AT, null)
                     }
                     limit(1)
                 }
@@ -176,7 +171,7 @@ class DashboardService(
                     "customers(full_name)",
                 )
             ) {
-                order(column = COLUMN_SALE_DATE, order = Order.DESCENDING)
+                order(column = DatabaseColumns.SALE_DATE, order = Order.DESCENDING)
                 limit(limit.toLong())
             }
             .decodeList<RecentTransactionRow>()
@@ -214,7 +209,7 @@ class DashboardService(
                     "categories(name)",
                 )
             ) {
-                order(column = COLUMN_CURRENT_STOCK, order = Order.ASCENDING)
+                order(column = DatabaseColumns.CURRENT_STOCK, order = Order.ASCENDING)
             }
             .decodeList<LowStockProductRow>()
 

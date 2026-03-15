@@ -1,5 +1,7 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.dto.request.CreateCategoryRequest
+import com.vibely.pos.backend.dto.request.UpdateCategoryRequest
 import com.vibely.pos.backend.services.CategoryService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
@@ -16,7 +18,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.route
-import kotlinx.serialization.Serializable
 
 private const val ERROR_KEY = "error"
 private const val ERROR_UNAUTHORIZED = "User not authenticated"
@@ -26,52 +27,6 @@ private const val DEFAULT_PAGE = 1
 private const val DEFAULT_PAGE_SIZE = 50
 private const val PATH_ID = "/{id}"
 private const val CLAIM_USER_ID = "userId"
-
-/**
- * Request body for creating a category.
- *
- * @property name Category name (required)
- * @property description Optional description
- * @property color Optional color hex code
- * @property icon Optional icon name
- * @property isActive Whether category is active (default: true)
- */
-@Serializable
-data class CreateCategoryRequest(
-    /** Category name (required) */
-    val name: String,
-    /** Optional description */
-    val description: String? = null,
-    /** Optional color hex code */
-    val color: String? = null,
-    /** Optional icon name */
-    val icon: String? = null,
-    /** Whether category is active (default: true) */
-    val isActive: Boolean = true
-)
-
-/**
- * Request body for updating a category.
- *
- * @property name Optional new name
- * @property description Optional new description
- * @property color Optional new color
- * @property icon Optional new icon
- * @property isActive Optional new active status
- */
-@Serializable
-data class UpdateCategoryRequest(
-    /** Optional new name */
-    val name: String? = null,
-    /** Optional new description */
-    val description: String? = null,
-    /** Optional new color */
-    val color: String? = null,
-    /** Optional new icon */
-    val icon: String? = null,
-    /** Optional new active status */
-    val isActive: Boolean? = null
-)
 
 /**
  * Configures category-related routes with JWT authentication.
@@ -167,7 +122,7 @@ private suspend fun ApplicationCall.handleCreateCategory(categoryService: Catego
         return
     }
 
-    val createRequest = CategoryService.CreateCategoryRequest(
+    val createRequest = CreateCategoryRequest(
         name = requestBody.name,
         description = requestBody.description,
         color = requestBody.color,
@@ -200,7 +155,7 @@ private suspend fun ApplicationCall.handleUpdateCategory(categoryService: Catego
 
     val requestBody = receive<UpdateCategoryRequest>()
 
-    val updateRequest = CategoryService.UpdateCategoryRequest(
+    val updateRequest = UpdateCategoryRequest(
         name = requestBody.name,
         description = requestBody.description,
         color = requestBody.color,
