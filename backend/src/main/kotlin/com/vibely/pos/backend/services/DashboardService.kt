@@ -14,7 +14,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Clock
 import kotlinx.serialization.SerializationException
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
@@ -131,9 +130,9 @@ class DashboardService(
                     limit(1)
                 }
                 .decodeSingleOrNull<ActiveShiftRow>()
-        } catch (e: RestException) {
+        } catch (_: RestException) {
             null
-        } catch (e: SerializationException) {
+        } catch (_: SerializationException) {
             null
         }
 
@@ -179,7 +178,7 @@ class DashboardService(
         return transactions.map { row ->
             // Convert from dollars (numeric) to cents (Long)
             val totalCents = (row.totalAmount * CENTS_PER_DOLLAR).toLong()
-            
+
             RecentTransactionDTO(
                 id = row.id,
                 invoiceNumber = row.invoiceNumber,
@@ -216,7 +215,7 @@ class DashboardService(
         return products.map { row ->
             // Convert from dollars (numeric) to cents (Long)
             val sellingPriceCents = (row.sellingPrice * CENTS_PER_DOLLAR).toLong()
-            
+
             LowStockProductDTO(
                 id = row.id,
                 sku = row.sku,

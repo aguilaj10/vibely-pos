@@ -16,10 +16,10 @@ object AppColors {
     val PrimaryDark = Color(0xFF0B0F1A) // Darker near-black
     val OnPrimary = Color.White
 
-    // Secondary Colors - Complementary Green (kept for success states)
-    val Secondary = Color(0xFF10B981) // Emerald - Success, growth
-    val SecondaryLight = Color(0xFF34D399)
-    val SecondaryDark = Color(0xFF059669)
+    // Secondary Colors - Grayscale for secondary actions (design system)
+    val Secondary = Color(0xFF6B7280) // Medium gray - Secondary actions
+    val SecondaryLight = Color(0xFF9CA3AF) // Light gray
+    val SecondaryDark = Color(0xFF4B5563) // Dark gray
     val OnSecondary = Color.White
 
     // Tertiary Colors - Warm Accent (kept for warnings/highlights)
@@ -116,8 +116,8 @@ val LightColorScheme = lightColorScheme(
 
     secondary = AppColors.Secondary,
     onSecondary = AppColors.OnSecondary,
-    secondaryContainer = AppColors.SuccessLight.copy(alpha = 0.15f),
-    onSecondaryContainer = AppColors.SuccessDark,
+    secondaryContainer = AppColors.NeutralLight200,
+    onSecondaryContainer = AppColors.SecondaryDark,
 
     tertiary = AppColors.Tertiary,
     onTertiary = AppColors.OnTertiary,
@@ -153,10 +153,10 @@ val DarkColorScheme = darkColorScheme(
     primaryContainer = AppColors.PrimaryDark,
     onPrimaryContainer = AppColors.NeutralDark900,
 
-    secondary = AppColors.SuccessLight,
-    onSecondary = AppColors.SuccessDark,
-    secondaryContainer = AppColors.SuccessDark,
-    onSecondaryContainer = AppColors.SuccessLight,
+    secondary = AppColors.SecondaryLight,
+    onSecondary = AppColors.SecondaryDark,
+    secondaryContainer = AppColors.NeutralDark300,
+    onSecondaryContainer = AppColors.SecondaryLight,
 
     tertiary = AppColors.TertiaryLight,
     onTertiary = AppColors.TertiaryDark,

@@ -65,7 +65,7 @@ fun QuickActionButtons(onActionClick: (QuickAction) -> Unit, modifier: Modifier 
                 )
             },
             onClick = { onActionClick(QuickAction.INVENTORY) },
-            style = AppButtonStyle.Secondary,
+            style = AppButtonStyle.Primary,
             size = AppButtonSize.Medium,
             modifier = Modifier.weight(1f),
         )
@@ -81,7 +81,7 @@ fun QuickActionButtons(onActionClick: (QuickAction) -> Unit, modifier: Modifier 
                 )
             },
             onClick = { onActionClick(QuickAction.REPORTS) },
-            style = AppButtonStyle.Secondary,
+            style = AppButtonStyle.Primary,
             size = AppButtonSize.Medium,
             modifier = Modifier.weight(1f),
         )

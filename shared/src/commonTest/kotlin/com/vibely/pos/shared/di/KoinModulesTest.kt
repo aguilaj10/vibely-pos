@@ -54,7 +54,7 @@ class KoinModulesTest {
                     "SUPABASE_ANON_KEY" to "test-anon-key",
                 ),
             )
-            modules(dataModule)
+            modules(domainModule, dataModule)
             checkModules {
                 withInstance<String>()
                 withInstance<HttpClientEngine>()

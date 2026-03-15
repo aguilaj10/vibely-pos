@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.vibely.pos.ui.theme.AppColors
 import com.vibely.pos.ui.theme.PosShapes
 
 /**
@@ -149,26 +148,26 @@ private fun ButtonContent(text: String, icon: (@Composable () -> Unit)?, loading
 @Composable
 private fun getButtonColors(style: AppButtonStyle): ButtonColors = when (style) {
     AppButtonStyle.Primary -> ButtonDefaults.buttonColors(
-        containerColor = AppColors.Primary,
-        contentColor = AppColors.OnPrimary,
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
     )
     AppButtonStyle.Secondary -> ButtonDefaults.buttonColors(
-        containerColor = AppColors.Secondary,
-        contentColor = AppColors.OnSecondary,
+        containerColor = MaterialTheme.colorScheme.secondary,
+        contentColor = MaterialTheme.colorScheme.onSecondary,
     )
     AppButtonStyle.Tertiary -> ButtonDefaults.buttonColors(
-        containerColor = AppColors.Tertiary,
-        contentColor = AppColors.OnTertiary,
+        containerColor = MaterialTheme.colorScheme.tertiary,
+        contentColor = MaterialTheme.colorScheme.onTertiary,
     )
     AppButtonStyle.Destructive -> ButtonDefaults.buttonColors(
-        containerColor = AppColors.Error,
-        contentColor = AppColors.OnError,
+        containerColor = MaterialTheme.colorScheme.error,
+        contentColor = MaterialTheme.colorScheme.onError,
     )
     AppButtonStyle.Outlined -> ButtonDefaults.outlinedButtonColors(
-        contentColor = AppColors.Primary,
+        contentColor = MaterialTheme.colorScheme.primary,
     )
     AppButtonStyle.Text -> ButtonDefaults.textButtonColors(
-        contentColor = AppColors.Primary,
+        contentColor = MaterialTheme.colorScheme.primary,
     )
 }
 

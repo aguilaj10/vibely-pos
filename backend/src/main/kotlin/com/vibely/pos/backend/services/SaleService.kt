@@ -7,10 +7,8 @@ import com.vibely.pos.shared.data.sales.dto.SaleDTO
 import com.vibely.pos.shared.data.sales.dto.SaleItemDTO
 import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
-import kotlinx.serialization.SerializationException
 
 private const val TABLE_SALES = "sales"
 private const val TABLE_SALE_ITEMS = "sale_items"
@@ -27,7 +25,7 @@ class SaleService(
     private val supabaseClient: SupabaseClient,
 ) : BaseService() {
     private val creationHelper = SaleCreationHelper(supabaseClient)
-    
+
     /**
      * Creates a new sale with items and updates inventory.
      *
@@ -39,11 +37,11 @@ class SaleService(
         return executeQuery(ERROR_CREATE_SALE) {
             val saleItemsData = creationHelper.validateAndBuildSaleItems(request)
             val subtotal = saleItemsData.second
-            
+
             val sale = creationHelper.insertSale(request, cashierId, subtotal)
             creationHelper.insertSaleItems(saleItemsData.first, sale.id)
             creationHelper.deductStockAndLogTransactions(request, sale, cashierId)
-            
+
             sale
         }
     }

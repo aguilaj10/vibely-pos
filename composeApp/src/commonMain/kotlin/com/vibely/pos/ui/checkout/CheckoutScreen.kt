@@ -423,7 +423,7 @@ private fun CartSidebar(
                 AppButton(
                     text = "Checkout",
                     onClick = onCheckout,
-                    style = if (cartItems.isEmpty()) AppButtonStyle.Secondary else AppButtonStyle.Primary,
+                    style = AppButtonStyle.Primary,
                     enabled = canCheckout && cartItems.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -597,7 +597,7 @@ private fun PaymentDialog(totalAmount: Double, isProcessing: Boolean, onPaymentM
                     AppButton(
                         text = "Card",
                         onClick = { onPaymentMethodSelected("card") },
-                        style = AppButtonStyle.Secondary,
+                        style = AppButtonStyle.Outlined,
                         modifier = Modifier.weight(1f),
                         enabled = !isProcessing,
                     )

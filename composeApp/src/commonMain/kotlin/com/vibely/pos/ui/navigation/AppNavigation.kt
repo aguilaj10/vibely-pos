@@ -1,21 +1,24 @@
 package com.vibely.pos.ui.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import com.vibely.pos.config.DebugConfig
 import com.vibely.pos.ui.auth.LoginScreen
 import com.vibely.pos.ui.customers.CustomersScreen
 import com.vibely.pos.ui.dashboard.DashboardScreen
 import com.vibely.pos.ui.inventory.InventoryScreen
-import com.vibely.pos.ui.navigation.components.BottomNavigationBar
+import com.vibely.pos.ui.navigation.components.LeftSidebarNavigation
 import com.vibely.pos.ui.screens.PlaceholderScreen
 import com.vibely.pos.ui.screens.ThemeDemoScreen
 import com.vibely.pos.ui.screens.categories.CategoriesScreen
@@ -25,39 +28,34 @@ import com.vibely.pos.ui.suppliers.SuppliersScreen
  * Main navigation controller for the application.
  *
  * Manages navigation between screens, authentication state, and layout structure.
- * Provides:
- * - Authentication guard (redirects to login if not authenticated)
- * - Bottom navigation bar for mobile layouts
- * - State-based navigation (simple but effective for Phase 1)
- *
- * Future enhancements:
- * - Side drawer for desktop/tablet layouts
- * - Deep linking support
- * - Back stack management
- * - Transition animations
+ * Uses Navigation3 for Kotlin Multiplatform navigation support.
  *
  * @param startDestination The initial screen to show. Defaults to Dashboard in debug mode, Login otherwise.
  * @param modifier Optional modifier for customization.
  */
 @Composable
 fun AppNavigation(startDestination: Screen = if (DebugConfig.isDebugMode) Screen.Dashboard else Screen.Login, modifier: Modifier = Modifier) {
-    var currentScreen by remember { mutableStateOf(startDestination) }
     var isAuthenticated by remember { mutableStateOf(DebugConfig.isDebugMode) }
+
+    val backStack = remember { mutableStateListOf(startDestination) }
+    val currentScreen = backStack.lastOrNull() ?: startDestination
 
     Box(modifier = modifier.fillMaxSize()) {
         // Authentication guard
         if (!isAuthenticated && currentScreen !in listOf(Screen.Login, Screen.ThemeDemo)) {
-            currentScreen = Screen.Login
+            backStack.clear()
+            backStack.add(Screen.Login)
         }
 
         // Main content based on authentication state
         when {
             // Login screen (no navigation UI)
-            currentScreen == Screen.Login -> {
+            currentScreen == Screen.Login && !isAuthenticated -> {
                 LoginScreen(
                     onLoginSuccess = {
                         isAuthenticated = true
-                        currentScreen = Screen.Dashboard
+                        backStack.clear()
+                        backStack.add(Screen.Dashboard)
                     },
                 )
             }
@@ -70,13 +68,22 @@ fun AppNavigation(startDestination: Screen = if (DebugConfig.isDebugMode) Screen
             // Authenticated screens with navigation UI
             isAuthenticated -> {
                 AuthenticatedScreenLayout(
-                    currentScreen = currentScreen,
-                    onNavigate = { screen ->
-                        currentScreen = screen
-                    },
+                    backStack = backStack,
                     onLogout = {
                         isAuthenticated = false
-                        currentScreen = Screen.Login
+                        backStack.clear()
+                        backStack.add(Screen.Login)
+                    },
+                )
+            }
+
+            // Fallback to login
+            else -> {
+                LoginScreen(
+                    onLoginSuccess = {
+                        isAuthenticated = true
+                        backStack.clear()
+                        backStack.add(Screen.Dashboard)
                     },
                 )
             }
@@ -85,101 +92,122 @@ fun AppNavigation(startDestination: Screen = if (DebugConfig.isDebugMode) Screen
 }
 
 /**
- * Layout for authenticated screens with bottom navigation.
+ * Layout for authenticated screens with left sidebar navigation.
  *
  * Provides consistent navigation structure across all authenticated screens.
- * Uses Scaffold for Material3 layout with bottom navigation bar.
+ * Uses left sidebar for desktop/tablet layouts.
  *
- * @param currentScreen The currently active screen.
- * @param onNavigate Callback when navigating to a different screen.
+ * @param backStack The navigation back stack.
  * @param onLogout Callback when user logs out.
  */
 @Composable
-private fun AuthenticatedScreenLayout(currentScreen: Screen, onNavigate: (Screen) -> Unit, onLogout: () -> Unit) {
-    Scaffold(
-        bottomBar = {
-            // Only show bottom nav for primary screens
-            if (currentScreen in Screen.getPrimaryScreens()) {
-                BottomNavigationBar(
-                    currentScreen = currentScreen,
-                    onNavigate = onNavigate,
-                )
-            }
-        },
-    ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            when (currentScreen) {
-                // Main screens
-                Screen.Dashboard -> DashboardScreen(
-                    onNavigate = onNavigate,
-                    onLogout = onLogout,
-                )
+private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: () -> Unit) {
+    val currentScreen = backStack.lastOrNull() ?: Screen.Dashboard
 
-                // Sales screens
-                Screen.Checkout -> PlaceholderScreen(
-                    title = Screen.Checkout.title,
-                    icon = Screen.Checkout.icon,
-                    description = "Point of sale checkout screen for processing new sales transactions.",
-                )
-                Screen.Sales -> PlaceholderScreen(
-                    title = Screen.Sales.title,
-                    icon = Screen.Sales.icon,
-                    description = "View and manage sales history, refunds, and transaction details.",
-                )
+    Row(modifier = Modifier.fillMaxSize()) {
+        LeftSidebarNavigation(
+            backStack = backStack,
+            currentScreen = currentScreen,
+            modifier = Modifier.fillMaxHeight(),
+        )
 
-                // Inventory screens
-                Screen.Inventory -> InventoryScreen(
-                    onNavigate = onNavigate,
-                )
-                Screen.Categories -> CategoriesScreen(
-                    onNavigate = onNavigate,
-                )
+        Box(modifier = Modifier.weight(1f)) {
+            NavDisplay(
+                backStack = backStack,
+                onBack = { if (backStack.size > 1) backStack.removeLast() },
+                entryProvider = { key ->
+                    when (key) {
+                        is Screen.Dashboard -> NavEntry(key) {
+                            DashboardScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
+                                onLogout = onLogout,
+                            )
+                        }
 
-                // Purchasing screens
-                Screen.Suppliers -> SuppliersScreen(
-                    onNavigate = onNavigate,
-                )
-                Screen.PurchaseOrders -> PlaceholderScreen(
-                    title = Screen.PurchaseOrders.title,
-                    icon = Screen.PurchaseOrders.icon,
-                    description = "Create and track purchase orders for restocking inventory.",
-                )
+                        is Screen.Checkout -> NavEntry(key) {
+                            PlaceholderScreen(
+                                title = Screen.Checkout.title,
+                                icon = Screen.Checkout.icon,
+                                description = "Point of sale checkout screen for processing new sales transactions.",
+                            )
+                        }
 
-                // People screens
-                Screen.Customers -> CustomersScreen(
-                    onNavigate = onNavigate,
-                )
-                Screen.Users -> PlaceholderScreen(
-                    title = Screen.Users.title,
-                    icon = Screen.Users.icon,
-                    description = "Manage system users, roles, and permissions.",
-                )
+                        is Screen.Sales -> NavEntry(key) {
+                            PlaceholderScreen(
+                                title = Screen.Sales.title,
+                                icon = Screen.Sales.icon,
+                                description = "View and manage sales history, refunds, and transaction details.",
+                            )
+                        }
 
-                // Operations screens
-                Screen.Shifts -> PlaceholderScreen(
-                    title = Screen.Shifts.title,
-                    icon = Screen.Shifts.icon,
-                    description = "Manage cash register shifts, opening/closing procedures.",
-                )
-                Screen.Reports -> PlaceholderScreen(
-                    title = Screen.Reports.title,
-                    icon = Screen.Reports.icon,
-                    description = "View business reports, analytics, and performance metrics.",
-                )
+                        is Screen.Inventory -> NavEntry(key) {
+                            InventoryScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
+                            )
+                        }
 
-                // Settings
-                Screen.Settings -> PlaceholderScreen(
-                    title = Screen.Settings.title,
-                    icon = Screen.Settings.icon,
-                    description = "Configure app settings, preferences, and system options.",
-                )
+                        is Screen.Categories -> NavEntry(key) {
+                            CategoriesScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
+                            )
+                        }
 
-                // Fallback (should never happen)
-                else -> PlaceholderScreen(
-                    title = "Unknown Screen",
-                    description = "This screen is not yet implemented.",
-                )
-            }
+                        is Screen.Suppliers -> NavEntry(key) {
+                            SuppliersScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
+                            )
+                        }
+
+                        is Screen.PurchaseOrders -> NavEntry(key) {
+                            PlaceholderScreen(
+                                title = Screen.PurchaseOrders.title,
+                                icon = Screen.PurchaseOrders.icon,
+                                description = "Create and track purchase orders for restocking inventory.",
+                            )
+                        }
+
+                        is Screen.Customers -> NavEntry(key) {
+                            CustomersScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
+                            )
+                        }
+
+                        is Screen.Users -> NavEntry(key) {
+                            PlaceholderScreen(
+                                title = Screen.Users.title,
+                                icon = Screen.Users.icon,
+                                description = "Manage system users, roles, and permissions.",
+                            )
+                        }
+
+                        is Screen.Shifts -> NavEntry(key) {
+                            PlaceholderScreen(
+                                title = Screen.Shifts.title,
+                                icon = Screen.Shifts.icon,
+                                description = "Manage cash register shifts, opening/closing procedures.",
+                            )
+                        }
+
+                        is Screen.Reports -> NavEntry(key) {
+                            PlaceholderScreen(
+                                title = Screen.Reports.title,
+                                icon = Screen.Reports.icon,
+                                description = "View business reports, analytics, and performance metrics.",
+                            )
+                        }
+
+                        is Screen.Settings -> NavEntry(key) {
+                            PlaceholderScreen(
+                                title = Screen.Settings.title,
+                                icon = Screen.Settings.icon,
+                                description = "Configure app settings, preferences, and system options.",
+                            )
+                        }
+
+                        else -> error("Unknown route: $key")
+                    }
+                },
+            )
         }
     }
 }

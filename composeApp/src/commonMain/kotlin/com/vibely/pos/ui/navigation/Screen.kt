@@ -1,5 +1,22 @@
 package com.vibely.pos.ui.navigation
 
+import androidx.compose.ui.graphics.vector.ImageVector
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Boxes
+import compose.icons.fontawesomeicons.solid.ChartBar
+import compose.icons.fontawesomeicons.solid.ChartLine
+import compose.icons.fontawesomeicons.solid.ClipboardList
+import compose.icons.fontawesomeicons.solid.Clock
+import compose.icons.fontawesomeicons.solid.Cog
+import compose.icons.fontawesomeicons.solid.Palette
+import compose.icons.fontawesomeicons.solid.Receipt
+import compose.icons.fontawesomeicons.solid.ShoppingCart
+import compose.icons.fontawesomeicons.solid.Tags
+import compose.icons.fontawesomeicons.solid.Truck
+import compose.icons.fontawesomeicons.solid.User
+import compose.icons.fontawesomeicons.solid.Users
+
 /**
  * Sealed class representing navigation destinations in the app.
  *
@@ -13,86 +30,77 @@ package com.vibely.pos.ui.navigation
  * - Operations: Shifts, Reports
  * - Settings: App Configuration
  */
-sealed class Screen(val route: String, val title: String, val icon: String? = null) {
-    // ==================== Authentication ====================
+sealed class Screen(val route: String, val title: String, val icon: ImageVector? = null) {
     /**
      * Login screen - entry point for unauthenticated users.
      */
     data object Login : Screen("login", "Login")
 
-    // ==================== Main ====================
     /**
      * Dashboard screen - main screen after successful login.
      * Shows key metrics, recent transactions, and quick actions.
      */
-    data object Dashboard : Screen("dashboard", "Dashboard", "📊")
+    data object Dashboard : Screen("dashboard", "Dashboard", FontAwesomeIcons.Solid.ChartLine)
 
-    // ==================== Sales ====================
     /**
      * Checkout screen - POS checkout for new sales.
      */
-    data object Checkout : Screen("checkout", "New Sale", "🛒")
+    data object Checkout : Screen("checkout", "New Sale", FontAwesomeIcons.Solid.ShoppingCart)
 
     /**
      * Sales history screen - view past transactions.
      */
-    data object Sales : Screen("sales", "Sales", "💰")
+    data object Sales : Screen("sales", "Sales", FontAwesomeIcons.Solid.Receipt)
 
-    // ==================== Inventory ====================
     /**
      * Inventory screen - manage products and stock levels.
      */
-    data object Inventory : Screen("inventory", "Inventory", "📦")
+    data object Inventory : Screen("inventory", "Inventory", FontAwesomeIcons.Solid.Boxes)
 
     /**
      * Categories screen - manage product categories.
      */
-    data object Categories : Screen("categories", "Categories", "🏷️")
+    data object Categories : Screen("categories", "Categories", FontAwesomeIcons.Solid.Tags)
 
-    // ==================== Purchasing ====================
     /**
      * Suppliers screen - manage suppliers.
      */
-    data object Suppliers : Screen("suppliers", "Suppliers", "🏭")
+    data object Suppliers : Screen("suppliers", "Suppliers", FontAwesomeIcons.Solid.Truck)
 
     /**
      * Purchase orders screen - manage purchase orders.
      */
-    data object PurchaseOrders : Screen("purchase-orders", "Purchase Orders", "📋")
+    data object PurchaseOrders : Screen("purchase-orders", "Purchase Orders", FontAwesomeIcons.Solid.ClipboardList)
 
-    // ==================== People ====================
     /**
      * Customers screen - manage customer information.
      */
-    data object Customers : Screen("customers", "Customers", "👥")
+    data object Customers : Screen("customers", "Customers", FontAwesomeIcons.Solid.Users)
 
     /**
      * Users screen - manage system users and permissions.
      */
-    data object Users : Screen("users", "Users", "👤")
+    data object Users : Screen("users", "Users", FontAwesomeIcons.Solid.User)
 
-    // ==================== Operations ====================
     /**
      * Shifts screen - manage cash register shifts.
      */
-    data object Shifts : Screen("shifts", "Shifts", "⏰")
+    data object Shifts : Screen("shifts", "Shifts", FontAwesomeIcons.Solid.Clock)
 
     /**
      * Reports screen - view business reports and analytics.
      */
-    data object Reports : Screen("reports", "Reports", "📈")
+    data object Reports : Screen("reports", "Reports", FontAwesomeIcons.Solid.ChartBar)
 
-    // ==================== Settings ====================
     /**
      * Settings screen - app configuration and preferences.
      */
-    data object Settings : Screen("settings", "Settings", "⚙️")
+    data object Settings : Screen("settings", "Settings", FontAwesomeIcons.Solid.Cog)
 
-    // ==================== Development ====================
     /**
      * Theme demo screen - for testing UI components (dev only).
      */
-    data object ThemeDemo : Screen("theme_demo", "Theme Demo", "🎨")
+    data object ThemeDemo : Screen("theme_demo", "Theme Demo", FontAwesomeIcons.Solid.Palette)
 
     companion object {
         /**

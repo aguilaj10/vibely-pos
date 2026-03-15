@@ -147,7 +147,7 @@ class CategoryService(
     suspend fun deleteCategory(userId: String, categoryId: String): Result<Unit> {
         return executeQuery(ERROR_DELETE_FAILED) {
             supabaseClient.from(TABLE_CATEGORIES)
-                .delete() {
+                .delete {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
                         eq(DatabaseColumns.USER_ID, userId)

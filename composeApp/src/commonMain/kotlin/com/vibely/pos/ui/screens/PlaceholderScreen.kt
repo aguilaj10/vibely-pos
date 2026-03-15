@@ -6,27 +6,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-/**
- * Placeholder screen for features not yet implemented.
- *
- * Displays a "Coming Soon" message with the screen title.
- * Used for navigation structure while features are being developed.
- *
- * @param title The screen title to display.
- * @param icon Optional emoji icon for the screen.
- * @param description Optional description of what the screen will contain.
- * @param modifier Optional modifier for customization.
- */
 @Composable
-fun PlaceholderScreen(title: String, icon: String? = null, description: String? = null, modifier: Modifier = Modifier) {
+fun PlaceholderScreen(title: String, icon: ImageVector? = null, description: String? = null, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -35,16 +27,16 @@ fun PlaceholderScreen(title: String, icon: String? = null, description: String? 
             modifier = Modifier.padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Icon
             if (icon != null) {
-                Text(
-                    text = icon,
-                    style = MaterialTheme.typography.displayLarge,
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Title
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineLarge,
@@ -53,7 +45,6 @@ fun PlaceholderScreen(title: String, icon: String? = null, description: String? 
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Coming Soon
             Text(
                 text = "Coming Soon",
                 style = MaterialTheme.typography.titleMedium,
@@ -61,7 +52,6 @@ fun PlaceholderScreen(title: String, icon: String? = null, description: String? 
                 textAlign = TextAlign.Center,
             )
 
-            // Description
             if (description != null) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
