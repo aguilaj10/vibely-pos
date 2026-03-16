@@ -86,6 +86,7 @@ class ReportService(
                 }
                 .decodeList<SalesReportRow>()
         } catch (e: RestException) {
+            println("⚠️ Error fetching sales report: ${e.message}")
             // Return empty report on error
             return SalesReportDTO(
                 totalRevenue = 0,
@@ -155,6 +156,7 @@ class ReportService(
                 .decodeList<SaleIdRow>()
                 .map { it.id }
         } catch (e: RestException) {
+            println("⚠️ Error fetching sales for top products (date range query): ${e.message}")
             return emptyList()
         }
 
@@ -180,6 +182,7 @@ class ReportService(
                 .decodeList<SaleItemWithSaleIdRow>()
                 .filter { it.saleId in saleIds }
         } catch (e: RestException) {
+            println("⚠️ Error fetching sale items for top products: ${e.message}")
             return emptyList()
         }
 
@@ -228,6 +231,7 @@ class ReportService(
                 .decodeList<SaleIdRow>()
                 .map { it.id }
         } catch (e: RestException) {
+            println("⚠️ Error fetching sales for category breakdown (date range query): ${e.message}")
             return emptyList()
         }
 
@@ -250,6 +254,7 @@ class ReportService(
                 .decodeList<SaleItemWithCategorySaleIdRow>()
                 .filter { it.saleId in saleIds }
         } catch (e: RestException) {
+            println("⚠️ Error fetching sale items for category breakdown: ${e.message}")
             return emptyList()
         }
 
@@ -307,6 +312,7 @@ class ReportService(
                 }
                 .decodeList<SaleWithCustomerRow>()
         } catch (e: RestException) {
+            println("⚠️ Error fetching customer analytics: ${e.message}")
             return emptyList()
         }
 
@@ -379,6 +385,7 @@ class ReportService(
                 }
                 .decodeList<SaleForTrendRow>()
         } catch (e: RestException) {
+            println("⚠️ Error fetching sales trend data: ${e.message}")
             return emptyList()
         }
 

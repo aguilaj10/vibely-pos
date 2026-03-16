@@ -193,13 +193,25 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
         request: ReceivePurchaseOrderRequest,
     ): Result<PurchaseOrderDTO> {
         return executeQuery(ERROR_RECEIVE_FAILED) {
+            val purchaseOrder = supabaseClient.from(TABLE_PURCHASE_ORDERS)
+                .select {
+                    filter {
+                        eq(DatabaseColumns.ID, purchaseOrderId)
+                        eq("created_by", userId)
+                    }
+                }
+                .decodeSingle<PurchaseOrderDTO>()
+
             request.items.forEach { itemUpdate ->
                 val updateData = buildJsonObject {
                     put("received_quantity", itemUpdate.receivedQuantity)
                 }
                 supabaseClient.from(TABLE_PURCHASE_ORDER_ITEMS)
                     .update(updateData) {
-                        filter { eq(DatabaseColumns.ID, itemUpdate.itemId) }
+                        filter {
+                            eq(DatabaseColumns.ID, itemUpdate.itemId)
+                            eq("purchase_order_id", purchaseOrderId)
+                        }
                     }
             }
 

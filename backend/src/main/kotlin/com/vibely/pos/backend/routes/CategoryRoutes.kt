@@ -54,6 +54,7 @@ fun Route.categoryRoutes(categoryService: CategoryService) {
 
 private fun Route.usePaths(categoryService: CategoryService) {
     get { call.handleGetAllCategories(categoryService) }
+    get("/search") { call.handleSearchCategories(categoryService) }
     get(PATH_ID) { call.handleGetById(categoryService) }
     post { call.handleCreateCategory(categoryService) }
     put(PATH_ID) { call.handleUpdateCategory(categoryService) }
@@ -197,5 +198,24 @@ private suspend fun ApplicationCall.handleDeleteCategory(categoryService: Catego
     when (val result = categoryService.deleteCategory(userId, categoryId)) {
         is Result.Success -> respond(HttpStatusCode.NoContent, mapOf("message" to "Category deleted successfully"))
         is Result.Error -> respond(HttpStatusCode.NotFound, mapOf(ERROR_KEY to result.message))
+    }
+}
+
+private suspend fun ApplicationCall.handleSearchCategories(categoryService: CategoryService) {
+    val userId = principal<JWTPrincipal>()
+        ?.payload
+        ?.getClaim(CLAIM_USER_ID)
+        ?.asString()
+
+    if (userId == null) {
+        respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
+        return
+    }
+
+    val query = request.queryParameters["q"] ?: ""
+
+    when (val result = categoryService.searchCategories(userId, query)) {
+        is Result.Success -> respond(HttpStatusCode.OK, result.data)
+        is Result.Error -> respond(HttpStatusCode.InternalServerError, mapOf(ERROR_KEY to result.message))
     }
 }

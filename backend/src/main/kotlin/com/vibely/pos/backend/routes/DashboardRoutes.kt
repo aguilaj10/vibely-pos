@@ -1,9 +1,9 @@
 package com.vibely.pos.backend.routes
 
 import com.vibely.pos.backend.services.DashboardService
+import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -56,8 +56,10 @@ private fun Route.usePaths(dashboardService: DashboardService) {
  * Returns aggregated dashboard metrics for today.
  */
 private suspend fun ApplicationCall.handleGetSummary(dashboardService: DashboardService) {
-    val summary = dashboardService.getDashboardSummary()
-    respond(HttpStatusCode.OK, summary)
+    when (val result = dashboardService.getDashboardSummary()) {
+        is Result.Success -> respond(HttpStatusCode.OK, result.data)
+        is Result.Error -> respond(HttpStatusCode.InternalServerError, mapOf(ERROR_KEY to result.message))
+    }
 }
 
 /**
@@ -67,14 +69,15 @@ private suspend fun ApplicationCall.handleGetSummary(dashboardService: Dashboard
 private suspend fun ApplicationCall.handleGetRecentTransactions(dashboardService: DashboardService) {
     val limit = request.queryParameters["limit"]?.toIntOrNull() ?: DEFAULT_LIMIT
 
-    // Validate limit range
-    if (limit < MIN_LIMIT || limit > MAX_LIMIT) {
+    if (limit !in MIN_LIMIT..MAX_LIMIT) {
         respond(HttpStatusCode.BadRequest, mapOf(ERROR_KEY to ERROR_INVALID_LIMIT))
         return
     }
 
-    val transactions = dashboardService.getRecentTransactions(limit)
-    respond(HttpStatusCode.OK, transactions)
+    when (val result = dashboardService.getRecentTransactions(limit)) {
+        is Result.Success -> respond(HttpStatusCode.OK, result.data)
+        is Result.Error -> respond(HttpStatusCode.InternalServerError, mapOf(ERROR_KEY to result.message))
+    }
 }
 
 /**
@@ -82,6 +85,8 @@ private suspend fun ApplicationCall.handleGetRecentTransactions(dashboardService
  * Returns products with current stock below minimum threshold.
  */
 private suspend fun ApplicationCall.handleGetLowStock(dashboardService: DashboardService) {
-    val products = dashboardService.getLowStockProducts()
-    respond(HttpStatusCode.OK, products)
+    when (val result = dashboardService.getLowStockProducts()) {
+        is Result.Success -> respond(HttpStatusCode.OK, result.data)
+        is Result.Error -> respond(HttpStatusCode.InternalServerError, mapOf(ERROR_KEY to result.message))
+    }
 }

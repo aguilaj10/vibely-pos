@@ -181,7 +181,9 @@ fun DashboardScreen(
                         transactions = state.recentTransactions,
                         modifier = Modifier.fillMaxWidth(),
                         onTransactionClick = { transaction ->
-                            // TODO: Navigate to transaction details
+                            // Navigate to Sales screen (transaction detail view not yet implemented)
+                            println("📊 Transaction clicked: ${transaction.id} - Navigate to Sales screen")
+                            onNavigate(com.vibely.pos.ui.navigation.Screen.Sales)
                         },
                     )
                 } else {

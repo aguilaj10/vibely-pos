@@ -219,7 +219,7 @@ private suspend fun ApplicationCall.handleGetPurchaseHistory(customerService: Cu
     val page = request.queryParameters["page"]?.toIntOrNull() ?: DEFAULT_PAGE
     val pageSize = request.queryParameters["page_size"]?.toIntOrNull() ?: DEFAULT_PAGE_SIZE
 
-    when (val result = customerService.getPurchaseHistory(customerId, page, pageSize)) {
+    when (val result = customerService.getPurchaseHistory(userId, customerId, page, pageSize)) {
         is Result.Success -> respond(HttpStatusCode.OK, result.data)
         is Result.Error -> respond(HttpStatusCode.InternalServerError, mapOf(ERROR_KEY to result.message))
     }

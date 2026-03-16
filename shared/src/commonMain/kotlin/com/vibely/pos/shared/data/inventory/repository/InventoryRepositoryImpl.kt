@@ -32,13 +32,15 @@ class InventoryRepositoryImpl(private val remoteDataSource: RemoteInventoryDataS
         InventoryTransactionMapper::toDomain,
     )
 
-    override suspend fun getById(id: String): Result<InventoryTransaction> {
-        TODO("Not implemented - will be added in inventory management phase")
-    }
+    override suspend fun getById(id: String): Result<InventoryTransaction> = mapSingle(
+        remoteDataSource.getTransactionById(id),
+        InventoryTransactionMapper::toDomain,
+    )
 
-    override suspend fun create(transaction: InventoryTransaction): Result<InventoryTransaction> {
-        TODO("Not implemented - will be added in inventory management phase")
-    }
+    override suspend fun create(transaction: InventoryTransaction): Result<InventoryTransaction> = mapSingle(
+        remoteDataSource.createTransaction(InventoryTransactionMapper.toDTO(transaction)),
+        InventoryTransactionMapper::toDomain,
+    )
 
     override suspend fun getByProduct(productId: String, page: Int, pageSize: Int): Result<List<InventoryTransaction>> = mapList(
         remoteDataSource.getTransactions(

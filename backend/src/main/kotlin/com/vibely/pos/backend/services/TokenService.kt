@@ -175,7 +175,7 @@ class TokenService(
                     }
                 }
         } catch (e: RestException) {
-            // Log error but don't fail
+            println("⚠️ Error deleting refresh token: ${e.message}")
         }
     }
 

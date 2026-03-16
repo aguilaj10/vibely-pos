@@ -5,6 +5,7 @@ import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.data.sales.dto.ProductDTO
 import com.vibely.pos.shared.data.sales.dto.SaleDTO
 import com.vibely.pos.shared.data.sales.dto.SaleItemDTO
+import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
@@ -29,17 +30,25 @@ internal class SaleCreationHelper(
 ) {
     suspend fun validateAndBuildSaleItems(
         request: CreateSaleRequest
-    ): Pair<List<SaleItemDTO>, BigDecimal> {
+    ): Result<Pair<List<SaleItemDTO>, BigDecimal>> {
+        return try {
+            val saleItems = buildSaleItemsList(request)
+            val subtotal = calculateSubtotal(saleItems)
+            Result.Success(Pair(saleItems, subtotal))
+        } catch (e: IllegalStateException) {
+            Result.Error(e.message ?: "Failed to validate sale items", cause = e)
+        } catch (e: NoSuchElementException) {
+            Result.Error(e.message ?: "Product not found", cause = e)
+        }
+    }
+
+    private suspend fun buildSaleItemsList(request: CreateSaleRequest): List<SaleItemDTO> {
         val saleItems = mutableListOf<SaleItemDTO>()
-        var subtotal = BigDecimal.ZERO
         val now = Clock.System.now().toString()
 
         for (item in request.items) {
             val product = fetchProduct(item.productId)
-
-            check(product.currentStock >= item.quantity) {
-                "$ERROR_INSUFFICIENT_STOCK ${product.name}"
-            }
+            validateStock(product, item.quantity)
 
             val itemSubtotal = product.sellingPrice.toBigDecimal() * item.quantity.toBigDecimal()
             saleItems.add(
@@ -54,11 +63,21 @@ internal class SaleCreationHelper(
                     createdAt = now
                 )
             )
-            subtotal += itemSubtotal
         }
 
-        return Pair(saleItems, subtotal)
+        return saleItems
     }
+
+    private fun validateStock(product: ProductDTO, requestedQuantity: Int) {
+        check(product.currentStock >= requestedQuantity) {
+            "$ERROR_INSUFFICIENT_STOCK ${product.name}"
+        }
+    }
+
+    private fun calculateSubtotal(saleItems: List<SaleItemDTO>): BigDecimal =
+        saleItems.fold(BigDecimal.ZERO) { acc, item ->
+            acc + item.subtotal.toBigDecimal()
+        }
 
     suspend fun fetchProduct(productId: String): ProductDTO {
         return supabaseClient.from(TABLE_PRODUCTS)

@@ -5,6 +5,7 @@ import com.vibely.pos.shared.data.dashboard.dto.ActiveShiftInfoDTO
 import com.vibely.pos.shared.data.dashboard.dto.DashboardSummaryDTO
 import com.vibely.pos.shared.data.dashboard.dto.LowStockProductDTO
 import com.vibely.pos.shared.data.dashboard.dto.RecentTransactionDTO
+import com.vibely.pos.shared.domain.result.Result
 import io.ktor.client.call.body
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
@@ -101,7 +102,7 @@ class DashboardRoutesTest {
         val client = createTestClient()
 
         // Mock successful response
-        coEvery { mockDashboardService.getDashboardSummary() } returns testSummary
+        coEvery { mockDashboardService.getDashboardSummary() } returns Result.Success(testSummary)
 
         val response = client.get("/api/dashboard/summary") {
             bearerAuth("test-user-123")
@@ -141,7 +142,7 @@ class DashboardRoutesTest {
             generatedAt = Clock.System.now().toString()
         )
 
-        coEvery { mockDashboardService.getDashboardSummary() } returns summaryWithoutShift
+        coEvery { mockDashboardService.getDashboardSummary() } returns Result.Success(summaryWithoutShift)
 
         val response = client.get("/api/dashboard/summary") {
             bearerAuth("test-user-123")
@@ -158,7 +159,7 @@ class DashboardRoutesTest {
         application { configureTestDashboardRoutes(mockDashboardService) }
         val client = createTestClient()
 
-        coEvery { mockDashboardService.getRecentTransactions(10) } returns testTransactions
+        coEvery { mockDashboardService.getRecentTransactions(10) } returns Result.Success(testTransactions)
 
         val response = client.get("/api/dashboard/recent-transactions?limit=10") {
             bearerAuth("test-user-123")
@@ -179,7 +180,7 @@ class DashboardRoutesTest {
         application { configureTestDashboardRoutes(mockDashboardService) }
         val client = createTestClient()
 
-        coEvery { mockDashboardService.getRecentTransactions(10) } returns testTransactions
+        coEvery { mockDashboardService.getRecentTransactions(10) } returns Result.Success(testTransactions)
 
         val response = client.get("/api/dashboard/recent-transactions") {
             bearerAuth("test-user-123")
@@ -194,7 +195,7 @@ class DashboardRoutesTest {
         application { configureTestDashboardRoutes(mockDashboardService) }
         val client = createTestClient()
 
-        coEvery { mockDashboardService.getRecentTransactions(1) } returns listOf(testTransactions[0])
+        coEvery { mockDashboardService.getRecentTransactions(1) } returns Result.Success(listOf(testTransactions[0]))
 
         val response = client.get("/api/dashboard/recent-transactions?limit=1") {
             bearerAuth("test-user-123")
@@ -209,7 +210,7 @@ class DashboardRoutesTest {
         application { configureTestDashboardRoutes(mockDashboardService) }
         val client = createTestClient()
 
-        coEvery { mockDashboardService.getRecentTransactions(100) } returns testTransactions
+        coEvery { mockDashboardService.getRecentTransactions(100) } returns Result.Success(testTransactions)
 
         val response = client.get("/api/dashboard/recent-transactions?limit=100") {
             bearerAuth("test-user-123")
@@ -260,7 +261,7 @@ class DashboardRoutesTest {
         application { configureTestDashboardRoutes(mockDashboardService) }
         val client = createTestClient()
 
-        coEvery { mockDashboardService.getRecentTransactions(10) } returns testTransactions
+        coEvery { mockDashboardService.getRecentTransactions(10) } returns Result.Success(testTransactions)
 
         val response = client.get("/api/dashboard/recent-transactions?limit=invalid") {
             bearerAuth("test-user-123")
@@ -286,7 +287,7 @@ class DashboardRoutesTest {
         application { configureTestDashboardRoutes(mockDashboardService) }
         val client = createTestClient()
 
-        coEvery { mockDashboardService.getLowStockProducts() } returns testLowStockProducts
+        coEvery { mockDashboardService.getLowStockProducts() } returns Result.Success(testLowStockProducts)
 
         val response = client.get("/api/dashboard/low-stock") {
             bearerAuth("test-user-123")
@@ -308,7 +309,7 @@ class DashboardRoutesTest {
         application { configureTestDashboardRoutes(mockDashboardService) }
         val client = createTestClient()
 
-        coEvery { mockDashboardService.getLowStockProducts() } returns emptyList()
+        coEvery { mockDashboardService.getLowStockProducts() } returns Result.Success(emptyList())
 
         val response = client.get("/api/dashboard/low-stock") {
             bearerAuth("test-user-123")

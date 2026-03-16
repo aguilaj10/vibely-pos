@@ -7,8 +7,10 @@ import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.InventoryService
 import com.vibely.pos.backend.services.ProductService
-import com.vibely.pos.backend.services.SaleService
 import com.vibely.pos.backend.services.PurchaseOrderService
+import com.vibely.pos.backend.services.ReportService
+import com.vibely.pos.backend.services.SaleService
+import com.vibely.pos.backend.services.SettingsService
 import com.vibely.pos.backend.services.ShiftService
 import com.vibely.pos.backend.services.SupplierService
 import com.vibely.pos.backend.services.TokenService
@@ -47,4 +49,8 @@ val backendModule =
     single { ShiftService(get()) }
 
     single { UserManagementService(get(), get()) }
+
+    single { ReportService(get()) }
+
+    single { SettingsService(get()) }
     }

@@ -170,7 +170,17 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
         }
     }
 
+    /**
+     * Retrieves purchase history for a customer.
+     *
+     * @param userId The ID of the user making the request (for authorization)
+     * @param customerId The ID of the customer whose history to retrieve
+     * @param page The page number for pagination
+     * @param pageSize The number of items per page
+     * @return Result containing list of sales records or error
+     */
     suspend fun getPurchaseHistory(
+        userId: String,
         customerId: String,
         page: Int,
         pageSize: Int
@@ -181,6 +191,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
                 .select {
                     filter {
                         eq("customer_id", customerId)
+                        eq(DatabaseColumns.USER_ID, userId)
                     }
                     order(DatabaseColumns.SALE_DATE, Order.DESCENDING)
                     range(from, to)

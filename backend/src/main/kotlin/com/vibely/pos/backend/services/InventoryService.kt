@@ -45,4 +45,41 @@ class InventoryService(
                 .decodeList<JsonObject>()
         }
     }
+
+    /**
+     * Retrieves a single inventory transaction by ID.
+     *
+     * @param userId ID of the user
+     * @param transactionId ID of the transaction
+     * @return Result containing the transaction
+     */
+    suspend fun getTransactionById(
+        userId: String,
+        transactionId: String
+    ): Result<JsonObject> = executeQuery("Failed to fetch inventory transaction") {
+        supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS)
+            .select {
+                filter {
+                    eq(DatabaseColumns.ID, transactionId)
+                    eq(DatabaseColumns.USER_ID, userId)
+                }
+            }
+            .decodeSingle<JsonObject>()
+    }
+
+    /**
+     * Creates a new inventory transaction.
+     *
+     * @param userId ID of the user creating the transaction
+     * @param transactionData Transaction data to create
+     * @return Result containing the created transaction
+     */
+    suspend fun createTransaction(
+        userId: String,
+        transactionData: JsonObject
+    ): Result<JsonObject> = executeQuery("Failed to create inventory transaction") {
+        supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS)
+            .insert(transactionData)
+            .decodeSingle<JsonObject>()
+    }
 }

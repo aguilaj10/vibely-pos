@@ -17,6 +17,7 @@ private const val ERROR_CATEGORY_NOT_FOUND = "Category not found"
 private const val ERROR_CREATE_FAILED = "Failed to create category"
 private const val ERROR_UPDATE_FAILED = "Failed to update category"
 private const val ERROR_DELETE_FAILED = "Failed to delete category"
+private const val ERROR_SEARCH_FAILED = "Failed to search categories"
 
 /**
  * Service for managing category operations.
@@ -153,6 +154,30 @@ class CategoryService(
                         eq(DatabaseColumns.USER_ID, userId)
                     }
                 }
+        }
+    }
+
+    /**
+     * Searches categories by name or description.
+     *
+     * @param userId ID of the user
+     * @param query Search query string
+     * @return Result containing list of matching categories
+     */
+    suspend fun searchCategories(userId: String, query: String): Result<List<JsonObject>> {
+        return executeQuery(ERROR_SEARCH_FAILED) {
+            supabaseClient.from(TABLE_CATEGORIES)
+                .select {
+                    filter {
+                        eq(DatabaseColumns.USER_ID, userId)
+                        or {
+                            ilike(DatabaseColumns.NAME, "%$query%")
+                            ilike(DatabaseColumns.DESCRIPTION, "%$query%")
+                        }
+                    }
+                    order(DatabaseColumns.NAME, Order.ASCENDING)
+                }
+                .decodeList<JsonObject>()
         }
     }
 }

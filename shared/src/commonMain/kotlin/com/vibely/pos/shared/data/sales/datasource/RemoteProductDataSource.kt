@@ -4,8 +4,14 @@ import com.vibely.pos.shared.data.sales.dto.ProductDTO
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 class RemoteProductDataSource(private val httpClient: HttpClient, private val baseUrl: String) {
 
@@ -38,5 +44,23 @@ class RemoteProductDataSource(private val httpClient: HttpClient, private val ba
     suspend fun checkStock(productId: String, quantity: Int): Result<Boolean> = Result.runCatching {
         val product = httpClient.get("$baseUrl/api/products/$productId").body<ProductDTO>()
         product.currentStock >= quantity
+    }
+
+    suspend fun createProduct(dto: ProductDTO): Result<ProductDTO> = Result.runCatching {
+        httpClient.post("$baseUrl/api/products") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }.body<ProductDTO>()
+    }
+
+    suspend fun updateProduct(id: String, dto: ProductDTO): Result<ProductDTO> = Result.runCatching {
+        httpClient.put("$baseUrl/api/products/$id") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }.body<ProductDTO>()
+    }
+
+    suspend fun deleteProduct(id: String): Result<Unit> = Result.runCatching {
+        httpClient.delete("$baseUrl/api/products/$id").body<Unit>()
     }
 }

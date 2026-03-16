@@ -73,7 +73,7 @@ class UserRepository(
                 }
             }
         } catch (e: RestException) {
-            // Log error but don't fail authentication
+            println("⚠️ Error updating last login for user $userId: ${e.message}")
         }
     }
 

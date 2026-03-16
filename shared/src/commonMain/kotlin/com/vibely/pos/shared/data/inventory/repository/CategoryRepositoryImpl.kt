@@ -16,17 +16,20 @@ class CategoryRepositoryImpl(private val remoteDataSource: RemoteCategoryDataSou
 
     override suspend fun getById(id: String): Result<Category> = mapSingle(remoteDataSource.getById(id), CategoryMapper::toDomain)
 
-    override suspend fun create(category: Category): Result<Category> {
-        TODO("Not implemented - will be added in inventory management phase")
-    }
+    override suspend fun create(category: Category): Result<Category> = mapSingle(
+        remoteDataSource.create(CategoryMapper.toDTO(category)),
+        CategoryMapper::toDomain,
+    )
 
-    override suspend fun update(category: Category): Result<Category> {
-        TODO("Not implemented - will be added in inventory management phase")
-    }
+    override suspend fun update(category: Category): Result<Category> = mapSingle(
+        remoteDataSource.update(category.id, CategoryMapper.toDTO(category)),
+        CategoryMapper::toDomain,
+    )
 
     override suspend fun delete(id: String): Result<Unit> = remoteDataSource.delete(id)
 
-    override suspend fun search(query: String): Result<List<Category>> {
-        TODO("Not implemented - will be added in inventory management phase")
-    }
+    override suspend fun search(query: String): Result<List<Category>> = mapList(
+        remoteDataSource.search(query),
+        CategoryMapper::toDomain,
+    )
 }

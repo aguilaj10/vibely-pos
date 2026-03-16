@@ -35,11 +35,15 @@ class SaleService(
      */
     suspend fun createSale(request: CreateSaleRequest, cashierId: String): Result<SaleDTO> {
         return executeQuery(ERROR_CREATE_SALE) {
-            val saleItemsData = creationHelper.validateAndBuildSaleItems(request)
-            val subtotal = saleItemsData.second
+            val saleItemsResult = creationHelper.validateAndBuildSaleItems(request)
+            if (saleItemsResult is Result.Error) {
+                throw IllegalStateException(saleItemsResult.message)
+            }
+
+            val (saleItems, subtotal) = (saleItemsResult as Result.Success).data
 
             val sale = creationHelper.insertSale(request, cashierId, subtotal)
-            creationHelper.insertSaleItems(saleItemsData.first, sale.id)
+            creationHelper.insertSaleItems(saleItems, sale.id)
             creationHelper.deductStockAndLogTransactions(request, sale, cashierId)
 
             sale

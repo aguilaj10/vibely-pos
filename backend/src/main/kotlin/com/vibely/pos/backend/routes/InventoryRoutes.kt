@@ -9,13 +9,18 @@ import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
+import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import kotlinx.serialization.json.JsonObject
 
 private const val ERROR_KEY = "error"
 private const val ERROR_UNAUTHORIZED = "User not authenticated"
+private const val ERROR_TRANSACTION_ID_REQUIRED = "Transaction ID is required"
+private const val CLAIM_USER_ID = "userId"
 private const val DEFAULT_PAGE = 1
 private const val DEFAULT_PAGE_SIZE = 50
 
@@ -42,12 +47,14 @@ fun Route.inventoryRoutes(inventoryService: InventoryService) {
 
 private fun Route.usePaths(inventoryService: InventoryService) {
     get("/transactions") { call.handleGetTransactions(inventoryService) }
+    get("/transactions/{id}") { call.handleGetTransactionById(inventoryService) }
+    post("/transactions") { call.handleCreateTransaction(inventoryService) }
 }
 
 private suspend fun ApplicationCall.handleGetTransactions(inventoryService: InventoryService) {
     val userId = principal<JWTPrincipal>()
         ?.payload
-        ?.getClaim("userId")
+        ?.getClaim(CLAIM_USER_ID)
         ?.asString()
 
     if (userId == null) {
@@ -74,6 +81,54 @@ private suspend fun ApplicationCall.handleGetTransactions(inventoryService: Inve
         )
     )) {
         is Result.Success -> respond(HttpStatusCode.OK, result.data)
+        is Result.Error -> respond(
+            HttpStatusCode.InternalServerError,
+            mapOf(ERROR_KEY to result.message)
+        )
+    }
+}
+
+private suspend fun ApplicationCall.handleGetTransactionById(inventoryService: InventoryService) {
+    val userId = principal<JWTPrincipal>()
+        ?.payload
+        ?.getClaim(CLAIM_USER_ID)
+        ?.asString()
+
+    if (userId == null) {
+        respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
+        return
+    }
+
+    val transactionId = parameters["id"]
+    if (transactionId == null) {
+        respond(HttpStatusCode.BadRequest, mapOf(ERROR_KEY to ERROR_TRANSACTION_ID_REQUIRED))
+        return
+    }
+
+    when (val result = inventoryService.getTransactionById(userId, transactionId)) {
+        is Result.Success -> respond(HttpStatusCode.OK, result.data)
+        is Result.Error -> respond(
+            HttpStatusCode.InternalServerError,
+            mapOf(ERROR_KEY to result.message)
+        )
+    }
+}
+
+private suspend fun ApplicationCall.handleCreateTransaction(inventoryService: InventoryService) {
+    val userId = principal<JWTPrincipal>()
+        ?.payload
+        ?.getClaim(CLAIM_USER_ID)
+        ?.asString()
+
+    if (userId == null) {
+        respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
+        return
+    }
+
+    val transactionData = receive<JsonObject>()
+
+    when (val result = inventoryService.createTransaction(userId, transactionData)) {
+        is Result.Success -> respond(HttpStatusCode.Created, result.data)
         is Result.Error -> respond(
             HttpStatusCode.InternalServerError,
             mapOf(ERROR_KEY to result.message)

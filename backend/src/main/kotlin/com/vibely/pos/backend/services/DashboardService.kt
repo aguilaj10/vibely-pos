@@ -5,6 +5,7 @@ import com.vibely.pos.shared.data.dashboard.dto.ActiveShiftInfoDTO
 import com.vibely.pos.shared.data.dashboard.dto.DashboardSummaryDTO
 import com.vibely.pos.shared.data.dashboard.dto.LowStockProductDTO
 import com.vibely.pos.shared.data.dashboard.dto.RecentTransactionDTO
+import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
@@ -43,22 +44,24 @@ class DashboardService(
      * Gets the dashboard summary containing today's sales, transaction count,
      * low stock count, and active shift information.
      *
-     * @return [DashboardSummaryDTO] with aggregated metrics.
+     * @return Result containing [DashboardSummaryDTO] with aggregated metrics or error.
      */
-    suspend fun getDashboardSummary(): DashboardSummaryDTO {
-        val now = Clock.System.now().toString()
-        val todaySalesCents = fetchTodaySalesTotal()
-        val todayTransactionCount = fetchTodayTransactionCount()
-        val lowStockCount = fetchLowStockCount()
-        val activeShift = fetchActiveShift()
+    suspend fun getDashboardSummary(): Result<DashboardSummaryDTO> {
+        return executeQuery("Failed to fetch dashboard summary") {
+            val now = Clock.System.now().toString()
+            val todaySalesCents = fetchTodaySalesTotal()
+            val todayTransactionCount = fetchTodayTransactionCount()
+            val lowStockCount = fetchLowStockCount()
+            val activeShift = fetchActiveShift()
 
-        return DashboardSummaryDTO(
-            todaySalesCents = todaySalesCents,
-            todayTransactionCount = todayTransactionCount,
-            lowStockCount = lowStockCount,
-            activeShift = activeShift,
-            generatedAt = now,
-        )
+            DashboardSummaryDTO(
+                todaySalesCents = todaySalesCents,
+                todayTransactionCount = todayTransactionCount,
+                lowStockCount = lowStockCount,
+                activeShift = activeShift,
+                generatedAt = now,
+            )
+        }
     }
 
     /**
@@ -156,75 +159,77 @@ class DashboardService(
      * Gets recent transactions ordered by sale date descending.
      *
      * @param limit Maximum number of transactions to retrieve (default: 10).
-     * @return List of [RecentTransactionDTO].
+     * @return Result containing list of [RecentTransactionDTO] or error.
      */
-    suspend fun getRecentTransactions(limit: Int = DEFAULT_TRANSACTIONS_LIMIT): List<RecentTransactionDTO> {
-        val transactions = supabaseClient.from(TABLE_SALES)
-            .select(
-                columns = Columns.list(
-                    "id",
-                    "invoice_number",
-                    "total_amount",
-                    "status",
-                    "sale_date",
-                    "customers(full_name)",
+    suspend fun getRecentTransactions(limit: Int = DEFAULT_TRANSACTIONS_LIMIT): Result<List<RecentTransactionDTO>> {
+        return executeQuery("Failed to fetch recent transactions") {
+            val transactions = supabaseClient.from(TABLE_SALES)
+                .select(
+                    columns = Columns.list(
+                        "id",
+                        "invoice_number",
+                        "total_amount",
+                        "status",
+                        "sale_date",
+                        "customers(full_name)",
+                    )
+                ) {
+                    order(column = DatabaseColumns.SALE_DATE, order = Order.DESCENDING)
+                    limit(limit.toLong())
+                }
+                .decodeList<RecentTransactionRow>()
+
+            transactions.map { row ->
+                val totalCents = (row.totalAmount * CENTS_PER_DOLLAR).toLong()
+
+                RecentTransactionDTO(
+                    id = row.id,
+                    invoiceNumber = row.invoiceNumber,
+                    totalCents = totalCents,
+                    status = row.status,
+                    saleDate = row.saleDate,
+                    customerName = row.customers?.fullName,
                 )
-            ) {
-                order(column = DatabaseColumns.SALE_DATE, order = Order.DESCENDING)
-                limit(limit.toLong())
             }
-            .decodeList<RecentTransactionRow>()
-
-        return transactions.map { row ->
-            // Convert from dollars (numeric) to cents (Long)
-            val totalCents = (row.totalAmount * CENTS_PER_DOLLAR).toLong()
-
-            RecentTransactionDTO(
-                id = row.id,
-                invoiceNumber = row.invoiceNumber,
-                totalCents = totalCents,
-                status = row.status,
-                saleDate = row.saleDate,
-                customerName = row.customers?.fullName,
-            )
         }
     }
 
     /**
      * Gets products with stock levels below their minimum threshold.
      *
-     * @return List of [LowStockProductDTO].
+     * @return Result containing list of [LowStockProductDTO] or error.
      */
-    suspend fun getLowStockProducts(): List<LowStockProductDTO> {
-        val products = supabaseClient.from(VIEW_LOW_STOCK_PRODUCTS)
-            .select(
-                columns = Columns.list(
-                    "id",
-                    "sku",
-                    "name",
-                    "current_stock",
-                    "min_stock_level",
-                    "selling_price",
-                    "categories(name)",
+    suspend fun getLowStockProducts(): Result<List<LowStockProductDTO>> {
+        return executeQuery("Failed to fetch low stock products") {
+            val products = supabaseClient.from(VIEW_LOW_STOCK_PRODUCTS)
+                .select(
+                    columns = Columns.list(
+                        "id",
+                        "sku",
+                        "name",
+                        "current_stock",
+                        "min_stock_level",
+                        "selling_price",
+                        "categories(name)",
+                    )
+                ) {
+                    order(column = DatabaseColumns.CURRENT_STOCK, order = Order.ASCENDING)
+                }
+                .decodeList<LowStockProductRow>()
+
+            products.map { row ->
+                val sellingPriceCents = (row.sellingPrice * CENTS_PER_DOLLAR).toLong()
+
+                LowStockProductDTO(
+                    id = row.id,
+                    sku = row.sku,
+                    name = row.name,
+                    currentStock = row.currentStock,
+                    minStockLevel = row.minStockLevel,
+                    sellingPriceCents = sellingPriceCents,
+                    categoryName = row.categories?.name,
                 )
-            ) {
-                order(column = DatabaseColumns.CURRENT_STOCK, order = Order.ASCENDING)
             }
-            .decodeList<LowStockProductRow>()
-
-        return products.map { row ->
-            // Convert from dollars (numeric) to cents (Long)
-            val sellingPriceCents = (row.sellingPrice * CENTS_PER_DOLLAR).toLong()
-
-            LowStockProductDTO(
-                id = row.id,
-                sku = row.sku,
-                name = row.name,
-                currentStock = row.currentStock,
-                minStockLevel = row.minStockLevel,
-                sellingPriceCents = sellingPriceCents,
-                categoryName = row.categories?.name,
-            )
         }
     }
 

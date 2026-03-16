@@ -16,11 +16,14 @@ abstract class BaseService {
     /**
      * Calculates pagination range for Supabase queries.
      *
-     * @param page Page number (1-indexed)
-     * @param pageSize Number of items per page
+     * @param page Page number (1-indexed, must be >= 1)
+     * @param pageSize Number of items per page (must be > 0)
      * @return Pair of (from, to) indices for range query
+     * @throws IllegalArgumentException if page < 1 or pageSize <= 0
      */
     protected fun calculatePaginationRange(page: Int, pageSize: Int): Pair<Long, Long> {
+        require(page >= 1) { "Page must be >= 1, got: $page" }
+        require(pageSize > 0) { "Page size must be > 0, got: $pageSize" }
         val from = ((page - 1) * pageSize).toLong()
         val to = (page * pageSize - 1).toLong()
         return Pair(from, to)
@@ -29,7 +32,8 @@ abstract class BaseService {
     /**
      * Executes a database operation with standardized error handling.
      *
-     * Wraps Supabase operations in try-catch for HttpRequestException, RestException and SerializationException.
+     * Wraps Supabase operations in try-catch for HttpRequestException, RestException,
+     * SerializationException, IllegalStateException, and IllegalArgumentException.
      *
      * @param T Return type of the operation
      * @param errorMessage Error message prefix for failures
@@ -50,6 +54,15 @@ abstract class BaseService {
             logger.error("$errorMessage: ${e.message}", e)
             Result.Error("$errorMessage: ${e.message}", cause = e)
         } catch (e: SerializationException) {
+            logger.error("$errorMessage: ${e.message}", e)
+            Result.Error("$errorMessage: ${e.message}", cause = e)
+        } catch (e: IllegalStateException) {
+            logger.error("$errorMessage: ${e.message}", e)
+            Result.Error("$errorMessage: ${e.message}", cause = e)
+        } catch (e: IllegalArgumentException) {
+            logger.error("$errorMessage: ${e.message}", e)
+            Result.Error("$errorMessage: ${e.message}", cause = e)
+        } catch (e: NoSuchElementException) {
             logger.error("$errorMessage: ${e.message}", e)
             Result.Error("$errorMessage: ${e.message}", cause = e)
         }

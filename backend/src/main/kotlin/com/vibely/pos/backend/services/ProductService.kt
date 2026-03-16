@@ -1,6 +1,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.putIfNotNull
 import com.vibely.pos.backend.dto.request.AdjustStockRequest
 import com.vibely.pos.backend.dto.request.CreateProductRequest
 import com.vibely.pos.backend.dto.request.GetAllProductsRequest
@@ -49,20 +50,20 @@ private fun buildProductCreateData(userId: String, request: CreateProductRequest
 
 private fun buildProductUpdateData(request: UpdateProductRequest): JsonObject {
     return buildJsonObject {
-        put(DatabaseColumns.NAME, request.name).takeIf { it != null }
-        put(DatabaseColumns.SKU, request.sku).takeIf { it != null }
-        put(DatabaseColumns.BARCODE, request.barcode).takeIf { it != null }
-        put(DatabaseColumns.DESCRIPTION, request.description).takeIf { it != null }
-        put(DatabaseColumns.CATEGORY_ID, request.categoryId).takeIf { it != null }
-        put(DatabaseColumns.SUPPLIER_ID, request.supplierId).takeIf { it != null }
-        put(DatabaseColumns.UNIT_PRICE, request.unitPrice).takeIf { it != null }
-        put(DatabaseColumns.COST_PRICE, request.costPrice).takeIf { it != null }
-        put(DatabaseColumns.MIN_STOCK_LEVEL, request.minStockLevel).takeIf { it != null }
-        put(DatabaseColumns.MAX_STOCK_LEVEL, request.maxStockLevel).takeIf { it != null }
-        put(DatabaseColumns.REORDER_POINT, request.reorderPoint).takeIf { it != null }
-        put(DatabaseColumns.UNIT_OF_MEASURE, request.unitOfMeasure).takeIf { it != null }
-        put(DatabaseColumns.IS_ACTIVE, request.isActive).takeIf { it != null }
-        put(DatabaseColumns.TAX_RATE, request.taxRate).takeIf { it != null }
+        putIfNotNull(DatabaseColumns.NAME, request.name)
+        putIfNotNull(DatabaseColumns.SKU, request.sku)
+        putIfNotNull(DatabaseColumns.BARCODE, request.barcode)
+        putIfNotNull(DatabaseColumns.DESCRIPTION, request.description)
+        putIfNotNull(DatabaseColumns.CATEGORY_ID, request.categoryId)
+        putIfNotNull(DatabaseColumns.SUPPLIER_ID, request.supplierId)
+        putIfNotNull(DatabaseColumns.UNIT_PRICE, request.unitPrice)
+        putIfNotNull(DatabaseColumns.COST_PRICE, request.costPrice)
+        putIfNotNull(DatabaseColumns.MIN_STOCK_LEVEL, request.minStockLevel)
+        putIfNotNull(DatabaseColumns.MAX_STOCK_LEVEL, request.maxStockLevel)
+        putIfNotNull(DatabaseColumns.REORDER_POINT, request.reorderPoint)
+        putIfNotNull(DatabaseColumns.UNIT_OF_MEASURE, request.unitOfMeasure)
+        putIfNotNull(DatabaseColumns.IS_ACTIVE, request.isActive)
+        putIfNotNull(DatabaseColumns.TAX_RATE, request.taxRate)
     }
 }
 
@@ -88,6 +89,13 @@ private data class InventoryTransactionParams(
     val userId: String,
     val productId: String,
     val request: AdjustStockRequest,
+    val newStock: Int
+)
+
+private data class StockUpdateParams(
+    val userId: String,
+    val productId: String,
+    val expectedCurrentStock: Int,
     val newStock: Int
 )
 
@@ -117,17 +125,16 @@ private suspend fun fetchProduct(
         .decodeSingle<ProductDTO>()
 }
 
-private suspend fun updateStock(
+private suspend fun updateStockWithOptimisticLock(
     supabaseClient: SupabaseClient,
-    userId: String,
-    productId: String,
-    newStock: Int
+    params: StockUpdateParams
 ): JsonObject {
     return supabaseClient.from(TABLE_PRODUCTS)
-        .update(mapOf(DatabaseColumns.CURRENT_STOCK to newStock)) {
+        .update(mapOf(DatabaseColumns.CURRENT_STOCK to params.newStock)) {
             filter {
-                eq(DatabaseColumns.ID, productId)
-                eq(DatabaseColumns.USER_ID, userId)
+                eq(DatabaseColumns.ID, params.productId)
+                eq(DatabaseColumns.USER_ID, params.userId)
+                eq(DatabaseColumns.CURRENT_STOCK, params.expectedCurrentStock)
             }
             select()
         }
@@ -300,10 +307,14 @@ class ProductService(
     /**
      * Adjusts product stock and creates an inventory transaction record.
      *
+     * Uses optimistic locking to prevent race conditions by validating the current stock
+     * during the update operation. Prevents negative stock values to ensure inventory integrity.
+     *
      * @param userId ID of the user performing the adjustment
      * @param productId ID of the product to adjust
      * @param request Stock adjustment parameters
      * @return Result containing updated product or error
+     * @throws IllegalArgumentException if the adjustment would result in negative stock
      */
     suspend fun adjustStock(
         userId: String,
@@ -313,7 +324,20 @@ class ProductService(
         return executeQuery(ERROR_STOCK_ADJUST_FAILED) {
             val currentProduct = fetchProduct(supabaseClient, userId, productId)
             val newStockValue = currentProduct.currentStock + request.quantity
-            val updatedProduct = updateStock(supabaseClient, userId, productId, newStockValue)
+
+            require(newStockValue >= 0) {
+                "Stock adjustment would result in negative stock. " +
+                    "Current: ${currentProduct.currentStock}, Adjustment: ${request.quantity}, " +
+                    "Resulting: $newStockValue"
+            }
+
+            val updateParams = StockUpdateParams(
+                userId = userId,
+                productId = productId,
+                expectedCurrentStock = currentProduct.currentStock,
+                newStock = newStockValue
+            )
+            val updatedProduct = updateStockWithOptimisticLock(supabaseClient, updateParams)
             val transactionParams = InventoryTransactionParams(userId, productId, request, newStockValue)
             insertInventoryTransaction(supabaseClient, transactionParams)
             updatedProduct

@@ -62,4 +62,14 @@ class RemoteCategoryDataSource(private val httpClient: HttpClient, private val b
         }
         response.body<Unit>()
     }
+
+    suspend fun search(query: String): Result<List<CategoryDTO>> = Result.runCatching {
+        val response: HttpResponse = httpClient.get("$baseUrl/api/categories/search") {
+            parameter("q", query)
+        }
+        if (!response.status.isSuccess()) {
+            throw Exception("HTTP ${response.status.value}: ${response.status.description}")
+        }
+        response.body<List<CategoryDTO>>()
+    }
 }

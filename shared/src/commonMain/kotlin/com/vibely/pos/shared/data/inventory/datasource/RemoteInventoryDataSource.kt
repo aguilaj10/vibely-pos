@@ -6,6 +6,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 class RemoteInventoryDataSource(private val httpClient: HttpClient, private val baseUrl: String = "http://localhost:8080") {
 
@@ -25,5 +29,17 @@ class RemoteInventoryDataSource(private val httpClient: HttpClient, private val 
             parameter("page", page)
             parameter("page_size", pageSize)
         }.body<List<InventoryTransactionDTO>>()
+    }
+
+    suspend fun getTransactionById(id: String): Result<InventoryTransactionDTO> = Result.runCatching {
+        httpClient.get("$baseUrl/api/inventory/transactions/$id")
+            .body<InventoryTransactionDTO>()
+    }
+
+    suspend fun createTransaction(dto: InventoryTransactionDTO): Result<InventoryTransactionDTO> = Result.runCatching {
+        httpClient.post("$baseUrl/api/inventory/transactions") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }.body<InventoryTransactionDTO>()
     }
 }

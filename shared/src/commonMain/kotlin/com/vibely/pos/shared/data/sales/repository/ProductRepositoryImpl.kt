@@ -20,15 +20,15 @@ class ProductRepositoryImpl(private val remoteDataSource: RemoteProductDataSourc
     override suspend fun getAll(categoryId: String?, isActive: Boolean?, lowStockOnly: Boolean, page: Int, pageSize: Int): Result<List<Product>> =
         mapList(remoteDataSource.getAllProducts(categoryId, isActive, lowStockOnly, page, pageSize), ProductMapper::toDomain)
 
-    override suspend fun create(product: Product): Result<Product> {
-        TODO("Not implemented - will be added in inventory management phase")
-    }
+    override suspend fun create(product: Product): Result<Product> = mapSingle(
+        remoteDataSource.createProduct(ProductMapper.toDTO(product)),
+        ProductMapper::toDomain,
+    )
 
-    override suspend fun update(product: Product): Result<Product> {
-        TODO("Not implemented - will be added in inventory management phase")
-    }
+    override suspend fun update(product: Product): Result<Product> = mapSingle(
+        remoteDataSource.updateProduct(product.id, ProductMapper.toDTO(product)),
+        ProductMapper::toDomain,
+    )
 
-    override suspend fun delete(id: String): Result<Unit> {
-        TODO("Not implemented - will be added in inventory management phase")
-    }
+    override suspend fun delete(id: String): Result<Unit> = remoteDataSource.deleteProduct(id)
 }
