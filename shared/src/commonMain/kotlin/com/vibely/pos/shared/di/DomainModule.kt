@@ -29,6 +29,11 @@ import com.vibely.pos.shared.domain.purchaseorder.usecase.GetPurchaseOrderByIdUs
 import com.vibely.pos.shared.domain.purchaseorder.usecase.ReceivePurchaseOrderUseCase
 import com.vibely.pos.shared.domain.purchaseorder.usecase.UpdatePurchaseOrderStatusUseCase
 import com.vibely.pos.shared.domain.purchaseorder.usecase.UpdatePurchaseOrderUseCase
+import com.vibely.pos.shared.domain.reports.usecase.GetCategoryBreakdownUseCase
+import com.vibely.pos.shared.domain.reports.usecase.GetCustomerAnalyticsUseCase
+import com.vibely.pos.shared.domain.reports.usecase.GetSalesReportUseCase
+import com.vibely.pos.shared.domain.reports.usecase.GetSalesTrendUseCase
+import com.vibely.pos.shared.domain.reports.usecase.GetTopProductsUseCase
 import com.vibely.pos.shared.domain.sales.usecase.AddToCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.CompleteSaleUseCase
 import com.vibely.pos.shared.domain.sales.usecase.GetSalesUseCase
@@ -143,4 +148,11 @@ val domainModule =
         singleOf(::ChangePasswordUseCase)
         singleOf(::DeleteUserUseCase)
         singleOf(::SearchUsersUseCase)
+
+        // Reports use cases
+        singleOf(::GetSalesReportUseCase)
+        singleOf(::GetSalesTrendUseCase)
+        singleOf(::GetCategoryBreakdownUseCase)
+        singleOf(::GetTopProductsUseCase)
+        singleOf(::GetCustomerAnalyticsUseCase)
     }

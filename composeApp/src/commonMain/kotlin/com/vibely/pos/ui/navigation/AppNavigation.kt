@@ -20,9 +20,11 @@ import com.vibely.pos.ui.dashboard.DashboardScreen
 import com.vibely.pos.ui.inventory.InventoryScreen
 import com.vibely.pos.ui.navigation.components.LeftSidebarNavigation
 import com.vibely.pos.ui.purchaseorders.PurchaseOrdersScreen
+import com.vibely.pos.ui.reports.ReportsScreen
 import com.vibely.pos.ui.screens.PlaceholderScreen
 import com.vibely.pos.ui.screens.ThemeDemoScreen
 import com.vibely.pos.ui.screens.categories.CategoriesScreen
+import com.vibely.pos.ui.settings.SettingsScreen
 import com.vibely.pos.ui.shifts.ShiftsScreen
 import com.vibely.pos.ui.suppliers.SuppliersScreen
 import com.vibely.pos.ui.users.UsersScreen
@@ -186,18 +188,16 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                         }
 
                         is Screen.Reports -> NavEntry(key) {
-                            PlaceholderScreen(
-                                title = Screen.Reports.title,
-                                icon = Screen.Reports.icon,
-                                description = "View business reports, analytics, and performance metrics.",
+                            ReportsScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
+                                onLogout = onLogout,
                             )
                         }
 
                         is Screen.Settings -> NavEntry(key) {
-                            PlaceholderScreen(
-                                title = Screen.Settings.title,
-                                icon = Screen.Settings.icon,
-                                description = "Configure app settings, preferences, and system options.",
+                            SettingsScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
+                                onLogout = onLogout,
                             )
                         }
 

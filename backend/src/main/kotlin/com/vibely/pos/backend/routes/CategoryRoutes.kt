@@ -42,22 +42,22 @@ fun Route.categoryRoutes(categoryService: CategoryService) {
     route("/api/categories") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get { call.handleGetAllCategories(categoryService) }
-                get(PATH_ID) { call.handleGetById(categoryService) }
-                post { call.handleCreateCategory(categoryService) }
-                put(PATH_ID) { call.handleUpdateCategory(categoryService) }
-                delete(PATH_ID) { call.handleDeleteCategory(categoryService) }
+                usePaths(categoryService)
             }
         } else {
             authenticate("auth-jwt") {
-                get { call.handleGetAllCategories(categoryService) }
-                get(PATH_ID) { call.handleGetById(categoryService) }
-                post { call.handleCreateCategory(categoryService) }
-                put(PATH_ID) { call.handleUpdateCategory(categoryService) }
-                delete(PATH_ID) { call.handleDeleteCategory(categoryService) }
+                usePaths(categoryService)
             }
         }
     }
+}
+
+private fun Route.usePaths(categoryService: CategoryService) {
+    get { call.handleGetAllCategories(categoryService) }
+    get(PATH_ID) { call.handleGetById(categoryService) }
+    post { call.handleCreateCategory(categoryService) }
+    put(PATH_ID) { call.handleUpdateCategory(categoryService) }
+    delete(PATH_ID) { call.handleDeleteCategory(categoryService) }
 }
 
 private suspend fun ApplicationCall.handleGetAllCategories(categoryService: CategoryService) {

@@ -14,7 +14,9 @@ import com.vibely.pos.backend.routes.dashboardRoutes
 import com.vibely.pos.backend.routes.inventoryRoutes
 import com.vibely.pos.backend.routes.productRoutes
 import com.vibely.pos.backend.routes.purchaseOrderRoutes
+import com.vibely.pos.backend.routes.reportRoutes
 import com.vibely.pos.backend.routes.salesRoutes
+import com.vibely.pos.backend.routes.settingsRoutes
 import com.vibely.pos.backend.routes.shiftRoutes
 import com.vibely.pos.backend.routes.supplierRoutes
 import com.vibely.pos.backend.routes.userManagementRoutes
@@ -25,7 +27,9 @@ import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.InventoryService
 import com.vibely.pos.backend.services.ProductService
 import com.vibely.pos.backend.services.PurchaseOrderService
+import com.vibely.pos.backend.services.ReportService
 import com.vibely.pos.backend.services.SaleService
+import com.vibely.pos.backend.services.SettingsService
 import com.vibely.pos.backend.services.ShiftService
 import com.vibely.pos.backend.services.SupplierService
 import com.vibely.pos.backend.services.UserManagementService
@@ -118,6 +122,8 @@ private fun Application.configureApiRoutes() {
     val purchaseOrderService: Lazy<PurchaseOrderService> = inject()
     val shiftService: Lazy<ShiftService> = inject()
     val userManagementService: Lazy<UserManagementService> = inject()
+    val reportService: Lazy<ReportService> = inject()
+    val settingsService: Lazy<SettingsService> = inject()
 
     routing {
         authRoutes(authService.value)
@@ -131,6 +137,8 @@ private fun Application.configureApiRoutes() {
         purchaseOrderRoutes(purchaseOrderService.value)
         shiftRoutes(shiftService.value)
         userManagementRoutes(userManagementService.value)
+        reportRoutes(reportService.value)
+        settingsRoutes(settingsService.value)
     }
 }
 

@@ -35,18 +35,20 @@ fun Route.dashboardRoutes(dashboardService: DashboardService) {
     route("/api/dashboard") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get("/summary") { call.handleGetSummary(dashboardService) }
-                get("/recent-transactions") { call.handleGetRecentTransactions(dashboardService) }
-                get("/low-stock") { call.handleGetLowStock(dashboardService) }
+                usePaths(dashboardService)
             }
         } else {
             authenticate("auth-jwt") {
-                get("/summary") { call.handleGetSummary(dashboardService) }
-                get("/recent-transactions") { call.handleGetRecentTransactions(dashboardService) }
-                get("/low-stock") { call.handleGetLowStock(dashboardService) }
+                usePaths(dashboardService)
             }
         }
     }
+}
+
+private fun Route.usePaths(dashboardService: DashboardService) {
+    get("/summary") { call.handleGetSummary(dashboardService) }
+    get("/recent-transactions") { call.handleGetRecentTransactions(dashboardService) }
+    get("/low-stock") { call.handleGetLowStock(dashboardService) }
 }
 
 /**

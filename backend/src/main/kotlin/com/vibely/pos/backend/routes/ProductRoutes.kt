@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 package com.vibely.pos.backend.routes
 
 import com.vibely.pos.backend.dto.request.AdjustStockRequest
@@ -45,26 +46,24 @@ fun Route.productRoutes(productService: ProductService) {
     route("/api/products") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get("/search") { call.handleSearch(productService) }
-                get(PATH_ID) { call.handleGetById(productService) }
-                get { call.handleGetAllProducts(productService) }
-                post { call.handleCreateProduct(productService) }
-                put(PATH_ID) { call.handleUpdateProduct(productService) }
-                delete(PATH_ID) { call.handleDeleteProduct(productService) }
-                post("/{id}/adjust-stock") { call.handleAdjustStock(productService) }
+                usePaths(productService)
             }
         } else {
             authenticate("auth-jwt") {
-                get("/search") { call.handleSearch(productService) }
-                get(PATH_ID) { call.handleGetById(productService) }
-                get { call.handleGetAllProducts(productService) }
-                post { call.handleCreateProduct(productService) }
-                put(PATH_ID) { call.handleUpdateProduct(productService) }
-                delete(PATH_ID) { call.handleDeleteProduct(productService) }
-                post("/{id}/adjust-stock") { call.handleAdjustStock(productService) }
+                usePaths(productService)
             }
         }
     }
+}
+
+private fun Route.usePaths(productService: ProductService) {
+    get("/search") { call.handleSearch(productService) }
+    get(PATH_ID) { call.handleGetById(productService) }
+    get { call.handleGetAllProducts(productService) }
+    post { call.handleCreateProduct(productService) }
+    put(PATH_ID) { call.handleUpdateProduct(productService) }
+    delete(PATH_ID) { call.handleDeleteProduct(productService) }
+    post("/{id}/adjust-stock") { call.handleAdjustStock(productService) }
 }
 
 private suspend fun ApplicationCall.handleSearch(productService: ProductService) {

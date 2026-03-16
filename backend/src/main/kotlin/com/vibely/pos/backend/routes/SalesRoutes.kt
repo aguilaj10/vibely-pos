@@ -36,22 +36,22 @@ fun Route.salesRoutes(saleService: SaleService) {
     route("/api/sales") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                post { call.handleCreateSale(saleService) }
-                get { call.handleGetAllSales(saleService) }
-                get("/{id}") { call.handleGetById(saleService) }
-                get("/{id}/items") { call.handleGetItems(saleService) }
-                put("/{id}/status") { call.handleUpdateStatus(saleService) }
+                usePaths(saleService)
             }
         } else {
             authenticate("auth-jwt") {
-                post { call.handleCreateSale(saleService) }
-                get { call.handleGetAllSales(saleService) }
-                get("/{id}") { call.handleGetById(saleService) }
-                get("/{id}/items") { call.handleGetItems(saleService) }
-                put("/{id}/status") { call.handleUpdateStatus(saleService) }
+                usePaths(saleService)
             }
         }
     }
+}
+
+private fun Route.usePaths(saleService: SaleService) {
+    post { call.handleCreateSale(saleService) }
+    get { call.handleGetAllSales(saleService) }
+    get("/{id}") { call.handleGetById(saleService) }
+    get("/{id}/items") { call.handleGetItems(saleService) }
+    put("/{id}/status") { call.handleUpdateStatus(saleService) }
 }
 
 private suspend fun ApplicationCall.handleCreateSale(saleService: SaleService) {

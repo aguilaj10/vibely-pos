@@ -30,14 +30,18 @@ fun Route.inventoryRoutes(inventoryService: InventoryService) {
     route("/api/inventory") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get("/transactions") { call.handleGetTransactions(inventoryService) }
+                usePaths(inventoryService)
             }
         } else {
             authenticate("auth-jwt") {
-                get("/transactions") { call.handleGetTransactions(inventoryService) }
+                usePaths(inventoryService)
             }
         }
     }
+}
+
+private fun Route.usePaths(inventoryService: InventoryService) {
+    get("/transactions") { call.handleGetTransactions(inventoryService) }
 }
 
 private suspend fun ApplicationCall.handleGetTransactions(inventoryService: InventoryService) {

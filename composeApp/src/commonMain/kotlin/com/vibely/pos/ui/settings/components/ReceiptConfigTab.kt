@@ -1,0 +1,344 @@
+package com.vibely.pos.ui.settings.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.vibely.pos.ui.components.AppCard
+import com.vibely.pos.ui.components.AppCardStyle
+import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.theme.PosShapes
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Edit
+import compose.icons.fontawesomeicons.solid.Image
+
+@Composable
+fun ReceiptConfigTab(
+    receiptSettings: com.vibely.pos.shared.domain.settings.entity.ReceiptSettings?,
+    onReceiptSettingsChange: (String, String, String?, Boolean) -> Unit,
+    isSaving: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    var header by remember(receiptSettings) { mutableStateOf(receiptSettings?.header ?: "") }
+    var footer by remember(receiptSettings) { mutableStateOf(receiptSettings?.footer ?: "") }
+    var logoUrl by remember(receiptSettings) { mutableStateOf(receiptSettings?.logoUrl ?: "") }
+    var showTax by remember(receiptSettings) { mutableStateOf(receiptSettings?.showTax ?: true) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+    ) {
+        AppCard(
+            style = AppCardStyle.Outlined,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Text(
+                    text = "Receipt Configuration",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+
+                OutlinedTextField(
+                    value = header,
+                    onValueChange = { header = it },
+                    label = { Text("Receipt Header") },
+                    placeholder = { Text("e.g., Thank you for shopping with us!") },
+                    leadingIcon = {
+                        androidx.compose.material3.Icon(
+                            imageVector = FontAwesomeIcons.Solid.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    enabled = !isSaving,
+                    singleLine = false,
+                    maxLines = 3,
+                    shape = PosShapes.InputField,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                OutlinedTextField(
+                    value = footer,
+                    onValueChange = { footer = it },
+                    label = { Text("Receipt Footer") },
+                    placeholder = { Text("e.g., Return policy: 30 days with receipt") },
+                    leadingIcon = {
+                        androidx.compose.material3.Icon(
+                            imageVector = FontAwesomeIcons.Solid.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    enabled = !isSaving,
+                    singleLine = false,
+                    maxLines = 3,
+                    shape = PosShapes.InputField,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                OutlinedTextField(
+                    value = logoUrl,
+                    onValueChange = { logoUrl = it },
+                    label = { Text("Logo URL (optional)") },
+                    placeholder = { Text("https://example.com/logo.png") },
+                    leadingIcon = {
+                        androidx.compose.material3.Icon(
+                            imageVector = FontAwesomeIcons.Solid.Image,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    enabled = !isSaving,
+                    singleLine = true,
+                    shape = PosShapes.InputField,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column {
+                        Text(
+                            text = "Show Tax on Receipt",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = "Display tax breakdown at the bottom",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppColors.TextSecondaryLight,
+                        )
+                    }
+                    Switch(
+                        checked = showTax,
+                        onCheckedChange = { showTax = it },
+                        enabled = !isSaving,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = AppColors.Primary,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        ),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Configure how receipts appear to your customers.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.TextSecondaryLight,
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Receipt Preview",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+
+        ReceiptPreviewCard(
+            header = header.ifBlank { "Thank you for shopping!" },
+            footer = footer.ifBlank { "Please come again!" },
+            showTax = showTax,
+            logoUrl = logoUrl.ifBlank { null },
+        )
+    }
+}
+
+@Composable
+private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean, logoUrl: String?, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = PosShapes.ProductCard,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            if (logoUrl != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "[Logo: $logoUrl]",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppColors.TextSecondaryLight,
+                    )
+                }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+
+            Text(
+                text = "STORE NAME",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = header,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            HorizontalDivider()
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "Item 1",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "$10.00",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "Item 2",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "$15.00",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "Subtotal",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = "$25.00",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            if (showTax) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = "Tax (16%)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = "$4.00",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "TOTAL",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = if (showTax) "$29.00" else "$25.00",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = footer,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Receipt Preview",
+                style = MaterialTheme.typography.labelSmall,
+                color = AppColors.TextSecondaryLight,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+        }
+    }
+}

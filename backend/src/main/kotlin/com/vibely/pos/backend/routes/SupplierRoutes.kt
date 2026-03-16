@@ -37,22 +37,22 @@ fun Route.supplierRoutes(supplierService: SupplierService) {
     route("/api/suppliers") {
         if (isDebugMode) {
             authenticate("auth-jwt", "debug-bearer", optional = false) {
-                get { call.handleGetAllSuppliers(supplierService) }
-                get(PATH_ID) { call.handleGetById(supplierService) }
-                post { call.handleCreateSupplier(supplierService) }
-                put(PATH_ID) { call.handleUpdateSupplier(supplierService) }
-                delete(PATH_ID) { call.handleDeleteSupplier(supplierService) }
+                usePaths(supplierService)
             }
         } else {
             authenticate("auth-jwt") {
-                get { call.handleGetAllSuppliers(supplierService) }
-                get(PATH_ID) { call.handleGetById(supplierService) }
-                post { call.handleCreateSupplier(supplierService) }
-                put(PATH_ID) { call.handleUpdateSupplier(supplierService) }
-                delete(PATH_ID) { call.handleDeleteSupplier(supplierService) }
+                usePaths(supplierService)
             }
         }
     }
+}
+
+private fun Route.usePaths(supplierService: SupplierService) {
+    get { call.handleGetAllSuppliers(supplierService) }
+    get(PATH_ID) { call.handleGetById(supplierService) }
+    post { call.handleCreateSupplier(supplierService) }
+    put(PATH_ID) { call.handleUpdateSupplier(supplierService) }
+    delete(PATH_ID) { call.handleDeleteSupplier(supplierService) }
 }
 
 private suspend fun ApplicationCall.handleGetAllSuppliers(supplierService: SupplierService) {
