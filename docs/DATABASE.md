@@ -5,9 +5,9 @@ Complete database schema reference for Vibely POS. This document contains the fu
 > **Note:** This is a reference document. For architecture overview, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 **Database:** Supabase PostgreSQL
-**Project ID:** jewqhojchyrmozxsrkoq
-**Region:** us-west-2
-**Version:** PostgreSQL 17.6.1.084
+**Version:** PostgreSQL 15+
+
+> **Note:** Set up your own Supabase project and configure connection details in your `.env` file. See [Backend README](../backend/README.md) for setup instructions.
 
 ---
 

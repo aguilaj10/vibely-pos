@@ -355,4 +355,4 @@ The demo screen provides interactive examples of all theme components and valida
 
 ## License
 
-Part of Vibely POS - Internal use only.
+Part of Vibely POS - MIT License. See [LICENSE](../LICENSE) for details.

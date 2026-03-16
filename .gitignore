@@ -55,6 +55,8 @@ composeResources/
 
 # Kotlin Language Server
 .kotlin-language-server/
-/docs/PHASE2_IMPLEMENTATION_PLAN.md
+
+# Internal documentation and planning (not for public release)
+.internal/
 /design
 /migrations/003_insert_debug_user.sql

@@ -54,8 +54,6 @@ private const val SERVER_HOST = "0.0.0.0"
 private const val ERROR_KEY = "error"
 private const val STATUS_KEY = "status"
 private const val MESSAGE_KEY = "message"
-private const val SUPABASE_PROJECT_ID = "jewqhojchyrmozxsrkoq"
-private const val SUPABASE_URL = "https://jewqhojchyrmozxsrkoq.supabase.co"
 
 /**
  * Main entry point for the Vibely POS backend server.
@@ -151,9 +149,7 @@ private suspend fun RoutingContext.handleDatabaseTest(supabaseClient: SupabaseCl
             mapOf(
                 STATUS_KEY to "success",
                 MESSAGE_KEY to "Database connection successful",
-                "database" to "connected",
-                "project_id" to SUPABASE_PROJECT_ID,
-                "supabase_url" to SUPABASE_URL
+                "database" to "connected"
             )
         )
     } catch (e: RestException) {
@@ -163,7 +159,6 @@ private suspend fun RoutingContext.handleDatabaseTest(supabaseClient: SupabaseCl
                 STATUS_KEY to "info",
                 MESSAGE_KEY to "Supabase client initialized successfully",
                 "note" to "Database query test skipped - ensure tables exist",
-                "project_id" to SUPABASE_PROJECT_ID,
                 ERROR_KEY to (e.message ?: "Unknown error")
             )
         )

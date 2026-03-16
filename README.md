@@ -1,38 +1,66 @@
 # Vibely POS
 
-A modern, cross-platform Point of Sale system built with Kotlin Multiplatform and Compose Multiplatform.
+A modern, cross-platform Point of Sale system built with Kotlin Multiplatform and Compose Multiplatform. Designed for small to medium businesses with features for sales, inventory, customer management, and reporting.
 
-[![CI](https://github.com/yourusername/vibely-pos/workflows/CI/badge.svg)](https://github.com/yourusername/vibely-pos/actions)
-[![Coverage](.github/badges/jacoco.svg)](https://github.com/yourusername/vibely-pos/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.3.10-blue.svg)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.0.20-blue.svg)](https://kotlinlang.org)
+[![Compose Multiplatform](https://img.shields.io/badge/compose-1.7.1-blue.svg)](https://www.jetbrains.com/lp/compose-multiplatform/)
 
 ## Features
 
-- 🛒 **Point of Sale** - Fast checkout with barcode scanning and product search
-- 📊 **Inventory Management** - Real-time stock tracking and low-stock alerts
-- 👥 **Customer Management** - Track purchases and loyalty programs
-- 📈 **Sales Analytics** - Comprehensive reporting and insights
-- 💼 **Multi-user Support** - Role-based access control
-- 🌍 **Cross-platform** - Desktop, Android, iOS, and Web from a single codebase
+### ✅ Implemented
+
+- **🔐 Authentication** - JWT-based login with role-based access control (admin, manager, cashier, warehouse, viewer)
+- **📊 Dashboard** - Real-time metrics, quick actions, and recent transactions overview
+- **🛒 Point of Sale** - Complete checkout flow with product search, cart management, and payment processing
+- **📦 Inventory Management** - Product catalog, stock tracking, and low-stock monitoring
+- **📋 Categories** - Hierarchical product categorization system
+- **👥 Customer Management** - Customer database with purchase history and loyalty tracking
+- **🏪 Supplier Management** - Vendor information and contact management
+- **💰 Sales History** - Transaction records with refund support
+- **📈 Reports** - Sales analytics with date range filtering, category breakdowns, and trends
+- **💼 Purchase Orders** - Inventory procurement workflow
+- **💵 Cash Shifts** - Shift management with opening/closing balance tracking
+- **⚙️ Settings** - Store configuration, tax rates, currencies, and receipt customization
+- **👤 User Management** - Multi-user support with role assignment
+- **🎨 Modern UI** - Material Design 3 with custom grayscale-dominant theme
+- **🔧 Debug Mode** - Development mode with authentication bypass for faster testing
+
+### 🚧 In Progress
+
+- **📱 Mobile Optimization** - Platform-specific UI enhancements for Android/iOS
+- **🌐 Web Platform** - WebAssembly and JavaScript builds
+- **📧 Email Notifications** - Automated receipts and low-stock alerts
+- **📊 Advanced Analytics** - Predictive inventory and customer insights
+
+### 📋 Planned
+
+- **🔍 Barcode Scanning** - Product lookup via barcode scanner
+- **🖨️ Receipt Printing** - Direct printer integration
+- **☁️ Cloud Sync** - Multi-location synchronization
+- **🔄 Offline Mode** - Local-first data with sync when online
+- **📱 Mobile Apps** - Native iOS and Android builds
 
 ## Technology Stack
 
 - **Kotlin** 2.3.10 - Modern, type-safe programming language
-- **Compose Multiplatform** 1.10.1 - Declarative UI framework
-- **Ktor** 3.4.0 - Async HTTP client & server
-- **Supabase** - PostgreSQL database and authentication
+- **Compose Multiplatform** 1.10.2 - Declarative UI framework
+- **Ktor** 3.4.1 - Async HTTP client & server
+- **Supabase** - PostgreSQL database with Row Level Security (RLS)
 - **Koin** 4.1.1 - Dependency injection
-- **Material 3** - Modern design system
+- **Material 3** - Modern design system with custom theme
+- **JWT Authentication** - Secure token-based auth with BCrypt password hashing
+- **Kotlinx Serialization** - Type-safe JSON handling
+- **Coroutines & Flow** - Reactive state management
 
 ## Supported Platforms
 
 | Platform | Status | Target |
 |----------|--------|--------|
-| Desktop (JVM) | ✅ Ready | Windows, macOS, Linux |
-| Android | ✅ Ready | API 24+ (Android 7.0+) |
-| iOS | ✅ Ready | iOS 14+ |
-| Web | ✅ Ready | Modern browsers (JS/Wasm) |
+| Desktop (JVM) | ✅ Production Ready | Windows, macOS, Linux |
+| Android | 🚧 In Development | API 24+ (Android 7.0+) |
+| iOS | 🚧 In Development | iOS 14+ |
+| Web | 🚧 In Development | Modern browsers (JS/Wasm) |
 
 ## Quick Start
 
@@ -46,8 +74,15 @@ A modern, cross-platform Point of Sale system built with Kotlin Multiplatform an
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/vibely-pos.git
+git clone https://github.com/your-username/vibely-pos.git
 cd vibely-pos
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Supabase credentials
+
+# Apply database schema
+# Run migrations in /migrations/ directory on your Supabase project
 
 # Build all platforms
 ./gradlew build
@@ -94,9 +129,20 @@ vibely-pos/
 
 ## Development
 
-### Debug Mode (Skip Authentication)
+### Debug Mode (Development)
 
-For development convenience, you can bypass the login screen and start directly at the dashboard with a mock admin user:
+For development convenience, you can bypass authentication and start directly at the dashboard with a pre-configured debug user:
+
+**Backend Debug Mode:**
+```bash
+# Enable debug mode for backend API
+export DEBUG_MODE=true
+./gradlew :backend:run
+```
+
+When `DEBUG_MODE=true`, the backend accepts `Authorization: Bearer debug-access-token` and automatically injects a debug user principal.
+
+**Frontend Debug Mode:**
 
 #### Desktop (JVM)
 ```bash
@@ -129,13 +175,14 @@ adb shell setprop debug.my.app.debug_mode true
 2. Add launch argument: `-skip-auth`
 
 **Debug Mode Features:**
-- ✅ Auto-login with mock admin user (dev@vibely.pos)
-- ✅ Skip authentication entirely
+- ✅ Backend: Accepts debug bearer token for authentication bypass
+- ✅ Frontend: Auto-login with debug user (`dev@vibely.pos`, admin role)
+- ✅ Skip authentication flows entirely
 - ✅ Shows "🔧 DEBUG MODE" badge in UI
 - ✅ Logs warning on startup
-- ✅ Automatically disabled in production builds
+- ⚠️ **Automatically disabled in production builds**
 
-**⚠️ IMPORTANT:** Debug mode is automatically disabled in production builds.
+> **Security Note:** Debug mode uses a hardcoded user in the database (`UUID: a2259bb8-d02d-4384-bf2f-bbfca16bade5`). The debug user is created automatically when you apply the database migrations.
 
 ### Code Quality
 
@@ -180,29 +227,29 @@ open build/reports/kover/html/index.html
 
 ### Continuous Integration
 
-The project uses GitHub Actions for CI/CD with parallel jobs:
+The project uses GitHub Actions for CI/CD:
 
-| Job | Purpose | Runtime |
-|-----|---------|---------|
-| Code Quality | Spotless + Detekt checks | ~2 min |
-| Build Desktop | JVM/JAR builds | ~5 min |
-| Build Android | Debug APK | ~5 min |
-| Build iOS | ARM64 Simulator | ~5 min |
-| Build Web | JS/Wasm bundles | ~5 min |
-| Test Coverage | Kover reports | ~3 min |
+| Job | Purpose | Status |
+|-----|---------|--------|
+| Code Quality | Spotless + Detekt checks | ✅ Implemented |
+| Build Desktop | JVM/JAR builds | ✅ Implemented |
+| Build Android | Debug APK | ✅ Implemented |
+| Build iOS | ARM64 Simulator | ✅ Implemented |
+| Build Web | JS/Wasm bundles | ✅ Implemented |
+| Test Coverage | Kover reports + badge generation | ✅ Implemented |
 
 **Pipeline Features:**
 - Parallel execution for fast feedback
-- Gradle caching (4GB heap)
-- Coverage badge generation
-- Artifacts retention (7-30 days)
+- Gradle caching for faster builds
+- Artifact retention (7-30 days)
+- Automatic quality checks on PR
 
-**Local Testing:**
+**Local CI Simulation:**
 ```bash
-# Full CI simulation
+# Full CI check
 ./gradlew spotlessCheck detekt build test koverXmlReport
 
-# Quick check
+# Quick pre-commit check
 ./gradlew spotlessCheck detekt
 ```
 
@@ -234,6 +281,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Status**: 🚧 In Active Development
+**Status**: 🚧 Active Development - Desktop platform production-ready, mobile/web in progress
 
-For questions or support, please [open an issue](https://github.com/yourusername/vibely-pos/issues).
+For questions or support, please [open an issue](https://github.com/your-username/vibely-pos/issues).

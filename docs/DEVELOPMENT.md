@@ -1,5 +1,9 @@
 # Development Guide
 
+> **⚠️ INTERNAL DOCUMENT**: This is a detailed internal development guide containing granular implementation tasks, technical decisions, and progress tracking. For high-level feature roadmap, see [ROADMAP.md](../ROADMAP.md) in the root directory.
+>
+> **For Contributors**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for contribution guidelines and workflow.
+
 Implementation roadmap and development tasks for Vibely POS.
 
 > **Note:** This is an internal development guide. For contributing guidelines, see [CONTRIBUTING.md](../CONTRIBUTING.md).

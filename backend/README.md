@@ -25,7 +25,7 @@ Create a `.env` file in the project root with the following variables:
 
 ```env
 # Supabase Configuration
-SUPABASE_URL=https://jewqhojchyrmozxsrkoq.supabase.co
+SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 
 # JWT Configuration
@@ -34,16 +34,21 @@ JWT_SECRET=your-jwt-secret-here
 # Server Configuration
 PORT=8080
 HOST=0.0.0.0
+
+# Debug Mode (Optional - bypasses authentication for development)
+DEBUG_MODE=false
 ```
 
 ### Getting Supabase Credentials
 
 1. Go to your [Supabase Dashboard](https://app.supabase.com/)
-2. Select your project (ID: `jewqhojchyrmozxsrkoq`)
+2. Create a new project or select your existing project
 3. Navigate to **Settings** → **API**
 4. Copy the following:
-   - **Project URL**: Use as `SUPABASE_URL`
+   - **Project URL**: Use as `SUPABASE_URL` (format: `https://your-project-id.supabase.co`)
    - **service_role key**: Use as `SUPABASE_SERVICE_ROLE_KEY` (⚠️ Keep this secret!)
+
+> **Note:** Apply the database schema from `/migrations/` or `/database_schema.sql` to your Supabase project before running the backend.
 
 ## Project Structure
 
@@ -79,18 +84,33 @@ backend/
 
 ```bash
 # Set environment variables and run
-export SUPABASE_URL="https://jewqhojchyrmozxsrkoq.supabase.co"
+export SUPABASE_URL="https://your-project-id.supabase.co"
 export SUPABASE_SERVICE_ROLE_KEY="your-key-here"
 export JWT_SECRET="your-secret-here"
 
 ./gradlew :backend:run
 ```
 
+### Debug Mode (Skip Authentication)
+
+For development, you can enable debug mode to bypass authentication:
+
+```bash
+export DEBUG_MODE=true
+./gradlew :backend:run
+```
+
+**Debug Mode Features:**
+- Accepts `Authorization: Bearer debug-access-token` header
+- Automatically injects debug user principal (`dev@vibely.pos`)
+- Shows warning logs on startup
+- ⚠️ **NEVER enable in production**
+
 ### Production Mode
 
 ```bash
 # Run the fat JAR
-export SUPABASE_URL="https://jewqhojchyrmozxsrkoq.supabase.co"
+export SUPABASE_URL="https://your-project-id.supabase.co"
 export SUPABASE_SERVICE_ROLE_KEY="your-key-here"
 export JWT_SECRET="your-secret-here"
 
@@ -125,20 +145,7 @@ Response (success):
 {
   "status": "success",
   "message": "Database connection successful",
-  "database": "connected",
-  "project_id": "jewqhojchyrmozxsrkoq",
-  "supabase_url": "https://jewqhojchyrmozxsrkoq.supabase.co"
-}
-```
-
-Response (error - shows client is working but query failed):
-```json
-{
-  "status": "info",
-  "message": "Supabase client initialized successfully",
-  "note": "Database query test skipped - ensure tables exist",
-  "project_id": "jewqhojchyrmozxsrkoq",
-  "error": "error details here"
+  "database": "connected"
 }
 ```
 
