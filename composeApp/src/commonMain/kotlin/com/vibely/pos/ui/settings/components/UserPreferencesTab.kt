@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
@@ -54,7 +55,7 @@ fun UserPreferencesTab(
     var enableNotifications by remember(userPreferences) { mutableStateOf(userPreferences?.enableNotifications ?: true) }
     var autoLogoutTimeout by remember(userPreferences) {
         mutableFloatStateOf(
-            (userPreferences?.autoLogoutTimeout?.let { it.inWholeMinutes.toFloat() } ?: 30f),
+            (userPreferences?.autoLogoutTimeout?.inWholeMinutes?.toFloat() ?: 30f),
         )
     }
 
@@ -122,7 +123,7 @@ fun UserPreferencesTab(
                         shape = PosShapes.InputField,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(),
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                     )
 
                     ExposedDropdownMenu(
@@ -168,7 +169,7 @@ fun UserPreferencesTab(
                         shape = PosShapes.InputField,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(),
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                     )
 
                     ExposedDropdownMenu(

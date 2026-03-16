@@ -16,6 +16,7 @@ import com.vibely.pos.shared.data.inventory.repository.CategoryRepositoryImpl
 import com.vibely.pos.shared.data.inventory.repository.InventoryRepositoryImpl
 import com.vibely.pos.shared.data.purchaseorder.datasource.RemotePurchaseOrderDataSource
 import com.vibely.pos.shared.data.purchaseorder.repository.PurchaseOrderRepositoryImpl
+import com.vibely.pos.shared.data.reports.repository.ReportsRepositoryImpl
 import com.vibely.pos.shared.data.sales.datasource.RemoteProductDataSource
 import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
 import com.vibely.pos.shared.data.sales.repository.ProductRepositoryImpl
@@ -32,6 +33,7 @@ import com.vibely.pos.shared.domain.dashboard.repository.DashboardRepository
 import com.vibely.pos.shared.domain.inventory.repository.CategoryRepository
 import com.vibely.pos.shared.domain.inventory.repository.InventoryRepository
 import com.vibely.pos.shared.domain.purchaseorder.repository.PurchaseOrderRepository
+import com.vibely.pos.shared.domain.reports.repository.ReportsRepository
 import com.vibely.pos.shared.domain.sales.repository.ProductRepository
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.shift.repository.ShiftRepository
@@ -260,4 +262,7 @@ val dataModule =
 
         // User repositories
         singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
+
+        // Reports repositories
+        singleOf(::ReportsRepositoryImpl) { bind<ReportsRepository>() }
     }

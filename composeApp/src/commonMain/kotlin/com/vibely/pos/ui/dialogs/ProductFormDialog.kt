@@ -15,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
@@ -135,7 +136,7 @@ fun ProductFormDialog(
                             label = { Text("Category") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                             modifier = Modifier
-                                .menuAnchor()
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                                 .fillMaxWidth(),
                         )
 
@@ -273,7 +274,7 @@ private fun validateProductForm(data: ProductFormData): Map<String, ValidationSt
 
     if (data.name.isBlank()) {
         errors["name"] = ValidationState.Error("Name is required")
-    } else if (data.name.length < 3 || data.name.length > 100) {
+    } else if (data.name.length !in 3..100) {
         errors["name"] = ValidationState.Error("Name must be 3-100 characters")
     }
 
