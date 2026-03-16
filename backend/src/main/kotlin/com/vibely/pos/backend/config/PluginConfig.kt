@@ -58,6 +58,7 @@ fun Application.configureContentNegotiation() {
  */
 fun Application.configureCORS() {
     install(CORS) {
+        allowCredentials = true
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
@@ -67,6 +68,7 @@ fun Application.configureCORS() {
         allowHeader(HttpHeaders.Authorization)
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        allowHeader("X-Client-Platform")
 
         // Allow any host for development (should be restricted in production)
         anyHost()

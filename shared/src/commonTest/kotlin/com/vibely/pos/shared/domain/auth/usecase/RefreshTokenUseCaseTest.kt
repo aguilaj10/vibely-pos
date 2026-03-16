@@ -99,26 +99,6 @@ class RefreshTokenUseCaseTest {
     }
 
     @Test
-    fun `invoke should return error when no refresh token available`() = runTest {
-        // Given
-        val mockRepo = MockAuthRepository()
-        mockRepo.refreshTokenResult = Result.Error(
-            message = "No refresh token available",
-            code = "NO_REFRESH_TOKEN",
-        )
-
-        val useCase = RefreshTokenUseCase(mockRepo)
-
-        // When
-        val result = useCase()
-
-        // Then
-        assertIs<Result.Error>(result)
-        assertEquals("No refresh token available", result.message)
-        assertEquals("NO_REFRESH_TOKEN", result.code)
-    }
-
-    @Test
     fun `invoke should return error if token storage fails`() = runTest {
         // Given
         val mockRepo = MockAuthRepository()

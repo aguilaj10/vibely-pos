@@ -1,9 +1,11 @@
 package com.vibely.pos.shared.di
 
-import com.vibely.pos.shared.data.auth.datasource.InMemoryAuthDataSource
+import com.vibely.pos.shared.Platform
 import com.vibely.pos.shared.data.auth.datasource.LocalAuthDataSource
 import com.vibely.pos.shared.data.auth.datasource.RemoteAuthDataSource
 import com.vibely.pos.shared.data.auth.repository.AuthRepositoryImpl
+import com.vibely.pos.shared.data.auth.storage.PlatformAuthStorageFactory
+import com.vibely.pos.shared.data.auth.storage.configurePlatformHttpClient
 import com.vibely.pos.shared.data.customer.datasource.RemoteCustomerDataSource
 import com.vibely.pos.shared.data.customer.repository.CustomerRepositoryImpl
 import com.vibely.pos.shared.data.dashboard.datasource.RemoteDashboardDataSource
@@ -44,8 +46,10 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.bind
@@ -86,17 +90,27 @@ val dataModule =
         // HTTP Client for Supabase and general API calls
         single {
             val isDebugMode = getProperty("DEBUG_MODE", "false") == "true"
+            val localAuthDataSource: LocalAuthDataSource = get()
+            val platformName = Platform.name
 
             HttpClient {
+                configurePlatformHttpClient()
+
                 install(ContentNegotiation) {
                     json(get())
                 }
                 install(Logging) {
                     level = LogLevel.INFO
                 }
+
+                defaultRequest {
+                    header("X-Client-Platform", platformName)
+                }
+
                 // Install Auth plugin for Bearer token
                 install(Auth) {
                     bearer {
+                        cacheTokens = false
                         loadTokens {
                             // In debug mode, send a special debug token
                             if (isDebugMode) {
@@ -106,8 +120,15 @@ val dataModule =
                                     refreshToken = "debug-refresh-token",
                                 )
                             } else {
-                                // TODO: Load real token from storage in production
-                                null
+                                val storedToken = localAuthDataSource.getToken().getOrNull()
+                                if (storedToken == null || storedToken.isExpired()) {
+                                    null
+                                } else {
+                                    BearerTokens(
+                                        accessToken = storedToken.accessToken,
+                                        refreshToken = storedToken.refreshToken,
+                                    )
+                                }
                             }
                         }
                     }
@@ -127,7 +148,7 @@ val dataModule =
         }
 
         // Auth data sources
-        singleOf(::InMemoryAuthDataSource) { bind<LocalAuthDataSource>() }
+        single<LocalAuthDataSource> { PlatformAuthStorageFactory.createLocalAuthDataSource() }
         single {
             RemoteAuthDataSource(
                 httpClient = get(),

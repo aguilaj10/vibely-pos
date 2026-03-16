@@ -28,7 +28,6 @@ class RefreshTokenUseCase(private val authRepository: AuthRepository) {
      *
      * Possible error codes:
      * - "INVALID_REFRESH_TOKEN": Refresh token is invalid or expired
-     * - "NO_REFRESH_TOKEN": No refresh token is stored
      * - "NETWORK_ERROR": Network request failed
      */
     suspend operator fun invoke(): Result<AuthToken> = authRepository.refreshToken()

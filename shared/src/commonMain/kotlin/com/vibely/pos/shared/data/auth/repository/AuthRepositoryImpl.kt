@@ -3,7 +3,6 @@ package com.vibely.pos.shared.data.auth.repository
 import com.vibely.pos.shared.data.auth.datasource.LocalAuthDataSource
 import com.vibely.pos.shared.data.auth.datasource.RemoteAuthDataSource
 import com.vibely.pos.shared.data.auth.dto.LoginRequestDTO
-import com.vibely.pos.shared.data.auth.dto.RefreshTokenRequestDTO
 import com.vibely.pos.shared.data.auth.mapper.AuthTokenMapper
 import com.vibely.pos.shared.data.auth.mapper.UserMapper
 import com.vibely.pos.shared.data.common.BaseRepository
@@ -71,16 +70,8 @@ class AuthRepositoryImpl(private val remoteDataSource: RemoteAuthDataSource, pri
 
     override suspend fun refreshToken(): Result<AuthToken> = localDataSource.getToken()
         .flatMap { token ->
-            if (token == null) {
-                Result.Error(
-                    message = "No refresh token available",
-                    code = "NO_REFRESH_TOKEN",
-                )
-            } else {
-                val request = RefreshTokenRequestDTO(refreshToken = token.refreshToken)
-                remoteDataSource.refreshToken(request)
-                    .map { response -> AuthTokenMapper.toDomain(response) }
-            }
+            remoteDataSource.refreshToken(refreshToken = token?.refreshToken)
+                .map { response -> AuthTokenMapper.toDomain(response) }
         }
 
     override suspend fun getStoredToken(): Result<AuthToken?> = localDataSource.getToken()

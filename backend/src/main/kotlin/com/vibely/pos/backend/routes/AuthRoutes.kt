@@ -5,7 +5,6 @@ import com.vibely.pos.shared.data.auth.dto.LoginRequestDTO
 import com.vibely.pos.shared.data.auth.dto.RefreshTokenRequestDTO
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
@@ -15,6 +14,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import io.ktor.util.date.GMTDate
 
 // Error message constants
 private const val ERROR_INVALID_CREDENTIALS = "Invalid email or password"
@@ -27,6 +27,10 @@ private const val ERROR_INVALID_REFRESH = "Invalid or expired refresh token"
 private const val ERROR_EMAIL_PASSWORD_REQUIRED = "Email and password are required"
 
 private const val ERROR = "error"
+
+private const val REFRESH_TOKEN_COOKIE_NAME = "vibely_refresh"
+private const val WEB_REFRESH_TOKEN_PLACEHOLDER = "cookie"
+private const val REFRESH_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7
 
 /**
  * Configures authentication routes.
@@ -66,7 +70,12 @@ private suspend fun ApplicationCall.handleLogin(authService: AuthService) {
         return
     }
 
-    respond(HttpStatusCode.OK, authResponse)
+    if (isWebClient()) {
+        setRefreshTokenCookie(authResponse.refreshToken)
+        respond(HttpStatusCode.OK, authResponse.copy(refreshToken = WEB_REFRESH_TOKEN_PLACEHOLDER))
+    } else {
+        respond(HttpStatusCode.OK, authResponse)
+    }
 }
 
 /**
@@ -85,6 +94,9 @@ private suspend fun ApplicationCall.handleLogout(authService: AuthService) {
     }
 
     authService.logout(token, userId)
+    if (isWebClient()) {
+        clearRefreshTokenCookie()
+    }
     respond(HttpStatusCode.OK, mapOf("message" to "Logged out successfully"))
 }
 
@@ -118,20 +130,59 @@ private suspend fun ApplicationCall.handleGetCurrentUser(authService: AuthServic
  * Refreshes an access token using a refresh token.
  */
 private suspend fun ApplicationCall.handleRefreshToken(authService: AuthService) {
-    val request = receive<RefreshTokenRequestDTO>()
+    val refreshTokenFromBody =
+        runCatching { receive<RefreshTokenRequestDTO>() }
+            .getOrNull()
+            ?.refreshToken
+            ?.takeIf { it.isNotBlank() }
 
-    if (request.refreshToken.isBlank()) {
+    val refreshToken = refreshTokenFromBody ?: request.cookies[REFRESH_TOKEN_COOKIE_NAME]
+
+    if (refreshToken.isNullOrBlank()) {
         respond(HttpStatusCode.BadRequest, mapOf(ERROR to ERROR_REFRESH_REQUIRED))
         return
     }
 
-    val authResponse = authService.refreshAccessToken(request.refreshToken)
+    val authResponse = authService.refreshAccessToken(refreshToken)
     if (authResponse == null) {
         respond(HttpStatusCode.Unauthorized, mapOf(ERROR to ERROR_INVALID_REFRESH))
         return
     }
 
-    respond(HttpStatusCode.OK, authResponse)
+    if (isWebClient()) {
+        setRefreshTokenCookie(authResponse.refreshToken)
+        respond(HttpStatusCode.OK, authResponse.copy(refreshToken = WEB_REFRESH_TOKEN_PLACEHOLDER))
+    } else {
+        respond(HttpStatusCode.OK, authResponse)
+    }
+}
+
+private fun ApplicationCall.isWebClient(): Boolean =
+    request.headers["X-Client-Platform"]?.contains("Web") == true
+
+private fun ApplicationCall.setRefreshTokenCookie(refreshToken: String) {
+    response.cookies.append(
+        name = REFRESH_TOKEN_COOKIE_NAME,
+        value = refreshToken,
+        maxAge = REFRESH_TOKEN_MAX_AGE_SECONDS.toLong(),
+        path = "/",
+        httpOnly = true,
+        secure = false,
+        extensions = mapOf("SameSite" to "Lax"),
+    )
+}
+
+private fun ApplicationCall.clearRefreshTokenCookie() {
+    response.cookies.append(
+        name = REFRESH_TOKEN_COOKIE_NAME,
+        value = "",
+        maxAge = 0,
+        expires = GMTDate(0),
+        path = "/",
+        httpOnly = true,
+        secure = false,
+        extensions = mapOf("SameSite" to "Lax"),
+    )
 }
 
 /**

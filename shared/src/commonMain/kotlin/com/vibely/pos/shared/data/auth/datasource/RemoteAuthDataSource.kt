@@ -59,15 +59,20 @@ class RemoteAuthDataSource(private val httpClient: HttpClient, private val baseU
      *
      * POST /auth/refresh
      *
-     * @param request The refresh token request.
+     * @param refreshToken The refresh token, or null to use a refresh cookie (web clients).
      * @return [Result.Success] with [AuthResponseDTO] containing new tokens,
      *         [Result.Error] if request fails.
      */
-    suspend fun refreshToken(request: RefreshTokenRequestDTO): Result<AuthResponseDTO> = Result.runCatching {
-        httpClient.post("$baseUrl/auth/refresh") {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }.body<AuthResponseDTO>()
+    suspend fun refreshToken(refreshToken: String?): Result<AuthResponseDTO> = Result.runCatching {
+        if (refreshToken == null) {
+            httpClient.post("$baseUrl/auth/refresh").body<AuthResponseDTO>()
+        } else {
+            val request = RefreshTokenRequestDTO(refreshToken = refreshToken)
+            httpClient.post("$baseUrl/auth/refresh") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }.body<AuthResponseDTO>()
+        }
     }
 
     /**
