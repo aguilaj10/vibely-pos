@@ -14,8 +14,14 @@ import com.vibely.pos.shared.domain.customer.usecase.UpdateCustomerUseCase
 import com.vibely.pos.shared.domain.dashboard.usecase.GetDashboardSummaryUseCase
 import com.vibely.pos.shared.domain.dashboard.usecase.GetLowStockProductsUseCase
 import com.vibely.pos.shared.domain.dashboard.usecase.GetRecentTransactionsUseCase
+import com.vibely.pos.shared.domain.inventory.usecase.AdjustStockUseCase
+import com.vibely.pos.shared.domain.inventory.usecase.CreateCategoryUseCase
+import com.vibely.pos.shared.domain.inventory.usecase.CreateProductUseCase
+import com.vibely.pos.shared.domain.inventory.usecase.DeleteProductUseCase
 import com.vibely.pos.shared.domain.inventory.usecase.GetAllProductsUseCase
 import com.vibely.pos.shared.domain.inventory.usecase.GetCategoriesUseCase
+import com.vibely.pos.shared.domain.inventory.usecase.UpdateCategoryUseCase
+import com.vibely.pos.shared.domain.inventory.usecase.UpdateProductUseCase
 import com.vibely.pos.shared.domain.purchaseorder.usecase.CreatePurchaseOrderUseCase
 import com.vibely.pos.shared.domain.purchaseorder.usecase.DeletePurchaseOrderUseCase
 import com.vibely.pos.shared.domain.purchaseorder.usecase.GetAllPurchaseOrdersUseCase
@@ -88,6 +94,12 @@ val domainModule =
         // Inventory use cases
         singleOf(::GetAllProductsUseCase)
         singleOf(::GetCategoriesUseCase)
+        singleOf(::CreateProductUseCase)
+        singleOf(::UpdateProductUseCase)
+        singleOf(::DeleteProductUseCase)
+        singleOf(::CreateCategoryUseCase)
+        singleOf(::UpdateCategoryUseCase)
+        singleOf(::AdjustStockUseCase)
 
         // Customer use cases
         singleOf(::GetAllCustomersUseCase)

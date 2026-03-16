@@ -46,6 +46,8 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.dialogs.CategoryFormDialog
+import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -71,6 +73,13 @@ fun CategoriesScreen(
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSuccessMessageDismiss()
         }
     }
 
@@ -121,6 +130,28 @@ fun CategoriesScreen(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+
+        if (state.showCategoryForm) {
+            CategoryFormDialog(
+                isEdit = state.editingCategoryId != null,
+                initialCategory = viewModel.getEditingCategory(),
+                onSave = viewModel::onSaveCategory,
+                onDismiss = viewModel::onDismissCategoryForm,
+            )
+        }
+
+        state.confirmDeleteCategoryId?.let { categoryId ->
+            val category = state.categories.find { it.id == categoryId }
+            ConfirmationDialog(
+                title = "Delete Category",
+                message = "Are you sure you want to delete \"${category?.name ?: "this category"}\"? " +
+                    "Products in this category will become uncategorized.",
+                confirmText = "Delete",
+                onConfirm = viewModel::onConfirmDeleteCategory,
+                onDismiss = viewModel::onDismissDeleteConfirmation,
+                isDestructive = true,
+            )
+        }
     }
 }
 

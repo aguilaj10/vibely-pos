@@ -41,6 +41,9 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.dialogs.ConfirmationDialog
+import com.vibely.pos.ui.dialogs.SupplierFormData
+import com.vibely.pos.ui.dialogs.SupplierFormDialog
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -65,6 +68,13 @@ fun SuppliersScreen(
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSuccessMessageDismiss()
         }
     }
 
@@ -111,6 +121,37 @@ fun SuppliersScreen(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+
+        if (state.showSupplierDialog) {
+            val editingSupplier = state.editingSupplier
+            SupplierFormDialog(
+                isEdit = editingSupplier != null,
+                initialData = editingSupplier?.let {
+                    SupplierFormData(
+                        id = it.id,
+                        name = it.name,
+                        contactPerson = it.contactPerson ?: "",
+                        email = it.email ?: "",
+                        phone = it.phone ?: "",
+                        address = it.address ?: "",
+                        isActive = it.isActive,
+                    )
+                },
+                onSave = viewModel::onSaveSupplier,
+                onDismiss = viewModel::onDismissSupplierDialog,
+            )
+        }
+
+        if (state.showDeleteDialog) {
+            ConfirmationDialog(
+                title = "Delete Supplier",
+                message = "Are you sure you want to delete this supplier? This action cannot be undone.",
+                confirmText = "Delete",
+                onConfirm = viewModel::onConfirmDelete,
+                onDismiss = viewModel::onDismissDeleteDialog,
+                isDestructive = true,
+            )
+        }
     }
 }
 

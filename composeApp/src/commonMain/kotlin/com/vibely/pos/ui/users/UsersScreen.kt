@@ -49,6 +49,9 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.dialogs.ConfirmationDialog
+import com.vibely.pos.ui.dialogs.UserFormData
+import com.vibely.pos.ui.dialogs.UserFormDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
@@ -73,6 +76,13 @@ fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vie
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSuccessMessageDismiss()
         }
     }
 
@@ -124,6 +134,35 @@ fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vie
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+
+        if (state.showUserDialog) {
+            val editingUser = state.editingUser
+            UserFormDialog(
+                isEdit = editingUser != null,
+                initialData = editingUser?.let {
+                    UserFormData(
+                        id = it.id,
+                        email = it.email.value,
+                        fullName = it.fullName,
+                        role = it.role,
+                        status = it.status,
+                    )
+                },
+                onSave = viewModel::onSaveUser,
+                onDismiss = viewModel::onDismissUserDialog,
+            )
+        }
+
+        if (state.showDeleteDialog) {
+            ConfirmationDialog(
+                title = "Delete User",
+                message = "Are you sure you want to delete this user? This action cannot be undone.",
+                confirmText = "Delete",
+                onConfirm = viewModel::onConfirmDelete,
+                onDismiss = viewModel::onDismissDeleteDialog,
+                isDestructive = true,
+            )
+        }
     }
 }
 

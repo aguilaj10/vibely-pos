@@ -20,6 +20,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -42,6 +43,7 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
+import com.vibely.pos.ui.dialogs.RefundDialog
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -49,6 +51,7 @@ import compose.icons.fontawesomeicons.solid.ExclamationCircle
 import compose.icons.fontawesomeicons.solid.Receipt
 import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Sync
+import compose.icons.fontawesomeicons.solid.TimesCircle
 import org.koin.compose.koinInject
 import kotlin.time.Instant
 
@@ -61,6 +64,13 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSuccessMessageDismiss()
         }
     }
 
@@ -162,6 +172,7 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
                                 SalesTableRow(
                                     sale = sale,
                                     onClick = { viewModel.onSaleSelected(sale) },
+                                    onRefund = { viewModel.onRefundSale(sale) },
                                 )
                             }
                         }
@@ -174,6 +185,18 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+
+        state.confirmRefundSaleId?.let { saleId ->
+            val sale = state.sales.find { it.id == saleId }
+            if (sale != null) {
+                RefundDialog(
+                    sale = sale,
+                    itemsCount = state.refundItemsCount,
+                    onConfirm = { reason -> viewModel.onConfirmRefund(reason) },
+                    onDismiss = viewModel::onDismissRefundConfirmation,
+                )
+            }
+        }
     }
 }
 
@@ -226,7 +249,7 @@ private fun SalesTableHeader() {
 }
 
 @Composable
-private fun SalesTableRow(sale: Sale, onClick: () -> Unit) {
+private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -268,6 +291,20 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit) {
                 status = sale.status,
                 modifier = Modifier.weight(0.8f),
             )
+
+            if (sale.status == SaleStatus.COMPLETED && sale.paymentStatus == PaymentStatus.COMPLETED) {
+                IconButton(
+                    onClick = onRefund,
+                    modifier = Modifier.size(32.dp),
+                ) {
+                    Icon(
+                        imageVector = FontAwesomeIcons.Solid.TimesCircle,
+                        contentDescription = "Refund",
+                        modifier = Modifier.size(16.dp),
+                        tint = AppColors.Warning,
+                    )
+                }
+            }
         }
 
         HorizontalDivider(

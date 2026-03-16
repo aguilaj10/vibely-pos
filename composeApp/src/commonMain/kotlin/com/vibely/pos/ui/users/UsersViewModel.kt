@@ -6,8 +6,12 @@ import com.vibely.pos.shared.domain.auth.entity.User
 import com.vibely.pos.shared.domain.auth.valueobject.UserRole
 import com.vibely.pos.shared.domain.auth.valueobject.UserStatus
 import com.vibely.pos.shared.domain.result.Result
+import com.vibely.pos.shared.domain.user.usecase.CreateUserUseCase
+import com.vibely.pos.shared.domain.user.usecase.DeleteUserUseCase
 import com.vibely.pos.shared.domain.user.usecase.GetAllUsersUseCase
 import com.vibely.pos.shared.domain.user.usecase.SearchUsersUseCase
+import com.vibely.pos.shared.domain.user.usecase.UpdateUserUseCase
+import com.vibely.pos.ui.dialogs.UserFormData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,18 +20,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * UI state for the users management screen.
- *
- * @param users List of users to display.
- * @param searchQuery Current search query.
- * @param selectedRoleFilter Optional role filter.
- * @param selectedStatusFilter Optional status filter.
- * @param isLoading True while loading data.
- * @param errorMessage Error message to display, if any.
- * @param totalUsers Total count of users.
- * @param activeUsers Count of active users.
- */
 data class UsersState(
     val users: List<User> = emptyList(),
     val searchQuery: String = "",
@@ -35,19 +27,22 @@ data class UsersState(
     val selectedStatusFilter: UserStatus? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val successMessage: String? = null,
     val totalUsers: Int = 0,
     val activeUsers: Int = 0,
+    val showUserDialog: Boolean = false,
+    val showDeleteDialog: Boolean = false,
+    val editingUser: User? = null,
+    val deletingUserId: String? = null,
 )
 
-/**
- * ViewModel for the users management screen.
- *
- * Handles loading, searching, and filtering users.
- *
- * @param getAllUsersUseCase Use case to fetch all users with optional filters.
- * @param searchUsersUseCase Use case to search users by query.
- */
-class UsersViewModel(private val getAllUsersUseCase: GetAllUsersUseCase, private val searchUsersUseCase: SearchUsersUseCase) : ViewModel() {
+class UsersViewModel(
+    private val getAllUsersUseCase: GetAllUsersUseCase,
+    private val searchUsersUseCase: SearchUsersUseCase,
+    private val createUserUseCase: CreateUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
+    private val deleteUserUseCase: DeleteUserUseCase,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(UsersState())
     val state: StateFlow<UsersState> = _state.asStateFlow()
@@ -58,9 +53,6 @@ class UsersViewModel(private val getAllUsersUseCase: GetAllUsersUseCase, private
         loadUsers()
     }
 
-    /**
-     * Loads users with current filters applied.
-     */
     fun loadUsers() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
@@ -92,11 +84,6 @@ class UsersViewModel(private val getAllUsersUseCase: GetAllUsersUseCase, private
         }
     }
 
-    /**
-     * Updates the search query with debouncing.
-     *
-     * @param query The new search query.
-     */
     fun onSearchQueryChange(query: String) {
         _state.update { it.copy(searchQuery = query) }
 
@@ -138,37 +125,21 @@ class UsersViewModel(private val getAllUsersUseCase: GetAllUsersUseCase, private
         }
     }
 
-    /**
-     * Clears the current search query and reloads users.
-     */
     fun onClearSearch() {
         _state.update { it.copy(searchQuery = "") }
         loadUsers()
     }
 
-    /**
-     * Updates the role filter and reloads users.
-     *
-     * @param role The new role filter, or null to clear.
-     */
     fun onRoleFilterChange(role: UserRole?) {
         _state.update { it.copy(selectedRoleFilter = role, searchQuery = "") }
         loadUsers()
     }
 
-    /**
-     * Updates the status filter and reloads users.
-     *
-     * @param status The new status filter, or null to clear.
-     */
     fun onStatusFilterChange(status: UserStatus?) {
         _state.update { it.copy(selectedStatusFilter = status, searchQuery = "") }
         loadUsers()
     }
 
-    /**
-     * Clears all filters and reloads users.
-     */
     fun onClearFilters() {
         _state.update {
             it.copy(
@@ -180,42 +151,107 @@ class UsersViewModel(private val getAllUsersUseCase: GetAllUsersUseCase, private
         loadUsers()
     }
 
-    /**
-     * Handles delete user action (placeholder).
-     *
-     * @param userId The ID of the user to delete.
-     */
-    fun onDeleteUser(userId: String) {
-        _state.update {
-            it.copy(errorMessage = "Delete functionality not yet implemented for: $userId")
-        }
-    }
-
-    /**
-     * Handles edit user action (placeholder).
-     *
-     * @param userId The ID of the user to edit.
-     */
-    fun onEditUser(userId: String) {
-        _state.update {
-            it.copy(errorMessage = "Edit navigation not yet implemented for: $userId")
-        }
-    }
-
-    /**
-     * Handles add user action (placeholder).
-     */
     fun onAddUser() {
-        _state.update {
-            it.copy(errorMessage = "Add user navigation not yet implemented")
+        _state.update { it.copy(showUserDialog = true, editingUser = null) }
+    }
+
+    fun onEditUser(userId: String) {
+        val user = _state.value.users.find { it.id == userId }
+        _state.update { it.copy(showUserDialog = true, editingUser = user) }
+    }
+
+    fun onDeleteUser(userId: String) {
+        _state.update { it.copy(showDeleteDialog = true, deletingUserId = userId) }
+    }
+
+    fun onDismissUserDialog() {
+        _state.update { it.copy(showUserDialog = false, editingUser = null) }
+    }
+
+    fun onDismissDeleteDialog() {
+        _state.update { it.copy(showDeleteDialog = false, deletingUserId = null) }
+    }
+
+    fun onSaveUser(formData: UserFormData) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            val result = if (formData.id.isBlank()) {
+                createUserUseCase(formData.email, formData.password, formData.fullName, formData.role)
+            } else {
+                val existingUser = _state.value.users.find { it.id == formData.id }
+                val updatedUser = existingUser?.copy(
+                    fullName = formData.fullName,
+                    role = formData.role,
+                    status = formData.status,
+                )
+                if (updatedUser != null) {
+                    updateUserUseCase(updatedUser)
+                } else {
+                    Result.Error(message = "User not found", code = "NOT_FOUND")
+                }
+            }
+
+            when (result) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            showUserDialog = false,
+                            editingUser = null,
+                            successMessage = if (formData.id.isBlank()) "User created successfully" else "User updated successfully",
+                        )
+                    }
+                    loadUsers()
+                }
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message,
+                        )
+                    }
+                }
+            }
         }
     }
 
-    /**
-     * Dismisses the current error message.
-     */
+    fun onConfirmDelete() {
+        val userId = _state.value.deletingUserId ?: return
+
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, showDeleteDialog = false) }
+
+            when (val result = deleteUserUseCase(userId)) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            deletingUserId = null,
+                            successMessage = "User deleted successfully",
+                        )
+                    }
+                    loadUsers()
+                }
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            deletingUserId = null,
+                            errorMessage = result.message,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun onErrorDismiss() {
         _state.update { it.copy(errorMessage = null) }
+    }
+
+    fun onSuccessMessageDismiss() {
+        _state.update { it.copy(successMessage = null) }
     }
 
     companion object {

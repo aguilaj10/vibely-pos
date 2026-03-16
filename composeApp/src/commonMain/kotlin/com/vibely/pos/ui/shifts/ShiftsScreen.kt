@@ -44,6 +44,8 @@ import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
+import com.vibely.pos.ui.dialogs.CloseShiftDialog
+import com.vibely.pos.ui.dialogs.OpenShiftDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
@@ -67,6 +69,13 @@ fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vi
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSuccessMessageDismiss()
         }
     }
 
@@ -117,6 +126,23 @@ fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vi
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+
+        if (state.showOpenShiftDialog) {
+            OpenShiftDialog(
+                onSave = viewModel::onSaveOpenShift,
+                onDismiss = viewModel::onDismissOpenShiftDialog,
+            )
+        }
+
+        if (state.showCloseShiftDialog) {
+            state.closingShift?.let { shift ->
+                CloseShiftDialog(
+                    shift = shift,
+                    onSave = viewModel::onSaveCloseShift,
+                    onDismiss = viewModel::onDismissCloseShiftDialog,
+                )
+            }
+        }
     }
 }
 

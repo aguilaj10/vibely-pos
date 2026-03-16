@@ -1,0 +1,398 @@
+package com.vibely.pos.ui.dialogs
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import com.vibely.pos.shared.domain.sales.entity.Product
+import com.vibely.pos.shared.domain.supplier.entity.Supplier
+import com.vibely.pos.shared.util.FormatUtils.formatCurrency
+import com.vibely.pos.ui.components.AppButton
+import com.vibely.pos.ui.components.AppButtonStyle
+import com.vibely.pos.ui.components.AppTextField
+import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.ValidationState
+import com.vibely.pos.ui.theme.AppColors
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Plus
+import compose.icons.fontawesomeicons.solid.Trash
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PurchaseOrderFormDialog(
+    isEdit: Boolean,
+    initialData: PurchaseOrderFormData? = null,
+    suppliers: List<Supplier> = emptyList(),
+    products: List<Product> = emptyList(),
+    onSave: (PurchaseOrderFormData) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var formData by remember {
+        mutableStateOf(initialData ?: PurchaseOrderFormData())
+    }
+
+    var supplierExpanded by remember { mutableStateOf(false) }
+    val validationErrors = validatePurchaseOrderForm(formData)
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                Text(
+                    text = if (isEdit) "Edit Purchase Order" else "Create Purchase Order",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                if (suppliers.isNotEmpty()) {
+                    ExposedDropdownMenuBox(
+                        expanded = supplierExpanded,
+                        onExpandedChange = { supplierExpanded = it },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        OutlinedTextField(
+                            value = suppliers.find { it.id == formData.supplierId }?.name ?: "Select Supplier",
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Supplier *") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierExpanded) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            isError = validationErrors["supplierId"] != null,
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = supplierExpanded,
+                            onDismissRequest = { supplierExpanded = false },
+                        ) {
+                            suppliers.forEach { supplier ->
+                                DropdownMenuItem(
+                                    text = { Text(supplier.name) },
+                                    onClick = {
+                                        formData = formData.copy(supplierId = supplier.id)
+                                        supplierExpanded = false
+                                    },
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                AppTextField(
+                    value = formData.notes,
+                    onValueChange = { formData = formData.copy(notes = it) },
+                    label = "Notes",
+                    variant = AppTextFieldVariant.Outlined,
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 2,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "Line Items",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    TextButton(
+                        onClick = {
+                            formData = formData.copy(
+                                lineItems = formData.lineItems + LineItemFormData(),
+                            )
+                        },
+                    ) {
+                        Icon(
+                            imageVector = FontAwesomeIcons.Solid.Plus,
+                            contentDescription = "Add Item",
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Add Product")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (formData.lineItems.isEmpty()) {
+                    Text(
+                        text = "No items added. Click 'Add Product' to add line items.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 16.dp),
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                    ) {
+                        items(formData.lineItems.indices.toList()) { index ->
+                            LineItemRow(
+                                lineItem = formData.lineItems[index],
+                                products = products,
+                                onUpdate = { updatedItem ->
+                                    val newItems = formData.lineItems.toMutableList()
+                                    newItems[index] = updatedItem
+                                    formData = formData.copy(lineItems = newItems)
+                                },
+                                onRemove = {
+                                    val newItems = formData.lineItems.toMutableList()
+                                    newItems.removeAt(index)
+                                    formData = formData.copy(lineItems = newItems)
+                                },
+                                isFirst = index == 0,
+                                isLast = index == formData.lineItems.lastIndex,
+                            )
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    Text(
+                        text = "Total:",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = formatCurrency(formData.calculateTotal()),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.Primary,
+                    )
+                }
+
+                if (validationErrors.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    validationErrors.values.forEach { error ->
+                        if (error is ValidationState.Error) {
+                            Text(
+                                text = error.message,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = AppColors.ErrorDark,
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    AppButton(
+                        text = if (isEdit) "Update" else "Create",
+                        onClick = { onSave(formData) },
+                        style = AppButtonStyle.Primary,
+                        enabled = validationErrors.isEmpty(),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LineItemRow(
+    lineItem: LineItemFormData,
+    products: List<Product>,
+    onUpdate: (LineItemFormData) -> Unit,
+    onRemove: () -> Unit,
+    isFirst: Boolean,
+    isLast: Boolean,
+) {
+    var productExpanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = productExpanded,
+                onExpandedChange = { productExpanded = it },
+                modifier = Modifier.weight(1.5f),
+            ) {
+                OutlinedTextField(
+                    value = products.find { it.id == lineItem.productId }?.name ?: "Select Product",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Product") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = productExpanded) },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                )
+
+                ExposedDropdownMenu(
+                    expanded = productExpanded,
+                    onDismissRequest = { productExpanded = false },
+                ) {
+                    products.forEach { product ->
+                        DropdownMenuItem(
+                            text = { Text("${product.name} (${product.sku})") },
+                            onClick = {
+                                onUpdate(
+                                    lineItem.copy(
+                                        productId = product.id,
+                                        unitCost = product.costPrice.toString(),
+                                    ),
+                                )
+                                productExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
+
+            AppTextField(
+                value = lineItem.quantity,
+                onValueChange = { onUpdate(lineItem.copy(quantity = it)) },
+                label = "Qty",
+                variant = AppTextFieldVariant.Outlined,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.width(70.dp),
+            )
+
+            AppTextField(
+                value = lineItem.unitCost,
+                onValueChange = { onUpdate(lineItem.copy(unitCost = it)) },
+                label = "Unit Cost",
+                variant = AppTextFieldVariant.Outlined,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                modifier = Modifier.width(100.dp),
+            )
+
+            Text(
+                text = formatCurrency(lineItem.calculateSubtotal()),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.width(80.dp),
+            )
+
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier.size(32.dp),
+            ) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.Trash,
+                    contentDescription = "Remove Item",
+                    tint = AppColors.ErrorDark,
+                )
+            }
+        }
+    }
+}
+
+private fun validatePurchaseOrderForm(data: PurchaseOrderFormData): Map<String, ValidationState> {
+    val errors = mutableMapOf<String, ValidationState>()
+
+    if (data.supplierId.isBlank()) {
+        errors["supplierId"] = ValidationState.Error("Supplier is required")
+    }
+
+    if (data.lineItems.isEmpty()) {
+        errors["lineItems"] = ValidationState.Error("At least one line item is required")
+    }
+
+    val invalidItems = data.lineItems.filter { it.productId.isBlank() || it.quantity.toIntOrNull() == null || it.quantity.toInt() <= 0 }
+    if (invalidItems.isNotEmpty()) {
+        errors["lineItems"] = ValidationState.Error("All line items must have a product and valid quantity")
+    }
+
+    return errors
+}
+
+data class PurchaseOrderFormData(
+    val id: String = "",
+    val supplierId: String = "",
+    val notes: String = "",
+    val lineItems: List<LineItemFormData> = emptyList(),
+) {
+    fun calculateTotal(): Double = lineItems.sumOf { it.calculateSubtotal() }
+}
+
+data class LineItemFormData(val id: String = "", val productId: String = "", val quantity: String = "1", val unitCost: String = "0.0") {
+    fun calculateSubtotal(): Double {
+        val qty = quantity.toDoubleOrNull() ?: 0.0
+        val cost = unitCost.toDoubleOrNull() ?: 0.0
+        return qty * cost
+    }
+}

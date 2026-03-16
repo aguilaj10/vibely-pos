@@ -45,6 +45,9 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.dialogs.ConfirmationDialog
+import com.vibely.pos.ui.dialogs.PurchaseOrderFormData
+import com.vibely.pos.ui.dialogs.PurchaseOrderFormDialog
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -71,6 +74,13 @@ fun PurchaseOrdersScreen(
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSuccessMessageDismiss()
         }
     }
 
@@ -119,6 +129,43 @@ fun PurchaseOrdersScreen(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+
+        if (state.showPODialog) {
+            val editingPO = state.editingPO
+            PurchaseOrderFormDialog(
+                isEdit = editingPO != null,
+                initialData = editingPO?.let {
+                    PurchaseOrderFormData(
+                        id = it.id,
+                        supplierId = it.supplierId,
+                        notes = it.notes ?: "",
+                        lineItems = it.items.map { item ->
+                            com.vibely.pos.ui.dialogs.LineItemFormData(
+                                id = item.id,
+                                productId = item.productId,
+                                quantity = item.quantity.toString(),
+                                unitCost = item.unitCost.toString(),
+                            )
+                        },
+                    )
+                },
+                suppliers = state.suppliers,
+                products = state.products,
+                onSave = viewModel::onSavePurchaseOrder,
+                onDismiss = viewModel::onDismissPODialog,
+            )
+        }
+
+        if (state.showDeleteDialog) {
+            ConfirmationDialog(
+                title = "Delete Purchase Order",
+                message = "Are you sure you want to delete this purchase order? This action cannot be undone.",
+                confirmText = "Delete",
+                onConfirm = viewModel::onConfirmDelete,
+                onDismiss = viewModel::onDismissDeleteDialog,
+                isDestructive = true,
+            )
+        }
     }
 }
 

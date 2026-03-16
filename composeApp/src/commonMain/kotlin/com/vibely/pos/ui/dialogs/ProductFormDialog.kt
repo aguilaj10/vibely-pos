@@ -1,0 +1,319 @@
+package com.vibely.pos.ui.dialogs
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import com.vibely.pos.ui.components.AppButton
+import com.vibely.pos.ui.components.AppButtonStyle
+import com.vibely.pos.ui.components.AppTextField
+import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.ValidationState
+
+/**
+ * Product form dialog for adding or editing products.
+ *
+ * @param isEdit Whether this is edit mode (true) or add mode (false)
+ * @param initialProduct Optional product data for edit mode
+ * @param categories List of available categories for selection
+ * @param onSave Callback with product data when form is submitted
+ * @param onDismiss Callback when dialog is dismissed
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProductFormDialog(
+    isEdit: Boolean,
+    initialProduct: ProductFormData? = null,
+    categories: List<CategoryOption> = emptyList(),
+    onSave: (ProductFormData) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var formData by remember {
+        mutableStateOf(
+            initialProduct ?: ProductFormData(),
+        )
+    }
+
+    var categoryExpanded by remember { mutableStateOf(false) }
+    val validationErrors = validateProductForm(formData)
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                Text(
+                    text = if (isEdit) "Edit Product" else "Add Product",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                AppTextField(
+                    value = formData.sku,
+                    onValueChange = { formData = formData.copy(sku = it) },
+                    label = "SKU *",
+                    variant = AppTextFieldVariant.Outlined,
+                    validationState = validationErrors["sku"] ?: ValidationState.None,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                AppTextField(
+                    value = formData.name,
+                    onValueChange = { formData = formData.copy(name = it) },
+                    label = "Name *",
+                    variant = AppTextFieldVariant.Outlined,
+                    validationState = validationErrors["name"] ?: ValidationState.None,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                AppTextField(
+                    value = formData.description,
+                    onValueChange = { formData = formData.copy(description = it) },
+                    label = "Description",
+                    variant = AppTextFieldVariant.Outlined,
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 3,
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                if (categories.isNotEmpty()) {
+                    ExposedDropdownMenuBox(
+                        expanded = categoryExpanded,
+                        onExpandedChange = { categoryExpanded = it },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        OutlinedTextField(
+                            value = categories.find { it.id == formData.categoryId }?.name ?: "Select Category",
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Category") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = categoryExpanded,
+                            onDismissRequest = { categoryExpanded = false },
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("No Category") },
+                                onClick = {
+                                    formData = formData.copy(categoryId = null)
+                                    categoryExpanded = false
+                                },
+                            )
+                            categories.forEach { category ->
+                                DropdownMenuItem(
+                                    text = { Text(category.name) },
+                                    onClick = {
+                                        formData = formData.copy(categoryId = category.id)
+                                        categoryExpanded = false
+                                    },
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    AppTextField(
+                        value = formData.costPrice,
+                        onValueChange = { formData = formData.copy(costPrice = it) },
+                        label = "Cost Price",
+                        variant = AppTextFieldVariant.Outlined,
+                        validationState = validationErrors["costPrice"] ?: ValidationState.None,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    AppTextField(
+                        value = formData.sellingPrice,
+                        onValueChange = { formData = formData.copy(sellingPrice = it) },
+                        label = "Selling Price *",
+                        variant = AppTextFieldVariant.Outlined,
+                        validationState = validationErrors["sellingPrice"] ?: ValidationState.None,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    AppTextField(
+                        value = formData.currentStock,
+                        onValueChange = { formData = formData.copy(currentStock = it) },
+                        label = "Stock *",
+                        variant = AppTextFieldVariant.Outlined,
+                        validationState = validationErrors["currentStock"] ?: ValidationState.None,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    AppTextField(
+                        value = formData.minStockLevel,
+                        onValueChange = { formData = formData.copy(minStockLevel = it) },
+                        label = "Min Stock Level",
+                        variant = AppTextFieldVariant.Outlined,
+                        validationState = validationErrors["minStockLevel"] ?: ValidationState.None,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    AppTextField(
+                        value = formData.unit,
+                        onValueChange = { formData = formData.copy(unit = it) },
+                        label = "Unit",
+                        variant = AppTextFieldVariant.Outlined,
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    AppTextField(
+                        value = formData.barcode,
+                        onValueChange = { formData = formData.copy(barcode = it) },
+                        label = "Barcode",
+                        variant = AppTextFieldVariant.Outlined,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    AppButton(
+                        text = if (isEdit) "Update" else "Create",
+                        onClick = { onSave(formData) },
+                        style = AppButtonStyle.Primary,
+                        enabled = validationErrors.isEmpty(),
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun validateProductForm(data: ProductFormData): Map<String, ValidationState> {
+    val errors = mutableMapOf<String, ValidationState>()
+
+    if (data.sku.isBlank()) {
+        errors["sku"] = ValidationState.Error("SKU is required")
+    }
+
+    if (data.name.isBlank()) {
+        errors["name"] = ValidationState.Error("Name is required")
+    } else if (data.name.length < 3 || data.name.length > 100) {
+        errors["name"] = ValidationState.Error("Name must be 3-100 characters")
+    }
+
+    val costPrice = data.costPrice.toDoubleOrNull()
+    if (costPrice != null && costPrice < 0) {
+        errors["costPrice"] = ValidationState.Error("Cost price cannot be negative")
+    }
+
+    val sellingPrice = data.sellingPrice.toDoubleOrNull()
+    if (sellingPrice == null || sellingPrice <= 0) {
+        errors["sellingPrice"] = ValidationState.Error("Selling price must be > 0")
+    }
+
+    val currentStock = data.currentStock.toIntOrNull()
+    if (currentStock == null || currentStock < 0) {
+        errors["currentStock"] = ValidationState.Error("Stock must be >= 0")
+    }
+
+    val minStockLevel = data.minStockLevel.toIntOrNull()
+    if (minStockLevel != null && minStockLevel < 0) {
+        errors["minStockLevel"] = ValidationState.Error("Min stock level cannot be negative")
+    }
+
+    return errors
+}
+
+data class ProductFormData(
+    val id: String = "",
+    val sku: String = "",
+    val name: String = "",
+    val description: String = "",
+    val categoryId: String? = null,
+    val costPrice: String = "",
+    val sellingPrice: String = "",
+    val currentStock: String = "0",
+    val minStockLevel: String = "10",
+    val unit: String = "unit",
+    val barcode: String = "",
+    val imageUrl: String = "",
+    val isActive: Boolean = true,
+)
+
+data class CategoryOption(val id: String, val name: String)

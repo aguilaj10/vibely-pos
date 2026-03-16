@@ -41,6 +41,9 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.dialogs.ConfirmationDialog
+import com.vibely.pos.ui.dialogs.CustomerFormData
+import com.vibely.pos.ui.dialogs.CustomerFormDialog
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -65,6 +68,13 @@ fun CustomersScreen(
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSuccessMessageDismiss()
         }
     }
 
@@ -112,6 +122,39 @@ fun CustomersScreen(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+
+        if (state.showCustomerDialog) {
+            val editingCustomer = state.editingCustomer
+            CustomerFormDialog(
+                isEdit = editingCustomer != null,
+                initialData = editingCustomer?.let {
+                    CustomerFormData(
+                        id = it.id,
+                        firstName = it.firstName,
+                        lastName = it.lastName,
+                        email = it.email ?: "",
+                        phone = it.phone ?: "",
+                        loyaltyPoints = it.loyaltyPoints,
+                        loyaltyTier = it.loyaltyTier,
+                        totalPurchases = it.totalPurchases,
+                        isActive = it.isActive,
+                    )
+                },
+                onSave = viewModel::onSaveCustomer,
+                onDismiss = viewModel::onDismissCustomerDialog,
+            )
+        }
+
+        if (state.showDeleteDialog) {
+            ConfirmationDialog(
+                title = "Delete Customer",
+                message = "Are you sure you want to delete this customer? This action cannot be undone.",
+                confirmText = "Delete",
+                onConfirm = viewModel::onConfirmDelete,
+                onDismiss = viewModel::onDismissDeleteDialog,
+                isDestructive = true,
+            )
+        }
     }
 }
 

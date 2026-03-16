@@ -1,0 +1,5 @@
+package com.vibely.pos.ui.util
+
+import platform.Foundation.NSUUID
+
+actual fun randomUuidString(): String = NSUUID().UUIDString()

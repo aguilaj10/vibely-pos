@@ -17,12 +17,12 @@ val uiModule = module {
     factory { LoginViewModel(get()) }
     factory { DashboardViewModel(get(), get(), get()) }
     factory { CheckoutViewModel(get(), get(), get(), get(), get()) }
-    factory { SalesListViewModel(get()) }
-    factory { InventoryViewModel(get(), get()) }
-    factory { CategoriesViewModel(get()) }
-    factory { CustomersViewModel(get(), get()) }
-    factory { SuppliersViewModel(get(), get()) }
-    factory { PurchaseOrdersViewModel(get()) }
-    factory { ShiftsViewModel(get()) }
-    factory { UsersViewModel(get(), get()) }
+    factory { SalesListViewModel(get(), get(), get()) }
+    factory { InventoryViewModel(get(), get(), get(), get(), get(), get()) }
+    factory { CategoriesViewModel(get(), get(), get()) }
+    factory { CustomersViewModel(get(), get(), get(), get(), get()) }
+    factory { SuppliersViewModel(get(), get(), get(), get(), get()) }
+    factory { PurchaseOrdersViewModel(get(), get(), get(), get(), get(), get()) }
+    factory { ShiftsViewModel(get(), get(), get()) }
+    factory { UsersViewModel(get(), get(), get(), get(), get()) }
 }

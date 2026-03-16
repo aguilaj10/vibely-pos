@@ -3,9 +3,14 @@ package com.vibely.pos.ui.customers
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vibely.pos.shared.domain.customer.entity.Customer
+import com.vibely.pos.shared.domain.customer.usecase.CreateCustomerUseCase
+import com.vibely.pos.shared.domain.customer.usecase.DeleteCustomerUseCase
 import com.vibely.pos.shared.domain.customer.usecase.GetAllCustomersUseCase
 import com.vibely.pos.shared.domain.customer.usecase.SearchCustomersUseCase
+import com.vibely.pos.shared.domain.customer.usecase.UpdateCustomerUseCase
 import com.vibely.pos.shared.domain.result.Result
+import com.vibely.pos.ui.dialogs.CustomerFormData
+import com.vibely.pos.ui.util.randomUuidString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,19 +18,30 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 
 data class CustomersState(
     val customers: List<Customer> = emptyList(),
     val searchQuery: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val successMessage: String? = null,
     val totalCustomers: Int = 0,
     val activeCustomers: Int = 0,
     val totalLoyaltyPoints: Int = 0,
+    val showCustomerDialog: Boolean = false,
+    val showDeleteDialog: Boolean = false,
+    val editingCustomer: Customer? = null,
+    val deletingCustomerId: String? = null,
 )
 
-class CustomersViewModel(private val getAllCustomersUseCase: GetAllCustomersUseCase, private val searchCustomersUseCase: SearchCustomersUseCase) :
-    ViewModel() {
+class CustomersViewModel(
+    private val getAllCustomersUseCase: GetAllCustomersUseCase,
+    private val searchCustomersUseCase: SearchCustomersUseCase,
+    private val createCustomerUseCase: CreateCustomerUseCase,
+    private val updateCustomerUseCase: UpdateCustomerUseCase,
+    private val deleteCustomerUseCase: DeleteCustomerUseCase,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(CustomersState())
     val state: StateFlow<CustomersState> = _state.asStateFlow()
@@ -116,25 +132,113 @@ class CustomersViewModel(private val getAllCustomersUseCase: GetAllCustomersUseC
         loadCustomers()
     }
 
-    fun onDeleteCustomer(customerId: String) {
-        _state.update {
-            it.copy(errorMessage = "Delete functionality not yet implemented for: $customerId")
-        }
+    fun onAddCustomer() {
+        _state.update { it.copy(showCustomerDialog = true, editingCustomer = null) }
     }
 
     fun onEditCustomer(customerId: String) {
-        _state.update {
-            it.copy(errorMessage = "Edit navigation not yet implemented for: $customerId")
+        val customer = _state.value.customers.find { it.id == customerId }
+        _state.update { it.copy(showCustomerDialog = true, editingCustomer = customer) }
+    }
+
+    fun onDeleteCustomer(customerId: String) {
+        _state.update { it.copy(showDeleteDialog = true, deletingCustomerId = customerId) }
+    }
+
+    fun onDismissCustomerDialog() {
+        _state.update { it.copy(showCustomerDialog = false, editingCustomer = null) }
+    }
+
+    fun onDismissDeleteDialog() {
+        _state.update { it.copy(showDeleteDialog = false, deletingCustomerId = null) }
+    }
+
+    fun onSaveCustomer(formData: CustomerFormData) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            val customer = Customer(
+                id = formData.id.ifBlank { randomUuidString() },
+                code = generateCustomerCode(),
+                firstName = formData.firstName,
+                lastName = formData.lastName,
+                email = formData.email.ifBlank { null },
+                phone = formData.phone.ifBlank { null },
+                loyaltyPoints = formData.loyaltyPoints,
+                loyaltyTier = formData.loyaltyTier,
+                totalPurchases = formData.totalPurchases,
+                isActive = formData.isActive,
+                createdAt = Clock.System.now(),
+                updatedAt = Clock.System.now(),
+            )
+
+            val result = if (formData.id.isBlank()) {
+                createCustomerUseCase(customer)
+            } else {
+                updateCustomerUseCase(customer)
+            }
+
+            when (result) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            showCustomerDialog = false,
+                            editingCustomer = null,
+                            successMessage = if (formData.id.isBlank()) "Customer created successfully" else "Customer updated successfully",
+                        )
+                    }
+                    loadCustomers()
+                }
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message,
+                        )
+                    }
+                }
+            }
         }
     }
 
-    fun onAddCustomer() {
-        _state.update {
-            it.copy(errorMessage = "Add customer navigation not yet implemented")
+    fun onConfirmDelete() {
+        val customerId = _state.value.deletingCustomerId ?: return
+
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, showDeleteDialog = false) }
+
+            when (val result = deleteCustomerUseCase(customerId)) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            deletingCustomerId = null,
+                            successMessage = "Customer deleted successfully",
+                        )
+                    }
+                    loadCustomers()
+                }
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            deletingCustomerId = null,
+                            errorMessage = result.message,
+                        )
+                    }
+                }
+            }
         }
     }
 
     fun onErrorDismiss() {
         _state.update { it.copy(errorMessage = null) }
     }
+
+    fun onSuccessMessageDismiss() {
+        _state.update { it.copy(successMessage = null) }
+    }
+
+    private fun generateCustomerCode(): String = "CUST-${Clock.System.now().toEpochMilliseconds().toString().takeLast(6)}"
 }

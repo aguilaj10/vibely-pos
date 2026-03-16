@@ -43,6 +43,8 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.dialogs.ConfirmationDialog
+import com.vibely.pos.ui.dialogs.ProductFormDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
@@ -67,6 +69,13 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSuccessMessageDismiss()
         }
     }
 
@@ -117,6 +126,28 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+
+        if (state.showProductForm) {
+            ProductFormDialog(
+                isEdit = state.editingProductId != null,
+                initialProduct = viewModel.getEditingProduct(),
+                categories = state.categories,
+                onSave = viewModel::onSaveProduct,
+                onDismiss = viewModel::onDismissProductForm,
+            )
+        }
+
+        state.confirmDeleteProductId?.let { productId ->
+            val product = state.products.find { it.id == productId }
+            ConfirmationDialog(
+                title = "Delete Product",
+                message = "Are you sure you want to delete \"${product?.name ?: "this product"}\"? This action cannot be undone.",
+                confirmText = "Delete",
+                onConfirm = viewModel::onConfirmDeleteProduct,
+                onDismiss = viewModel::onDismissDeleteConfirmation,
+                isDestructive = true,
+            )
+        }
     }
 }
 

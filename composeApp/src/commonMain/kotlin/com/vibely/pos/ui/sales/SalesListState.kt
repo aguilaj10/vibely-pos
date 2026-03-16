@@ -22,11 +22,14 @@ data class SalesListState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val errorMessage: String? = null,
+    val successMessage: String? = null,
     val searchQuery: String = "",
     val statusFilter: SaleStatus? = null,
     val startDate: Instant? = null,
     val endDate: Instant? = null,
     val selectedSale: Sale? = null,
+    val confirmRefundSaleId: String? = null,
+    val refundItemsCount: Int = 0,
 ) {
     val hasSales: Boolean get() = sales.isNotEmpty()
     val hasFilters: Boolean get() = statusFilter != null || startDate != null || endDate != null
