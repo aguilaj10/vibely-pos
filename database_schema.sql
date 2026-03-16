@@ -892,5 +892,35 @@ CREATE POLICY "Users can update own notifications"
     USING (TRUE);
 
 -- ============================================================================
+-- SEED DATA (DEVELOPMENT ONLY)
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- Debug User
+-- ----------------------------------------------------------------------------
+-- Insert debug/development user with hardcoded UUID for testing.
+-- ⚠️ WARNING: For DEVELOPMENT ONLY - exclude from production deployments.
+-- User credentials: dev@vibely.pos / debug123
+INSERT INTO public.users (
+    id,
+    email,
+    password_hash,
+    full_name,
+    role,
+    status,
+    created_at,
+    updated_at
+) VALUES (
+    'a2259bb8-d02d-4384-bf2f-bbfca16bade5'::UUID,
+    'dev@vibely.pos',
+    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+    'Debug Developer',
+    'admin'::public.user_role,
+    'active'::public.user_status,
+    NOW(),
+    NOW()
+) ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
 -- END OF SCHEMA
 -- ============================================================================

@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.dto.request
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -27,20 +28,35 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class CreateProductRequest(
+    @SerialName("name")
     val name: String,
+    @SerialName("sku")
     val sku: String? = null,
+    @SerialName("barcode")
     val barcode: String? = null,
+    @SerialName("description")
     val description: String? = null,
+    @SerialName("category_id")
     val categoryId: String? = null,
+    @SerialName("supplier_id")
     val supplierId: String? = null,
+    @SerialName("selling_price")
     val unitPrice: Double,
+    @SerialName("cost_price")
     val costPrice: Double? = null,
+    @SerialName("current_stock")
     val currentStock: Int,
+    @SerialName("min_stock_level")
     val minStockLevel: Int? = null,
+    @SerialName("max_stock_level")
     val maxStockLevel: Int? = null,
+    @SerialName("reorder_point")
     val reorderPoint: Int? = null,
+    @SerialName("unit")
     val unitOfMeasure: String? = null,
+    @SerialName("is_active")
     val isActive: Boolean = true,
+    @SerialName("tax_rate")
     val taxRate: Double? = null
 )
 
@@ -64,19 +80,33 @@ data class CreateProductRequest(
  */
 @Serializable
 data class UpdateProductRequest(
+    @SerialName("name")
     val name: String? = null,
+    @SerialName("sku")
     val sku: String? = null,
+    @SerialName("barcode")
     val barcode: String? = null,
+    @SerialName("description")
     val description: String? = null,
+    @SerialName("category_id")
     val categoryId: String? = null,
+    @SerialName("supplier_id")
     val supplierId: String? = null,
+    @SerialName("selling_price")
     val unitPrice: Double? = null,
+    @SerialName("cost_price")
     val costPrice: Double? = null,
+    @SerialName("min_stock_level")
     val minStockLevel: Int? = null,
+    @SerialName("max_stock_level")
     val maxStockLevel: Int? = null,
+    @SerialName("reorder_point")
     val reorderPoint: Int? = null,
+    @SerialName("unit")
     val unitOfMeasure: String? = null,
+    @SerialName("is_active")
     val isActive: Boolean? = null,
+    @SerialName("tax_rate")
     val taxRate: Double? = null
 )
 
@@ -91,10 +121,15 @@ data class UpdateProductRequest(
  */
 @Serializable
 data class AdjustStockRequest(
+    @SerialName("quantity")
     val quantity: Int,
+    @SerialName("transaction_type")
     val transactionType: String,
+    @SerialName("reference_type")
     val referenceType: String? = null,
+    @SerialName("reference_id")
     val referenceId: String? = null,
+    @SerialName("notes")
     val notes: String? = null
 )
 
@@ -110,10 +145,16 @@ data class AdjustStockRequest(
  */
 @Serializable
 data class GetAllProductsRequest(
+    @SerialName("page")
     val page: Int = 1,
+    @SerialName("page_size")
     val pageSize: Int = 50,
+    @SerialName("category_id")
     val categoryId: String? = null,
+    @SerialName("supplier_id")
     val supplierId: String? = null,
+    @SerialName("is_active")
     val isActive: Boolean? = null,
+    @SerialName("low_stock")
     val lowStock: Boolean? = null
 )

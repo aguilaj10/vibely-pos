@@ -57,3 +57,4 @@ composeResources/
 .kotlin-language-server/
 /docs/PHASE2_IMPLEMENTATION_PLAN.md
 /design
+/migrations/003_insert_debug_user.sql

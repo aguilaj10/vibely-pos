@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.dto.request
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -17,10 +18,15 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class GetAllSalesRequest(
+    @SerialName("page")
     val page: Int = 1,
+    @SerialName("page_size")
     val pageSize: Int = 50,
+    @SerialName("start_date")
     val startDate: String? = null,
+    @SerialName("end_date")
     val endDate: String? = null,
+    @SerialName("status")
     val status: String? = null
 )
 
@@ -34,9 +40,13 @@ data class GetAllSalesRequest(
  */
 @Serializable
 data class CreateSaleRequest(
+    @SerialName("items")
     val items: List<SaleItemRequest>,
+    @SerialName("payment_method")
     val paymentMethod: String,
+    @SerialName("customer_id")
     val customerId: String? = null,
+    @SerialName("notes")
     val notes: String? = null
 )
 
@@ -49,7 +59,10 @@ data class CreateSaleRequest(
  */
 @Serializable
 data class SaleItemRequest(
+    @SerialName("product_id")
     val productId: String,
+    @SerialName("quantity")
     val quantity: Int,
+    @SerialName("unit_price")
     val unitPrice: Double
 )

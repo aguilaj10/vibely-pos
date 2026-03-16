@@ -5,7 +5,6 @@ object DatabaseColumns {
     const val ID = "id"
     const val USER_ID = "user_id"
     const val CREATED_AT = "created_at"
-    const val UPDATED_AT = "updated_at"
     const val IS_ACTIVE = "is_active"
 
     const val NAME = "name"
@@ -25,8 +24,8 @@ object DatabaseColumns {
     const val MIN_STOCK_LEVEL = "min_stock_level"
     const val MAX_STOCK_LEVEL = "max_stock_level"
     const val REORDER_POINT = "reorder_point"
-    const val UNIT_OF_MEASURE = "unit_of_measure"
-    const val UNIT_PRICE = "unit_price"
+    const val UNIT = "unit"
+    const val SELLING_PRICE = "selling_price"
     const val COST_PRICE = "cost_price"
     const val TAX_RATE = "tax_rate"
 

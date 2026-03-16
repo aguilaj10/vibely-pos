@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.dto.request
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -17,10 +18,15 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class CreateCategoryRequest(
+    @SerialName("name")
     val name: String,
+    @SerialName("description")
     val description: String? = null,
+    @SerialName("color")
     val color: String? = null,
+    @SerialName("icon")
     val icon: String? = null,
+    @SerialName("is_active")
     val isActive: Boolean = true
 )
 
@@ -35,9 +41,14 @@ data class CreateCategoryRequest(
  */
 @Serializable
 data class UpdateCategoryRequest(
+    @SerialName("name")
     val name: String? = null,
+    @SerialName("description")
     val description: String? = null,
+    @SerialName("color")
     val color: String? = null,
+    @SerialName("icon")
     val icon: String? = null,
+    @SerialName("is_active")
     val isActive: Boolean? = null
 )

@@ -31,7 +31,7 @@ private fun buildProductCreateData(userId: String, request: CreateProductRequest
     return buildJsonObject {
         put(DatabaseColumns.USER_ID, userId)
         put(DatabaseColumns.NAME, request.name)
-        put(DatabaseColumns.UNIT_PRICE, request.unitPrice)
+        put(DatabaseColumns.SELLING_PRICE, request.unitPrice)
         put(DatabaseColumns.CURRENT_STOCK, request.currentStock)
         put(DatabaseColumns.IS_ACTIVE, request.isActive)
         request.sku?.let { put(DatabaseColumns.SKU, it) }
@@ -43,7 +43,7 @@ private fun buildProductCreateData(userId: String, request: CreateProductRequest
         request.minStockLevel?.let { put(DatabaseColumns.MIN_STOCK_LEVEL, it) }
         request.maxStockLevel?.let { put(DatabaseColumns.MAX_STOCK_LEVEL, it) }
         request.reorderPoint?.let { put(DatabaseColumns.REORDER_POINT, it) }
-        request.unitOfMeasure?.let { put(DatabaseColumns.UNIT_OF_MEASURE, it) }
+        request.unitOfMeasure?.let { put(DatabaseColumns.UNIT, it) }
         request.taxRate?.let { put(DatabaseColumns.TAX_RATE, it) }
     }
 }
@@ -56,12 +56,12 @@ private fun buildProductUpdateData(request: UpdateProductRequest): JsonObject {
         putIfNotNull(DatabaseColumns.DESCRIPTION, request.description)
         putIfNotNull(DatabaseColumns.CATEGORY_ID, request.categoryId)
         putIfNotNull(DatabaseColumns.SUPPLIER_ID, request.supplierId)
-        putIfNotNull(DatabaseColumns.UNIT_PRICE, request.unitPrice)
+        putIfNotNull(DatabaseColumns.SELLING_PRICE, request.unitPrice)
         putIfNotNull(DatabaseColumns.COST_PRICE, request.costPrice)
         putIfNotNull(DatabaseColumns.MIN_STOCK_LEVEL, request.minStockLevel)
         putIfNotNull(DatabaseColumns.MAX_STOCK_LEVEL, request.maxStockLevel)
         putIfNotNull(DatabaseColumns.REORDER_POINT, request.reorderPoint)
-        putIfNotNull(DatabaseColumns.UNIT_OF_MEASURE, request.unitOfMeasure)
+        putIfNotNull(DatabaseColumns.UNIT, request.unitOfMeasure)
         putIfNotNull(DatabaseColumns.IS_ACTIVE, request.isActive)
         putIfNotNull(DatabaseColumns.TAX_RATE, request.taxRate)
     }

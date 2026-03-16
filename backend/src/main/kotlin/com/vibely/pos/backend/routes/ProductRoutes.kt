@@ -9,7 +9,6 @@ import com.vibely.pos.backend.services.ProductService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
@@ -129,25 +128,7 @@ private suspend fun ApplicationCall.handleCreateProduct(productService: ProductS
         return
     }
 
-    val createRequest = CreateProductRequest(
-        name = requestBody.name,
-        sku = requestBody.sku,
-        barcode = requestBody.barcode,
-        description = requestBody.description,
-        categoryId = requestBody.categoryId,
-        supplierId = requestBody.supplierId,
-        unitPrice = requestBody.unitPrice,
-        costPrice = requestBody.costPrice,
-        currentStock = requestBody.currentStock,
-        minStockLevel = requestBody.minStockLevel,
-        maxStockLevel = requestBody.maxStockLevel,
-        reorderPoint = requestBody.reorderPoint,
-        unitOfMeasure = requestBody.unitOfMeasure,
-        isActive = requestBody.isActive,
-        taxRate = requestBody.taxRate
-    )
-
-    when (val result = productService.createProduct(userId, createRequest)) {
+    when (val result = productService.createProduct(userId, requestBody)) {
         is Result.Success -> respond(HttpStatusCode.Created, result.data)
         is Result.Error -> respond(HttpStatusCode.BadRequest, mapOf(ERROR_KEY to result.message))
     }
@@ -189,24 +170,7 @@ private suspend fun ApplicationCall.handleUpdateProduct(productService: ProductS
 
     val requestBody = receive<UpdateProductRequest>()
 
-    val updateRequest = UpdateProductRequest(
-        name = requestBody.name,
-        sku = requestBody.sku,
-        barcode = requestBody.barcode,
-        description = requestBody.description,
-        categoryId = requestBody.categoryId,
-        supplierId = requestBody.supplierId,
-        unitPrice = requestBody.unitPrice,
-        costPrice = requestBody.costPrice,
-        minStockLevel = requestBody.minStockLevel,
-        maxStockLevel = requestBody.maxStockLevel,
-        reorderPoint = requestBody.reorderPoint,
-        unitOfMeasure = requestBody.unitOfMeasure,
-        isActive = requestBody.isActive,
-        taxRate = requestBody.taxRate
-    )
-
-    when (val result = productService.updateProduct(userId, productId, updateRequest)) {
+    when (val result = productService.updateProduct(userId, productId, requestBody)) {
         is Result.Success -> respond(HttpStatusCode.OK, result.data)
         is Result.Error -> respond(HttpStatusCode.NotFound, mapOf(ERROR_KEY to result.message))
     }
@@ -255,15 +219,7 @@ private suspend fun ApplicationCall.handleAdjustStock(productService: ProductSer
         return
     }
 
-    val adjustRequest = AdjustStockRequest(
-        quantity = requestBody.quantity,
-        transactionType = requestBody.transactionType,
-        referenceType = requestBody.referenceType,
-        referenceId = requestBody.referenceId,
-        notes = requestBody.notes
-    )
-
-    when (val result = productService.adjustStock(userId, productId, adjustRequest)) {
+    when (val result = productService.adjustStock(userId, productId, requestBody)) {
         is Result.Success -> respond(HttpStatusCode.OK, result.data)
         is Result.Error -> respond(HttpStatusCode.BadRequest, mapOf(ERROR_KEY to result.message))
     }

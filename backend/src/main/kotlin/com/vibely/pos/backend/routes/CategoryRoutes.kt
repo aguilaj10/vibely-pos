@@ -131,15 +131,7 @@ private suspend fun ApplicationCall.handleCreateCategory(categoryService: Catego
         return
     }
 
-    val createRequest = CreateCategoryRequest(
-        name = requestBody.name,
-        description = requestBody.description,
-        color = requestBody.color,
-        icon = requestBody.icon,
-        isActive = requestBody.isActive
-    )
-
-    when (val result = categoryService.createCategory(userId, createRequest)) {
+    when (val result = categoryService.createCategory(userId, requestBody)) {
         is Result.Success -> respond(HttpStatusCode.Created, result.data)
         is Result.Error -> respond(HttpStatusCode.BadRequest, mapOf(ERROR_KEY to result.message))
     }
@@ -164,15 +156,7 @@ private suspend fun ApplicationCall.handleUpdateCategory(categoryService: Catego
 
     val requestBody = receive<UpdateCategoryRequest>()
 
-    val updateRequest = UpdateCategoryRequest(
-        name = requestBody.name,
-        description = requestBody.description,
-        color = requestBody.color,
-        icon = requestBody.icon,
-        isActive = requestBody.isActive
-    )
-
-    when (val result = categoryService.updateCategory(userId, categoryId, updateRequest)) {
+    when (val result = categoryService.updateCategory(userId, categoryId, requestBody)) {
         is Result.Success -> respond(HttpStatusCode.OK, result.data)
         is Result.Error -> respond(HttpStatusCode.NotFound, mapOf(ERROR_KEY to result.message))
     }

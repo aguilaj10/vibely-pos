@@ -25,7 +25,7 @@ class CreateProductUseCase(private val productRepository: ProductRepository, pri
         if (name.isBlank()) {
             return Result.Error("Product name cannot be blank")
         }
-        if (name.length < 3 || name.length > 100) {
+        if (name.length !in 3..100) {
             return Result.Error("Product name must be between 3 and 100 characters")
         }
 
