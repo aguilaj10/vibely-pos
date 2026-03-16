@@ -1,78 +1,21 @@
 {
+  "languages": {
+    "Kotlin": {
+      "language_servers": ["kotlin-lsp"]
+    }
+  },
   "lsp": {
-    "kotlin-language-server": {
-      "initialization_options": {
-        "storagePath": ".kotlin-language-server",
-        "compiler": {
-          "jvm": {
-            "target": "17"
-          }
-        },
-        "indexing": {
-          "enabled": true
-        },
-        "completion": {
-          "snippets": {
-            "enabled": true
-          }
-        },
-        "inlayHints": {
-          "typeHints": {
-            "enabled": true
-          },
-          "parameterHints": {
-            "enabled": true
-          },
-          "chainedHints": {
-            "enabled": true
-          }
-        },
-        "externalSources": {
-          "useKlsScheme": false,
-          "autoConvertToKotlin": false
+    "kotlin-lsp": {
+      "binary": {
+        "path": "/home/jonathan/.local/bin/kotlin-lsp",
+        "arguments": ["--stdio", "--system-path=/home/jonathan/desarrollo/vibely-pos/.kotlin-lsp"],
+        "env": {
+          "KOTLIN_LSP_LOG_LEVEL": "INFO",
+          "JAVA_HOME": "/home/jonathan/.sdkman/candidates/java/current"
         }
       },
-      "settings": {
-        "kotlin": {
-          "languageServer": {
-            "enabled": true,
-            "path": "kotlin-language-server",
-            "debounceTime": 500,
-            "transport": "stdio"
-          },
-          "compiler": {
-            "jvm": {
-              "target": "17"
-            }
-          },
-          "sourcePath": [
-            "backend/src/main/kotlin",
-            "backend/src/test/kotlin",
-            "composeApp/src/commonMain/kotlin",
-            "composeApp/src/jvmMain/kotlin",
-            "composeApp/src/androidMain/kotlin",
-            "composeApp/src/jsMain/kotlin",
-            "composeApp/src/wasmJsMain/kotlin",
-            "composeApp/src/iosMain/kotlin",
-            "composeApp/src/commonTest/kotlin",
-            "shared/src/commonMain/kotlin",
-            "shared/src/jvmMain/kotlin",
-            "shared/src/androidMain/kotlin",
-            "shared/src/iosMain/kotlin",
-            "shared/src/commonTest/kotlin",
-            "buildSrc/src/main/kotlin"
-          ],
-          "excludePath": [
-            ".gradle",
-            ".kotlin",
-            "build",
-            "kotlin-js-store",
-            ".idea",
-            "out",
-            "target",
-            "node_modules"
-          ]
-        }
+      "initialization_options": {
+        "defaultJdk": "/home/jonathan/.sdkman/candidates/java/current"
       }
     }
   }

@@ -68,6 +68,11 @@ This implementation plan consolidates the work of 5 specialist teams (UI Designe
   - [x] Create README.md with setup instructions ✅
   - [x] Configure pre-commit hooks (Spotless, Detekt) ✅
 
+- [x] **Editor/IDE Setup** ✅
+  - [x] Migrate to official Kotlin LSP (`Kotlin/kotlin-lsp`) for Kotlin 2.3.10 support ✅
+  - [x] Configure Zed editor LSP integration (`.zed/settings.json`) ✅
+  - [x] Remove deprecated `kotlin-language-server` (fwcd) ✅
+
 - [x] **CI/CD Pipeline** ✅
   - [x] Create GitHub Actions workflow (.github/workflows/ci.yml) ✅
   - [x] Add build verification for all platforms ✅
