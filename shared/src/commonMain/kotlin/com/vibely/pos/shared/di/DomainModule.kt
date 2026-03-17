@@ -4,6 +4,11 @@ import com.vibely.pos.shared.domain.auth.usecase.GetCurrentUserUseCase
 import com.vibely.pos.shared.domain.auth.usecase.LoginUseCase
 import com.vibely.pos.shared.domain.auth.usecase.LogoutUseCase
 import com.vibely.pos.shared.domain.auth.usecase.RefreshTokenUseCase
+import com.vibely.pos.shared.domain.currency.usecase.CreateExchangeRateUseCase
+import com.vibely.pos.shared.domain.currency.usecase.DeleteExchangeRateUseCase
+import com.vibely.pos.shared.domain.currency.usecase.GetActiveCurrenciesUseCase
+import com.vibely.pos.shared.domain.currency.usecase.GetAllExchangeRatesUseCase
+import com.vibely.pos.shared.domain.currency.usecase.UpdateExchangeRateUseCase
 import com.vibely.pos.shared.domain.customer.usecase.AddLoyaltyPointsUseCase
 import com.vibely.pos.shared.domain.customer.usecase.CreateCustomerUseCase
 import com.vibely.pos.shared.domain.customer.usecase.DeleteCustomerUseCase
@@ -157,4 +162,11 @@ val domainModule =
         singleOf(::GetCategoryBreakdownUseCase)
         singleOf(::GetTopProductsUseCase)
         singleOf(::GetCustomerAnalyticsUseCase)
+
+        // Currency use cases
+        singleOf(::GetAllExchangeRatesUseCase)
+        singleOf(::CreateExchangeRateUseCase)
+        singleOf(::UpdateExchangeRateUseCase)
+        singleOf(::DeleteExchangeRateUseCase)
+        singleOf(::GetActiveCurrenciesUseCase)
     }

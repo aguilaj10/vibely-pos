@@ -18,6 +18,7 @@ import kotlinx.serialization.Serializable
  * @property supplierId Optional supplier ID
  * @property unitPrice Unit price (required)
  * @property costPrice Optional cost price
+ * @property costCurrencyCode Currency code for cost price (default: USD)
  * @property currentStock Initial stock quantity (required)
  * @property minStockLevel Optional minimum stock level
  * @property maxStockLevel Optional maximum stock level
@@ -44,6 +45,8 @@ data class CreateProductRequest(
     val unitPrice: Double,
     @SerialName("cost_price")
     val costPrice: Double? = null,
+    @SerialName("cost_currency_code")
+    val costCurrencyCode: String? = null,
     @SerialName("current_stock")
     val currentStock: Int,
     @SerialName("min_stock_level")
@@ -71,6 +74,7 @@ data class CreateProductRequest(
  * @property supplierId Optional new supplier ID
  * @property unitPrice Optional new unit price
  * @property costPrice Optional new cost price
+ * @property costCurrencyCode Optional new cost currency code
  * @property minStockLevel Optional new minimum stock level
  * @property maxStockLevel Optional new maximum stock level
  * @property reorderPoint Optional new reorder point
@@ -96,6 +100,8 @@ data class UpdateProductRequest(
     val unitPrice: Double? = null,
     @SerialName("cost_price")
     val costPrice: Double? = null,
+    @SerialName("cost_currency_code")
+    val costCurrencyCode: String? = null,
     @SerialName("min_stock_level")
     val minStockLevel: Int? = null,
     @SerialName("max_stock_level")

@@ -154,6 +154,7 @@ fun PurchaseOrdersScreen(
                 },
                 suppliers = state.suppliers,
                 products = state.products,
+                currencies = state.currencies,
                 onSave = viewModel::onSavePurchaseOrder,
                 onDismiss = viewModel::onDismissPODialog,
             )

@@ -27,6 +27,8 @@ data class ProductDTO(
     val categories: CategoryNameDTO? = null,
     @SerialName("cost_price")
     val costPrice: Double,
+    @SerialName("cost_currency_code")
+    val costCurrencyCode: String? = null,
     @SerialName("selling_price")
     val sellingPrice: Double,
     @SerialName("current_stock")

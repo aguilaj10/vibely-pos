@@ -10,6 +10,7 @@ import com.vibely.pos.backend.config.configureSecurity
 import com.vibely.pos.backend.config.configureStatusPages
 import com.vibely.pos.backend.routes.authRoutes
 import com.vibely.pos.backend.routes.categoryRoutes
+import com.vibely.pos.backend.routes.currencyRoutes
 import com.vibely.pos.backend.routes.customerRoutes
 import com.vibely.pos.backend.routes.dashboardRoutes
 import com.vibely.pos.backend.routes.inventoryRoutes
@@ -23,6 +24,7 @@ import com.vibely.pos.backend.routes.supplierRoutes
 import com.vibely.pos.backend.routes.userManagementRoutes
 import com.vibely.pos.backend.services.AuthService
 import com.vibely.pos.backend.services.CategoryService
+import com.vibely.pos.backend.services.CurrencyService
 import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.InventoryService
@@ -124,6 +126,7 @@ private fun Application.configureApiRoutes() {
     val userManagementService: Lazy<UserManagementService> = inject()
     val reportService: Lazy<ReportService> = inject()
     val settingsService: Lazy<SettingsService> = inject()
+    val currencyService: Lazy<CurrencyService> = inject()
 
     routing {
         authRoutes(authService.value)
@@ -139,6 +142,7 @@ private fun Application.configureApiRoutes() {
         userManagementRoutes(userManagementService.value)
         reportRoutes(reportService.value)
         settingsRoutes(settingsService.value)
+        currencyRoutes(currencyService.value)
     }
 }
 

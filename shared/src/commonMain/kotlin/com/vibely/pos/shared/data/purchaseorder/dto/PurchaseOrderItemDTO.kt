@@ -19,6 +19,8 @@ data class PurchaseOrderItemDTO(
     val quantity: Int,
     @SerialName("unit_cost")
     val unitCost: Double,
+    @SerialName("cost_currency_code")
+    val costCurrencyCode: String = "USD",
     @SerialName("subtotal")
     val subtotal: Double,
     @SerialName("received_quantity")

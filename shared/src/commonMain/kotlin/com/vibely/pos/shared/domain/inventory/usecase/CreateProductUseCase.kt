@@ -21,6 +21,7 @@ class CreateProductUseCase(private val productRepository: ProductRepository, pri
         categoryId: String? = null,
         unit: String = "unit",
         imageUrl: String? = null,
+        costCurrencyCode: String = "USD",
     ): Result<Product> {
         if (name.isBlank()) {
             return Result.Error("Product name cannot be blank")

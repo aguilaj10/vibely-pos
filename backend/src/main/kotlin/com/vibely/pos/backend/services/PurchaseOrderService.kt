@@ -11,8 +11,8 @@ package com.vibely.pos.backend.services
 import com.vibely.pos.backend.common.DatabaseColumns
 import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.backend.common.ErrorMessages
-import com.vibely.pos.backend.common.putIfNotNull
 import com.vibely.pos.backend.dto.request.CreatePurchaseOrderRequest
+import com.vibely.pos.backend.dto.request.ReceivePurchaseOrderItemRequest
 import com.vibely.pos.backend.dto.request.ReceivePurchaseOrderRequest
 import com.vibely.pos.backend.dto.request.UpdatePurchaseOrderRequest
 import com.vibely.pos.shared.data.purchaseorder.dto.PurchaseOrderDTO
@@ -23,10 +23,8 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
-import io.github.jan.supabase.postgrest.rpc
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 
 private const val PO_NUMBER_PADDING = 4
 private const val ERROR_FETCH_FAILED = "Failed to fetch purchase orders"
@@ -37,7 +35,10 @@ private const val ERROR_RECEIVE_FAILED = "Failed to receive purchase order"
 private const val ERROR_STATUS_UPDATE_FAILED = "Failed to update purchase order status"
 private const val ERROR_GENERATE_PO_FAILED = "Failed to generate PO number"
 
-class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseService() {
+class PurchaseOrderService(
+    private val supabaseClient: SupabaseClient,
+    private val currencyService: CurrencyService,
+) : BaseService() {
 
     suspend fun getAllPurchaseOrders(
         userId: String,
@@ -115,6 +116,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
                 put(DatabaseColumns.PRODUCT_ID, item.productId)
                 put(DatabaseColumns.QUANTITY, item.quantity)
                 put("unit_cost", item.unitCost)
+                put("cost_currency_code", item.costCurrencyCode)
                 put("subtotal", item.quantity * item.unitCost)
                 put("received_quantity", 0)
             }
@@ -187,13 +189,23 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
         }
     }
 
+    /**
+     * Receives a purchase order by updating received quantities and marking as received.
+     *
+     * This function performs multiple operations in sequence:
+     * 1. Validates purchase order ownership
+     * 2. Fetches all items from the order
+     * 3. Updates received quantities for each item
+     * 4. Converts non-MXN costs to MXN using latest exchange rates
+     * 5. Marks the order as received
+     */
     suspend fun receivePurchaseOrder(
         userId: String,
         purchaseOrderId: String,
         request: ReceivePurchaseOrderRequest,
     ): Result<PurchaseOrderDTO> {
         return executeQuery(ERROR_RECEIVE_FAILED) {
-            val purchaseOrder = supabaseClient.from(TableNames.PURCHASE_ORDERS)
+            supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
@@ -202,18 +214,16 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
                 }
                 .decodeSingle<PurchaseOrderDTO>()
 
-            request.items.forEach { itemUpdate ->
-                val updateData = buildJsonObject {
-                    put("received_quantity", itemUpdate.receivedQuantity)
-                }
-                supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
-                    .update(updateData) {
-                        filter {
-                            eq(DatabaseColumns.ID, itemUpdate.itemId)
-                            eq("purchase_order_id", purchaseOrderId)
-                        }
+            val orderItems = supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
+                .select {
+                    filter {
+                        eq("purchase_order_id", purchaseOrderId)
                     }
-            }
+                }
+                .decodeList<PurchaseOrderItemDTO>()
+
+            updateReceivedQuantities(purchaseOrderId, request.items)
+            convertProductCostsToMXN(orderItems)
 
             val statusData = buildJsonObject {
                 put(DatabaseColumns.STATUS, "received")
@@ -230,6 +240,46 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
                 }
                 .decodeSingle<PurchaseOrderDTO>()
         }
+    }
+
+    private suspend fun updateReceivedQuantities(
+        purchaseOrderId: String,
+        items: List<ReceivePurchaseOrderItemRequest>
+    ) {
+        items.forEach { itemUpdate ->
+            val updateData = buildJsonObject {
+                put("received_quantity", itemUpdate.receivedQuantity)
+            }
+            supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
+                .update(updateData) {
+                    filter {
+                        eq(DatabaseColumns.ID, itemUpdate.itemId)
+                        eq("purchase_order_id", purchaseOrderId)
+                    }
+                }
+        }
+    }
+
+    private suspend fun convertProductCostsToMXN(orderItems: List<PurchaseOrderItemDTO>) {
+        orderItems.filter { it.costCurrencyCode != "MXN" }
+            .forEach { item ->
+                currencyService.convertAmount(
+                    amount = item.unitCost,
+                    fromCurrency = item.costCurrencyCode,
+                    toCurrency = "MXN"
+                )?.let { convertedCost ->
+                    val productData = buildJsonObject {
+                        put("cost_price", convertedCost)
+                        put("cost_currency_code", "MXN")
+                    }
+                    supabaseClient.from(TableNames.PRODUCTS)
+                        .update(productData) {
+                            filter {
+                                eq(DatabaseColumns.ID, item.productId)
+                            }
+                        }
+                }
+            }
     }
 
     suspend fun generatePoNumber(userId: String): Result<String> {

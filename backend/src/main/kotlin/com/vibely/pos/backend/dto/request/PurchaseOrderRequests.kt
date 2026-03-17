@@ -21,6 +21,8 @@ data class PurchaseOrderItemRequest(
     val quantity: Int,
     @SerialName("unit_cost")
     val unitCost: Double,
+    @SerialName("cost_currency_code")
+    val costCurrencyCode: String = "USD",
 )
 
 @Serializable

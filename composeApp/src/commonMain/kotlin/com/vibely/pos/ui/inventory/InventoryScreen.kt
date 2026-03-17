@@ -141,6 +141,7 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
                 isEdit = state.editingProductId != null,
                 initialProduct = viewModel.getEditingProduct(),
                 categories = state.categories,
+                currencies = state.currencies,
                 onSave = viewModel::onSaveProduct,
                 onDismiss = viewModel::onDismissProductForm,
             )

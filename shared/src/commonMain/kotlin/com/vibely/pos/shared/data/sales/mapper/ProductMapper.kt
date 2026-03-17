@@ -25,6 +25,7 @@ object ProductMapper {
         categoryId = dto.categoryId,
         categoryName = dto.categoryName,
         costPrice = dto.costPrice,
+        costCurrencyCode = dto.costCurrencyCode ?: "USD",
         sellingPrice = dto.sellingPrice,
         currentStock = dto.currentStock,
         minStockLevel = dto.minStockLevel,
@@ -53,6 +54,7 @@ object ProductMapper {
         categoryId = product.categoryId,
         categories = null, // Not sent to backend, only received
         costPrice = product.costPrice,
+        costCurrencyCode = product.costCurrencyCode,
         sellingPrice = product.sellingPrice,
         currentStock = product.currentStock,
         minStockLevel = product.minStockLevel,

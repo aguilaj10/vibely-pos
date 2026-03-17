@@ -21,6 +21,7 @@ class UpdateProductUseCase(private val productRepository: ProductRepository) {
         unit: String = "unit",
         imageUrl: String? = null,
         isActive: Boolean = true,
+        costCurrencyCode: String = "USD",
     ): Result<Product> {
         if (id.isBlank()) {
             return Result.Error("Product ID cannot be blank")

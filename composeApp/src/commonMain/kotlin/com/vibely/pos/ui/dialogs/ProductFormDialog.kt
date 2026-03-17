@@ -53,6 +53,7 @@ fun ProductFormDialog(
     isEdit: Boolean,
     initialProduct: ProductFormData? = null,
     categories: List<CategoryOption> = emptyList(),
+    currencies: List<CurrencyOption> = emptyList(),
     onSave: (ProductFormData) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -63,6 +64,7 @@ fun ProductFormDialog(
     }
 
     var categoryExpanded by remember { mutableStateOf(false) }
+    var currencyExpanded by remember { mutableStateOf(false) }
     val validationErrors = validateProductForm(formData)
 
     Dialog(onDismissRequest = onDismiss) {
@@ -176,26 +178,72 @@ fun ProductFormDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    AppTextField(
-                        value = formData.costPrice,
-                        onValueChange = { formData = formData.copy(costPrice = it) },
-                        label = "Cost Price",
-                        variant = AppTextFieldVariant.Outlined,
-                        validationState = validationErrors["costPrice"] ?: ValidationState.None,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        modifier = Modifier.weight(1f),
-                    )
+                    Column(modifier = Modifier.weight(2f)) {
+                        AppTextField(
+                            value = formData.costPrice,
+                            onValueChange = { formData = formData.copy(costPrice = it) },
+                            label = "Cost Price",
+                            variant = AppTextFieldVariant.Outlined,
+                            validationState = validationErrors["costPrice"] ?: ValidationState.None,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
 
-                    AppTextField(
-                        value = formData.sellingPrice,
-                        onValueChange = { formData = formData.copy(sellingPrice = it) },
-                        label = "Selling Price *",
-                        variant = AppTextFieldVariant.Outlined,
-                        validationState = validationErrors["sellingPrice"] ?: ValidationState.None,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        modifier = Modifier.weight(1f),
-                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        ExposedDropdownMenuBox(
+                            expanded = currencyExpanded,
+                            onExpandedChange = { currencyExpanded = it },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            OutlinedTextField(
+                                value = currencies.find { it.code == formData.costCurrencyCode }?.symbol ?: "USD",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Currency") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
+                                modifier = Modifier
+                                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                                    .fillMaxWidth(),
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = currencyExpanded,
+                                onDismissRequest = { currencyExpanded = false },
+                            ) {
+                                if (currencies.isEmpty()) {
+                                    DropdownMenuItem(
+                                        text = { Text("No currencies available") },
+                                        onClick = { currencyExpanded = false },
+                                        enabled = false,
+                                    )
+                                } else {
+                                    currencies.forEach { currency ->
+                                        DropdownMenuItem(
+                                            text = { Text("${currency.symbol} ${currency.code}") },
+                                            onClick = {
+                                                formData = formData.copy(costCurrencyCode = currency.code)
+                                                currencyExpanded = false
+                                            },
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                AppTextField(
+                    value = formData.sellingPrice,
+                    onValueChange = { formData = formData.copy(sellingPrice = it) },
+                    label = "Selling Price (MXN) *",
+                    variant = AppTextFieldVariant.Outlined,
+                    validationState = validationErrors["sellingPrice"] ?: ValidationState.None,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -314,6 +362,7 @@ data class ProductFormData(
     val description: String = "",
     val categoryId: String? = null,
     val costPrice: String = "",
+    val costCurrencyCode: String = "USD",
     val sellingPrice: String = "",
     val currentStock: String = "0",
     val minStockLevel: String = "10",
@@ -324,3 +373,5 @@ data class ProductFormData(
 )
 
 data class CategoryOption(val id: String, val name: String)
+
+data class CurrencyOption(val code: String, val symbol: String, val name: String)

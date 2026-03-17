@@ -39,6 +39,7 @@ private fun buildProductCreateData(userId: String, request: CreateProductRequest
         request.categoryId?.let { put(DatabaseColumns.CATEGORY_ID, it) }
         request.supplierId?.let { put(DatabaseColumns.SUPPLIER_ID, it) }
         request.costPrice?.let { put(DatabaseColumns.COST_PRICE, it) }
+        request.costCurrencyCode?.let { put(DatabaseColumns.COST_CURRENCY_CODE, it) }
         request.minStockLevel?.let { put(DatabaseColumns.MIN_STOCK_LEVEL, it) }
         request.maxStockLevel?.let { put(DatabaseColumns.MAX_STOCK_LEVEL, it) }
         request.reorderPoint?.let { put(DatabaseColumns.REORDER_POINT, it) }
@@ -57,6 +58,7 @@ private fun buildProductUpdateData(request: UpdateProductRequest): JsonObject {
         putIfNotNull(DatabaseColumns.SUPPLIER_ID, request.supplierId)
         putIfNotNull(DatabaseColumns.SELLING_PRICE, request.unitPrice)
         putIfNotNull(DatabaseColumns.COST_PRICE, request.costPrice)
+        putIfNotNull(DatabaseColumns.COST_CURRENCY_CODE, request.costCurrencyCode)
         putIfNotNull(DatabaseColumns.MIN_STOCK_LEVEL, request.minStockLevel)
         putIfNotNull(DatabaseColumns.MAX_STOCK_LEVEL, request.maxStockLevel)
         putIfNotNull(DatabaseColumns.REORDER_POINT, request.reorderPoint)

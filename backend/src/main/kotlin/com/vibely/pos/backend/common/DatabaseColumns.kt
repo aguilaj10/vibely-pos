@@ -52,6 +52,14 @@ object DatabaseColumns {
 
     const val CLOSED_AT = "closed_at"
 
+    const val CODE = "code"
+    const val SYMBOL = "symbol"
+    const val CURRENCY_CODE_FROM = "currency_code_from"
+    const val CURRENCY_CODE_TO = "currency_code_to"
+    const val RATE = "rate"
+    const val EFFECTIVE_DATE = "effective_date"
+    const val COST_CURRENCY_CODE = "cost_currency_code"
+
     // Loyalty tier thresholds
     const val PLATINUM_THRESHOLD = 5000
     const val GOLD_THRESHOLD = 2000

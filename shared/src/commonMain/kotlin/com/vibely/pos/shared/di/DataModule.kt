@@ -6,6 +6,8 @@ import com.vibely.pos.shared.data.auth.datasource.RemoteAuthDataSource
 import com.vibely.pos.shared.data.auth.repository.AuthRepositoryImpl
 import com.vibely.pos.shared.data.auth.storage.PlatformAuthStorageFactory
 import com.vibely.pos.shared.data.auth.storage.configurePlatformHttpClient
+import com.vibely.pos.shared.data.currency.datasource.RemoteCurrencyDataSource
+import com.vibely.pos.shared.data.currency.repository.CurrencyRepositoryImpl
 import com.vibely.pos.shared.data.customer.datasource.RemoteCustomerDataSource
 import com.vibely.pos.shared.data.customer.repository.CustomerRepositoryImpl
 import com.vibely.pos.shared.data.dashboard.datasource.RemoteDashboardDataSource
@@ -29,6 +31,7 @@ import com.vibely.pos.shared.data.supplier.repository.SupplierRepositoryImpl
 import com.vibely.pos.shared.data.user.datasource.RemoteUserDataSource
 import com.vibely.pos.shared.data.user.repository.UserRepositoryImpl
 import com.vibely.pos.shared.domain.auth.repository.AuthRepository
+import com.vibely.pos.shared.domain.currency.repository.CurrencyRepository
 import com.vibely.pos.shared.domain.customer.repository.CustomerRepository
 import com.vibely.pos.shared.domain.dashboard.repository.DashboardRepository
 import com.vibely.pos.shared.domain.inventory.repository.CategoryRepository
@@ -274,4 +277,15 @@ val dataModule =
 
         // Reports repositories
         singleOf(::ReportsRepositoryImpl) { bind<ReportsRepository>() }
+
+        // Currency data sources
+        single {
+            RemoteCurrencyDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Currency repositories
+        singleOf(::CurrencyRepositoryImpl) { bind<CurrencyRepository>() }
     }

@@ -4,6 +4,7 @@ package com.vibely.pos.ui.purchaseorders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vibely.pos.shared.domain.currency.repository.CurrencyRepository
 import com.vibely.pos.shared.domain.purchaseorder.entity.PurchaseOrder
 import com.vibely.pos.shared.domain.purchaseorder.entity.PurchaseOrderItem
 import com.vibely.pos.shared.domain.purchaseorder.usecase.CreatePurchaseOrderUseCase
@@ -17,6 +18,7 @@ import com.vibely.pos.shared.domain.supplier.entity.Supplier
 import com.vibely.pos.shared.domain.supplier.usecase.GetAllSuppliersUseCase
 import com.vibely.pos.ui.common.PaginatedResult
 import com.vibely.pos.ui.common.PaginationState
+import com.vibely.pos.ui.dialogs.CurrencyOption
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormData
 import com.vibely.pos.ui.util.randomUuidString
 import kotlinx.coroutines.Job
@@ -32,6 +34,7 @@ data class PurchaseOrdersState(
     val purchaseOrders: List<PurchaseOrder> = emptyList(),
     val suppliers: List<Supplier> = emptyList(),
     val products: List<Product> = emptyList(),
+    val currencies: List<CurrencyOption> = emptyList(),
     val searchQuery: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -53,6 +56,7 @@ class PurchaseOrdersViewModel(
     private val deletePurchaseOrderUseCase: DeletePurchaseOrderUseCase,
     private val getAllSuppliersUseCase: GetAllSuppliersUseCase,
     private val getAllProductsUseCase: com.vibely.pos.shared.domain.inventory.usecase.GetAllProductsUseCase,
+    private val currencyRepository: CurrencyRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PurchaseOrdersState())
@@ -115,6 +119,16 @@ class PurchaseOrdersViewModel(
             when (val productsResult = getAllProductsUseCase()) {
                 is Result.Success -> {
                     _state.update { it.copy(products = productsResult.data) }
+                }
+                is Result.Error -> {}
+            }
+
+            when (val currenciesResult = currencyRepository.getActiveCurrencies()) {
+                is Result.Success -> {
+                    val currencies = currenciesResult.data.map {
+                        CurrencyOption(code = it.code, symbol = it.symbol, name = it.name)
+                    }
+                    _state.update { it.copy(currencies = currencies) }
                 }
                 is Result.Error -> {}
             }
@@ -199,6 +213,7 @@ class PurchaseOrdersViewModel(
                     productSku = product?.sku,
                     quantity = lineItem.quantity.toIntOrNull() ?: 1,
                     unitCost = lineItem.unitCost.toDoubleOrNull() ?: 0.0,
+                    costCurrencyCode = lineItem.costCurrencyCode,
                     subtotal = lineItem.calculateSubtotal(),
                     createdAt = Clock.System.now(),
                 )

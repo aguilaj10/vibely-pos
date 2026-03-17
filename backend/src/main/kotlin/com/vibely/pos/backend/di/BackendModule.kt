@@ -5,6 +5,7 @@ import com.vibely.pos.backend.security.CsrfTokenManager
 import com.vibely.pos.backend.security.RateLimiter
 import com.vibely.pos.backend.services.AuthService
 import com.vibely.pos.backend.services.CategoryService
+import com.vibely.pos.backend.services.CurrencyService
 import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.InventoryService
@@ -50,7 +51,7 @@ val backendModule =
 
     single { SupplierService(get()) }
 
-    single { PurchaseOrderService(get()) }
+    single { PurchaseOrderService(get(), get()) }
 
     single { ShiftService(get()) }
 
@@ -59,4 +60,6 @@ val backendModule =
     single { ReportService(get()) }
 
     single { SettingsService(get()) }
+
+    single { CurrencyService(get()) }
     }

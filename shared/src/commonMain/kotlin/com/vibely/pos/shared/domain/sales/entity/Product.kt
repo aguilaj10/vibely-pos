@@ -18,6 +18,7 @@ import kotlin.time.Instant
  * @param categoryId Optional reference to product category.
  * @param categoryName Optional display name of the product category.
  * @param costPrice Purchase/cost price of the product.
+ * @param costCurrencyCode Currency code for cost price (USD, EUR, MXN).
  * @param sellingPrice Retail selling price.
  * @param currentStock Current quantity in stock.
  * @param minStockLevel Minimum stock level before low stock alert.
@@ -36,6 +37,7 @@ data class Product(
     val categoryId: String?,
     val categoryName: String?,
     val costPrice: Double,
+    val costCurrencyCode: String = "USD",
     val sellingPrice: Double,
     val currentStock: Int,
     val minStockLevel: Int,
@@ -171,6 +173,7 @@ data class Product(
             unit: String = "unit",
             imageUrl: String? = null,
             isActive: Boolean = true,
+            costCurrencyCode: String = "USD",
             createdAt: Instant = Clock.System.now(),
             updatedAt: Instant = Clock.System.now(),
         ): Product = Product(
@@ -182,6 +185,7 @@ data class Product(
             categoryId = categoryId,
             categoryName = categoryName,
             costPrice = costPrice,
+            costCurrencyCode = costCurrencyCode,
             sellingPrice = sellingPrice,
             currentStock = currentStock,
             minStockLevel = minStockLevel,

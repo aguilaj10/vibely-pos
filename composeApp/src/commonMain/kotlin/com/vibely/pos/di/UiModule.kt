@@ -22,11 +22,11 @@ val uiModule = module {
     factory { DashboardViewModel(get(), get(), get()) }
     factory { CheckoutViewModel(get(), get(), get(), get(), get(), get()) }
     factory { SalesListViewModel(get(), get(), get()) }
-    factory { InventoryViewModel(get(), get(), get(), get(), get(), get()) }
+    factory { InventoryViewModel(get(), get(), get(), get(), get(), get(), get()) }
     factory { CategoriesViewModel(get(), get(), get()) }
     factory { CustomersViewModel(get(), get(), get(), get(), get()) }
     factory { SuppliersViewModel(get(), get(), get(), get(), get()) }
-    factory { PurchaseOrdersViewModel(get(), get(), get(), get(), get(), get()) }
+    factory { PurchaseOrdersViewModel(get(), get(), get(), get(), get(), get(), get()) }
     factory { ShiftsViewModel(get(), get(), get()) }
     factory { UsersViewModel(get(), get(), get(), get(), get()) }
     factory { ReportsViewModel(get(), get(), get(), get(), get()) }

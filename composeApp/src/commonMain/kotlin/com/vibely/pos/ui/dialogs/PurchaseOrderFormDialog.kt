@@ -47,6 +47,7 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
+import com.vibely.pos.ui.dialogs.CurrencyOption
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -60,6 +61,7 @@ fun PurchaseOrderFormDialog(
     initialData: PurchaseOrderFormData? = null,
     suppliers: List<Supplier> = emptyList(),
     products: List<Product> = emptyList(),
+    currencies: List<CurrencyOption> = emptyList(),
     onSave: (PurchaseOrderFormData) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -189,6 +191,7 @@ fun PurchaseOrderFormDialog(
                             LineItemRow(
                                 lineItem = formData.lineItems[index],
                                 products = products,
+                                currencies = currencies,
                                 onUpdate = { updatedItem ->
                                     val newItems = formData.lineItems.toMutableList()
                                     newItems[index] = updatedItem
@@ -269,12 +272,14 @@ fun PurchaseOrderFormDialog(
 private fun LineItemRow(
     lineItem: LineItemFormData,
     products: List<Product>,
+    currencies: List<CurrencyOption>,
     onUpdate: (LineItemFormData) -> Unit,
     onRemove: () -> Unit,
     isFirst: Boolean,
     isLast: Boolean,
 ) {
     var productExpanded by remember { mutableStateOf(false) }
+    var currencyExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -341,6 +346,39 @@ private fun LineItemRow(
                 modifier = Modifier.width(100.dp),
             )
 
+            if (currencies.isNotEmpty()) {
+                ExposedDropdownMenuBox(
+                    expanded = currencyExpanded,
+                    onExpandedChange = { currencyExpanded = it },
+                    modifier = Modifier.width(80.dp),
+                ) {
+                    OutlinedTextField(
+                        value = currencies.find { it.code == lineItem.costCurrencyCode }?.symbol ?: "USD",
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth(),
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = currencyExpanded,
+                        onDismissRequest = { currencyExpanded = false },
+                    ) {
+                        currencies.forEach { currency ->
+                            DropdownMenuItem(
+                                text = { Text("${currency.symbol} ${currency.code}") },
+                                onClick = {
+                                    onUpdate(lineItem.copy(costCurrencyCode = currency.code))
+                                    currencyExpanded = false
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
             Text(
                 text = formatCurrency(lineItem.calculateSubtotal()),
                 style = MaterialTheme.typography.bodyMedium,
@@ -390,7 +428,13 @@ data class PurchaseOrderFormData(
     fun calculateTotal(): Double = lineItems.sumOf { it.calculateSubtotal() }
 }
 
-data class LineItemFormData(val id: String = "", val productId: String = "", val quantity: String = "1", val unitCost: String = "0.0") {
+data class LineItemFormData(
+    val id: String = "",
+    val productId: String = "",
+    val quantity: String = "1",
+    val unitCost: String = "0.0",
+    val costCurrencyCode: String = "USD",
+) {
     fun calculateSubtotal(): Double {
         val qty = quantity.toDoubleOrNull() ?: 0.0
         val cost = unitCost.toDoubleOrNull() ?: 0.0

@@ -2,6 +2,7 @@ package com.vibely.pos.ui.inventory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vibely.pos.shared.domain.currency.repository.CurrencyRepository
 import com.vibely.pos.shared.domain.inventory.usecase.CreateProductUseCase
 import com.vibely.pos.shared.domain.inventory.usecase.DeleteProductUseCase
 import com.vibely.pos.shared.domain.inventory.usecase.GetAllProductsUseCase
@@ -13,6 +14,7 @@ import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
 import com.vibely.pos.ui.common.PaginatedResult
 import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.dialogs.CategoryOption
+import com.vibely.pos.ui.dialogs.CurrencyOption
 import com.vibely.pos.ui.dialogs.ProductFormData
 import com.vibely.pos.ui.util.randomUuidString
 import kotlinx.coroutines.Job
@@ -34,6 +36,7 @@ data class InventoryState(
     val totalValue: Double = 0.0,
     val categoriesCount: Int = 0,
     val categories: List<CategoryOption> = emptyList(),
+    val currencies: List<CurrencyOption> = emptyList(),
     val showProductForm: Boolean = false,
     val editingProductId: String? = null,
     val confirmDeleteProductId: String? = null,
@@ -47,6 +50,7 @@ class InventoryViewModel(
     private val updateProductUseCase: UpdateProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val currencyRepository: CurrencyRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(InventoryState())
@@ -57,6 +61,7 @@ class InventoryViewModel(
     init {
         loadProducts()
         loadCategories()
+        loadCurrencies()
     }
 
     fun loadProducts() {
@@ -112,6 +117,22 @@ class InventoryViewModel(
                 }
                 is Result.Error -> {
                     // Silently fail for categories - not critical
+                }
+            }
+        }
+    }
+
+    private fun loadCurrencies() {
+        viewModelScope.launch {
+            when (val result = currencyRepository.getActiveCurrencies()) {
+                is Result.Success -> {
+                    val currencies = result.data.map {
+                        CurrencyOption(code = it.code, symbol = it.symbol, name = it.name)
+                    }
+                    _state.update { it.copy(currencies = currencies) }
+                }
+                is Result.Error -> {
+                    // Silently fail for currencies - not critical, will default to USD
                 }
             }
         }
@@ -239,6 +260,7 @@ class InventoryViewModel(
                     unit = formData.unit.ifBlank { "unit" },
                     imageUrl = formData.imageUrl.ifBlank { null },
                     isActive = formData.isActive,
+                    costCurrencyCode = formData.costCurrencyCode,
                 )
             } else {
                 createProductUseCase(
@@ -254,6 +276,7 @@ class InventoryViewModel(
                     categoryId = formData.categoryId,
                     unit = formData.unit.ifBlank { "unit" },
                     imageUrl = formData.imageUrl.ifBlank { null },
+                    costCurrencyCode = formData.costCurrencyCode,
                 )
             }
 

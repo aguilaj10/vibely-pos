@@ -13,6 +13,7 @@ object PurchaseOrderItemMapper {
         productSku = dto.productSku,
         quantity = dto.quantity,
         unitCost = dto.unitCost,
+        costCurrencyCode = dto.costCurrencyCode,
         receivedQuantity = dto.receivedQuantity,
         createdAt = Instant.parse(dto.createdAt),
     )
@@ -25,6 +26,7 @@ object PurchaseOrderItemMapper {
         productSku = item.productSku,
         quantity = item.quantity,
         unitCost = item.unitCost,
+        costCurrencyCode = item.costCurrencyCode,
         subtotal = item.subtotal,
         receivedQuantity = item.receivedQuantity,
         createdAt = item.createdAt.toString(),

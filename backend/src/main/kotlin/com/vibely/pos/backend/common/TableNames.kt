@@ -18,4 +18,7 @@ object TableNames {
     const val PURCHASE_ORDER_ITEMS = "purchase_order_items"
 
     const val SETTINGS = "app_settings"
+
+    const val CURRENCIES = "currencies"
+    const val CURRENCY_EXCHANGE_RATES = "currency_exchange_rates"
 }

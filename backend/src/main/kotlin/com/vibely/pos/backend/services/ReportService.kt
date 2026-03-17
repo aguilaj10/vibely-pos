@@ -11,6 +11,13 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
+import java.time.DateTimeException
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.YearMonth
+import java.time.ZoneOffset
+import java.time.format.DateTimeParseException
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -430,7 +437,6 @@ class ReportService(
     }
 
     // Helper function to parse timestamp to epoch milliseconds
-    @Suppress("TooGenericExceptionCaught")
     private fun parseTimestampToEpoch(timestamp: String): Long {
         return try {
             // Simple parsing - assume ISO format
@@ -438,49 +444,48 @@ class ReportService(
             val cleanTimestamp = timestamp.replace("+00:00", "").replace("Z", "")
             if (cleanTimestamp.contains(".")) {
                 val basePart = cleanTimestamp.substringBefore(".")
-                val parsed = java.time.LocalDateTime.parse(basePart)
-                java.time.Instant.from(parsed.atZone(java.time.ZoneOffset.UTC)).toEpochMilli()
+                val parsed = LocalDateTime.parse(basePart)
+                Instant.from(parsed.atZone(ZoneOffset.UTC)).toEpochMilli()
             } else {
-                val parsed = java.time.LocalDateTime.parse(cleanTimestamp)
-                java.time.Instant.from(parsed.atZone(java.time.ZoneOffset.UTC)).toEpochMilli()
+                val parsed = LocalDateTime.parse(cleanTimestamp)
+                Instant.from(parsed.atZone(ZoneOffset.UTC)).toEpochMilli()
             }
-        } catch (e: Exception) {
+        } catch (_: DateTimeParseException) {
             // Return current time as fallback
-            System.currentTimeMillis()
+            Instant.now().toEpochMilli()
         }
     }
 
     // Helper function to parse date string to epoch milliseconds
-    @Suppress("TooGenericExceptionCaught")
     private fun parseDateToEpoch(dateStr: String): Long {
         return try {
-            val parsed = java.time.LocalDate.parse(dateStr)
-            java.time.Instant.from(parsed.atStartOfDay(java.time.ZoneOffset.UTC)).toEpochMilli()
-        } catch (e: Exception) {
-            System.currentTimeMillis()
+            val parsed = LocalDate.parse(dateStr)
+            Instant.from(parsed.atStartOfDay(ZoneOffset.UTC)).toEpochMilli()
+        } catch (_: DateTimeParseException) {
+            Instant.now().toEpochMilli()
         }
     }
 
     // Helper function to parse month string to epoch milliseconds
-    @Suppress("TooGenericExceptionCaught")
     private fun parseMonthToEpoch(monthStr: String): Long {
         return try {
-            val parsed = java.time.YearMonth.parse(monthStr)
-            java.time.Instant.from(parsed.atDay(1).atStartOfDay(java.time.ZoneOffset.UTC)).toEpochMilli()
-        } catch (e: Exception) {
-            System.currentTimeMillis()
+            val parsed = YearMonth.parse(monthStr)
+            Instant.from(parsed.atDay(1).atStartOfDay(ZoneOffset.UTC)).toEpochMilli()
+        } catch (_: DateTimeParseException) {
+            Instant.now().toEpochMilli()
         }
     }
 
     // Helper function to parse year string to epoch milliseconds
-    @Suppress("TooGenericExceptionCaught")
     private fun parseYearToEpoch(yearStr: String): Long {
         return try {
             val year = yearStr.toInt()
-            val date = java.time.LocalDate.of(year, 1, 1)
-            java.time.Instant.from(date.atStartOfDay(java.time.ZoneOffset.UTC)).toEpochMilli()
-        } catch (e: Exception) {
-            System.currentTimeMillis()
+            val date = LocalDate.of(year, 1, 1)
+            Instant.from(date.atStartOfDay(ZoneOffset.UTC)).toEpochMilli()
+        } catch (_: NumberFormatException) {
+            Instant.now().toEpochMilli()
+        } catch (_: DateTimeException) {
+            Instant.now().toEpochMilli()
         }
     }
 
