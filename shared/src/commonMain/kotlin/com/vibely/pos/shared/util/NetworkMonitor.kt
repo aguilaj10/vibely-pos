@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
  * }
  * ```
  */
-expect class NetworkMonitor() {
+expect class NetworkMonitor {
 
     /**
      * A Flow that emits the current network connectivity state.

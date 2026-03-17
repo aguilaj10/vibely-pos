@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-actual class NetworkMonitor {
+actual class NetworkMonitor internal constructor(private val context: Context) {
 
     private val _isOnline = MutableStateFlow(true)
     actual val isOnline: StateFlow<Boolean> = _isOnline.asStateFlow()
@@ -19,19 +19,8 @@ actual class NetworkMonitor {
     private var connectivityManager: ConnectivityManager? = null
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
-    private object NetworkMonitorContext {
-        private var context: Context? = null
-
-        fun init(appContext: Context) {
-            context = appContext.applicationContext
-        }
-
-        fun get(): Context? = context
-    }
-
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     actual fun startMonitoring() {
-        val context = NetworkMonitorContext.get() ?: return
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         connectivityManager = cm
 
@@ -56,7 +45,6 @@ actual class NetworkMonitor {
 
         cm?.registerNetworkCallback(networkRequest, networkCallback!!)
 
-        // Set initial state
         _isOnline.value = cm?.activeNetwork?.let { network ->
             cm.getNetworkCapabilities(network)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         } ?: false

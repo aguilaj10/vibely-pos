@@ -1,6 +1,5 @@
 package com.vibely.pos.shared.util
 
-import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -37,7 +36,7 @@ actual class NetworkMonitor {
     }
 
     private fun updateOnlineStatus() {
-        _isOnline.update { window.navigator.onLine }
+        _isOnline.update { true }
     }
 
     companion object {

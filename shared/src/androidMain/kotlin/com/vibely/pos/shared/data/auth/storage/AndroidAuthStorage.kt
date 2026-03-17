@@ -13,6 +13,8 @@ import com.vibely.pos.shared.domain.auth.valueobject.AuthToken
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.client.HttpClientConfig
 import kotlinx.coroutines.flow.first
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.time.Instant
 
 private const val AUTH_DATASTORE_FILE_NAME = "auth.preferences_pb"
@@ -21,25 +23,9 @@ private val accessTokenKey = stringPreferencesKey("access_token")
 private val refreshTokenKey = stringPreferencesKey("refresh_token")
 private val expiresAtEpochMsKey = longPreferencesKey("expires_at_epoch_ms")
 
-private object AndroidAuthStorageContext {
-    private var context: Context? = null
-
-    fun init(appContext: Context) {
-        context = appContext.applicationContext
-    }
-
-    fun requireContext(): Context = requireNotNull(context) {
-        "Android auth storage is not initialized. Call initAndroidAuthStorage(context) before creating Koin modules."
-    }
-}
-
-fun initAndroidAuthStorage(context: Context) {
-    AndroidAuthStorageContext.init(context)
-}
-
-internal actual object PlatformAuthStorageFactory {
+internal actual object PlatformAuthStorageFactory : KoinComponent {
     actual fun createLocalAuthDataSource(): LocalAuthDataSource {
-        val context = AndroidAuthStorageContext.requireContext()
+        val context: Context by inject()
         val dataStore =
             PreferenceDataStoreFactory.create(
                 produceFile = { context.preferencesDataStoreFile(AUTH_DATASTORE_FILE_NAME) },

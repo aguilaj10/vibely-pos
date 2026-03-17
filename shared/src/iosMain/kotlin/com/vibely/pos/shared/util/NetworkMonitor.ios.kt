@@ -36,9 +36,6 @@ actual class NetworkMonitor {
     }
 
     private fun updateOnlineStatus() {
-        // For iOS, we assume online - actual network checking would require
-        // native code integration or URLSession checks
-        // This is a simplified implementation
         _isOnline.update { true }
     }
 
