@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.vibely.pos.config.DebugConfig
 import com.vibely.pos.ui.auth.LoginScreen
+import com.vibely.pos.ui.checkout.CheckoutScreen
 import com.vibely.pos.ui.customers.CustomersScreen
 import com.vibely.pos.ui.dashboard.DashboardScreen
 import com.vibely.pos.ui.inventory.InventoryScreen
@@ -130,10 +131,8 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                         }
 
                         is Screen.Checkout -> NavEntry(key) {
-                            PlaceholderScreen(
-                                title = Screen.Checkout.title,
-                                icon = Screen.Checkout.icon,
-                                description = "Point of sale checkout screen for processing new sales transactions.",
+                            CheckoutScreen(
+                                onNavigate = { screen -> backStack.add(screen) },
                             )
                         }
 

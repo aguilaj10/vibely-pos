@@ -52,8 +52,5 @@ data class CheckoutState(
      */
     val canCheckout: Boolean get() = hasItems && !isProcessingPayment
 
-    /**
-     * Returns true if any loading operation is in progress.
-     */
-    val isAnyLoading: Boolean get() = isLoading || isSearching || isProcessingPayment
+    val shouldExpand: Boolean get() = searchQuery.length >= 3 && (searchResults.isNotEmpty() || isSearching)
 }

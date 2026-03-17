@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -27,6 +29,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.theme.AppColors
 import com.vibely.pos.ui.theme.PosShapes
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Check
+import compose.icons.fontawesomeicons.solid.ExclamationTriangle
+import compose.icons.fontawesomeicons.solid.TimesCircle
 
 sealed class ValidationState {
     object None : ValidationState()
@@ -184,10 +191,37 @@ private fun FilledTextField(
 
 @Composable
 private fun getValidationIcon(state: ValidationState): (@Composable () -> Unit)? = when (state) {
-    is ValidationState.Error -> null
-    is ValidationState.Warning -> null
-    ValidationState.Valid -> null
-    ValidationState.None -> null
+    is ValidationState.Error -> {
+        {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.TimesCircle,
+                contentDescription = "Error",
+                modifier = Modifier.size(20.dp),
+                tint = AppColors.Error,
+            )
+        }
+    }
+    is ValidationState.Warning -> {
+        {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.ExclamationTriangle,
+                contentDescription = "Warning",
+                modifier = Modifier.size(20.dp),
+                tint = AppColors.Warning,
+            )
+        }
+    }
+    is ValidationState.Valid -> {
+        {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Check,
+                contentDescription = "Valid",
+                modifier = Modifier.size(20.dp),
+                tint = AppColors.Success,
+            )
+        }
+    }
+    is ValidationState.None -> null
 }
 
 @Composable

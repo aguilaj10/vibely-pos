@@ -41,7 +41,7 @@ class CheckoutViewModel(
 
         searchJob = viewModelScope.launch {
             delay(300)
-            if (query.length >= 2) {
+            if (query.length >= 3) {
                 performSearch(query)
             }
         }
