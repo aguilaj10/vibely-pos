@@ -44,6 +44,7 @@ import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
+import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.CloseShiftDialog
 import com.vibely.pos.ui.dialogs.OpenShiftDialog
 import com.vibely.pos.ui.navigation.Screen
@@ -114,6 +115,8 @@ fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vi
             } else {
                 ShiftsTable(
                     shifts = state.shifts,
+                    state = state,
+                    viewModel = viewModel,
                     onViewShift = viewModel::onViewShiftDetails,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -321,7 +324,13 @@ private fun KpiCard(icon: ImageVector, label: String, value: String, valueColor:
 }
 
 @Composable
-private fun ShiftsTable(shifts: List<Shift>, onViewShift: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun ShiftsTable(
+    shifts: List<Shift>,
+    state: ShiftsState,
+    viewModel: ShiftsViewModel,
+    onViewShift: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     AppCard(
         modifier = modifier.padding(horizontal = 16.dp),
         style = AppCardStyle.Elevated,
@@ -364,6 +373,13 @@ private fun ShiftsTable(shifts: List<Shift>, onViewShift: (String) -> Unit, modi
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
+
+                PaginationControls(
+                    paginationState = state.pagination,
+                    onPreviousPage = viewModel::onPreviousPage,
+                    onNextPage = viewModel::onNextPage,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }

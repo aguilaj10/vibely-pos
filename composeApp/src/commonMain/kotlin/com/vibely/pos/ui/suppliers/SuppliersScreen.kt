@@ -41,6 +41,7 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.SupplierFormData
 import com.vibely.pos.ui.dialogs.SupplierFormDialog
@@ -108,6 +109,8 @@ fun SuppliersScreen(
             } else {
                 SuppliersTable(
                     suppliers = state.suppliers,
+                    state = state,
+                    viewModel = viewModel,
                     onEditSupplier = viewModel::onEditSupplier,
                     onDeleteSupplier = viewModel::onDeleteSupplier,
                     modifier = Modifier
@@ -279,6 +282,8 @@ private fun KpiCard(
 @Composable
 private fun SuppliersTable(
     suppliers: List<Supplier>,
+    state: SuppliersState,
+    viewModel: SuppliersViewModel,
     onEditSupplier: (String) -> Unit,
     onDeleteSupplier: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -326,6 +331,13 @@ private fun SuppliersTable(
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
+
+                PaginationControls(
+                    paginationState = state.pagination,
+                    onPreviousPage = viewModel::onPreviousPage,
+                    onNextPage = viewModel::onNextPage,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }

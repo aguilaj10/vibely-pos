@@ -11,6 +11,8 @@ import com.vibely.pos.shared.domain.user.usecase.DeleteUserUseCase
 import com.vibely.pos.shared.domain.user.usecase.GetAllUsersUseCase
 import com.vibely.pos.shared.domain.user.usecase.SearchUsersUseCase
 import com.vibely.pos.shared.domain.user.usecase.UpdateUserUseCase
+import com.vibely.pos.ui.common.PaginatedResult
+import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.dialogs.UserFormData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -34,6 +36,7 @@ data class UsersState(
     val showDeleteDialog: Boolean = false,
     val editingUser: User? = null,
     val deletingUserId: String? = null,
+    val pagination: PaginationState = PaginationState(),
 )
 
 class UsersViewModel(
@@ -59,16 +62,27 @@ class UsersViewModel(
 
             val role = _state.value.selectedRoleFilter
             val status = _state.value.selectedStatusFilter
+            val currentPagination = _state.value.pagination
 
-            when (val result = getAllUsersUseCase(role = role, status = status)) {
+            when (
+                val result = getAllUsersUseCase(
+                    role = role,
+                    status = status,
+                    page = currentPagination.currentPage,
+                    pageSize = currentPagination.pageSize,
+                )
+            ) {
                 is Result.Success -> {
                     val users = result.data
+                    val paginatedResult = PaginatedResult.from(users, currentPagination.pageSize)
+
                     _state.update {
                         it.copy(
                             users = users,
                             isLoading = false,
                             totalUsers = users.size,
                             activeUsers = users.count { u -> u.status == UserStatus.ACTIVE },
+                            pagination = currentPagination.withHasMore(paginatedResult.hasMore),
                         )
                     }
                 }
@@ -85,7 +99,7 @@ class UsersViewModel(
     }
 
     fun onSearchQueryChange(query: String) {
-        _state.update { it.copy(searchQuery = query) }
+        _state.update { it.copy(searchQuery = query, pagination = it.pagination.reset()) }
 
         searchJob?.cancel()
         if (query.isBlank()) {
@@ -126,17 +140,17 @@ class UsersViewModel(
     }
 
     fun onClearSearch() {
-        _state.update { it.copy(searchQuery = "") }
+        _state.update { it.copy(searchQuery = "", pagination = it.pagination.reset()) }
         loadUsers()
     }
 
     fun onRoleFilterChange(role: UserRole?) {
-        _state.update { it.copy(selectedRoleFilter = role, searchQuery = "") }
+        _state.update { it.copy(selectedRoleFilter = role, searchQuery = "", pagination = it.pagination.reset()) }
         loadUsers()
     }
 
     fun onStatusFilterChange(status: UserStatus?) {
-        _state.update { it.copy(selectedStatusFilter = status, searchQuery = "") }
+        _state.update { it.copy(selectedStatusFilter = status, searchQuery = "", pagination = it.pagination.reset()) }
         loadUsers()
     }
 
@@ -146,6 +160,7 @@ class UsersViewModel(
                 selectedRoleFilter = null,
                 selectedStatusFilter = null,
                 searchQuery = "",
+                pagination = it.pagination.reset(),
             )
         }
         loadUsers()
@@ -252,6 +267,16 @@ class UsersViewModel(
 
     fun onSuccessMessageDismiss() {
         _state.update { it.copy(successMessage = null) }
+    }
+
+    fun onNextPage() {
+        _state.update { it.copy(pagination = it.pagination.nextPage()) }
+        loadUsers()
+    }
+
+    fun onPreviousPage() {
+        _state.update { it.copy(pagination = it.pagination.previousPage()) }
+        loadUsers()
     }
 
     companion object {

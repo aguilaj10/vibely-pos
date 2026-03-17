@@ -21,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.theme.AppColors
@@ -224,7 +226,12 @@ fun AppSearchField(
         variant = variant,
         trailingIcon = if (value.isNotEmpty()) {
             {
-                IconButton(onClick = { onValueChange("") }) {
+                IconButton(
+                    onClick = { onValueChange("") },
+                    modifier = Modifier.semantics {
+                        contentDescription = "Clear search"
+                    }
+                ) {
                     Text("✕")
                 }
             }

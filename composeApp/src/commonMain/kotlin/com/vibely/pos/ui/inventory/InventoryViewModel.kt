@@ -10,6 +10,8 @@ import com.vibely.pos.shared.domain.inventory.usecase.UpdateProductUseCase
 import com.vibely.pos.shared.domain.result.Result
 import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
+import com.vibely.pos.ui.common.PaginatedResult
+import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.dialogs.CategoryOption
 import com.vibely.pos.ui.dialogs.ProductFormData
 import com.vibely.pos.ui.util.randomUuidString
@@ -35,6 +37,7 @@ data class InventoryState(
     val showProductForm: Boolean = false,
     val editingProductId: String? = null,
     val confirmDeleteProductId: String? = null,
+    val pagination: PaginationState = PaginationState(),
 )
 
 class InventoryViewModel(
@@ -60,9 +63,16 @@ class InventoryViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            when (val result = getAllProductsUseCase()) {
+            val currentPagination = _state.value.pagination
+            when (
+                val result = getAllProductsUseCase(
+                    page = currentPagination.currentPage,
+                    pageSize = currentPagination.pageSize,
+                )
+            ) {
                 is Result.Success -> {
                     val products = result.data
+                    val paginatedResult = PaginatedResult.from(products, currentPagination.pageSize)
                     val lowStockCount = products.count { it.isLowStock }
                     val totalValue = products.sumOf { it.sellingPrice * it.currentStock }
                     val categoriesCount = products.mapNotNull { it.categoryId }.distinct().size
@@ -75,6 +85,7 @@ class InventoryViewModel(
                             lowStockCount = lowStockCount,
                             totalValue = totalValue,
                             categoriesCount = categoriesCount,
+                            pagination = currentPagination.withHasMore(paginatedResult.hasMore),
                         )
                     }
                 }
@@ -107,7 +118,7 @@ class InventoryViewModel(
     }
 
     fun onSearchQueryChange(query: String) {
-        _state.update { it.copy(searchQuery = query) }
+        _state.update { it.copy(searchQuery = query, pagination = it.pagination.reset()) }
 
         searchJob?.cancel()
         if (query.isBlank()) {
@@ -139,6 +150,7 @@ class InventoryViewModel(
                         lowStockCount = lowStockCount,
                         totalValue = totalValue,
                         categoriesCount = categoriesCount,
+                        pagination = it.pagination.reset().withHasMore(false),
                     )
                 }
             }
@@ -154,7 +166,7 @@ class InventoryViewModel(
     }
 
     fun onClearSearch() {
-        _state.update { it.copy(searchQuery = "") }
+        _state.update { it.copy(searchQuery = "", pagination = it.pagination.reset()) }
         loadProducts()
     }
 
@@ -296,6 +308,16 @@ class InventoryViewModel(
 
     fun onSuccessMessageDismiss() {
         _state.update { it.copy(successMessage = null) }
+    }
+
+    fun onNextPage() {
+        _state.update { it.copy(pagination = it.pagination.nextPage()) }
+        loadProducts()
+    }
+
+    fun onPreviousPage() {
+        _state.update { it.copy(pagination = it.pagination.previousPage()) }
+        loadProducts()
     }
 }
 

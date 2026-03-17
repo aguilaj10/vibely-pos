@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +27,10 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.DebugModeBadge
 import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
+import com.vibely.pos.ui.components.ErrorState
+import com.vibely.pos.ui.components.ShimmerPlaceholder
+import com.vibely.pos.ui.components.SkeletonDashboardMetrics
+import com.vibely.pos.ui.components.SkeletonSalesTable
 import com.vibely.pos.ui.dashboard.components.MetricCard
 import com.vibely.pos.ui.dashboard.components.QuickActionButtons
 import com.vibely.pos.ui.dashboard.components.RecentTransactionsTable
@@ -36,7 +39,6 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.ChartLine
 import compose.icons.fontawesomeicons.solid.CheckCircle
-import compose.icons.fontawesomeicons.solid.ExclamationCircle
 import compose.icons.fontawesomeicons.solid.ExclamationTriangle
 import compose.icons.fontawesomeicons.solid.Receipt
 import compose.icons.fontawesomeicons.solid.Sync
@@ -69,6 +71,7 @@ fun DashboardScreen(
                 ErrorState(
                     message = state.errorMessage!!,
                     onRetry = { viewModel.loadDashboard() },
+                    title = "Failed to load dashboard",
                 )
                 return@Column
             }
@@ -90,7 +93,7 @@ fun DashboardScreen(
                     ) {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.ChartLine,
-                            contentDescription = null,
+                            contentDescription = "Dashboard overview",
                             modifier = Modifier.size(28.dp),
                             tint = MaterialTheme.colorScheme.primary,
                         )
@@ -108,7 +111,7 @@ fun DashboardScreen(
                         icon = {
                             Icon(
                                 imageVector = FontAwesomeIcons.Solid.Sync,
-                                contentDescription = null,
+                                contentDescription = "Refresh dashboard",
                                 modifier = Modifier.size(16.dp),
                             )
                         },
@@ -228,38 +231,76 @@ fun DashboardScreen(
 
 @Composable
 private fun LoadingState() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Loading dashboard...",
-                style = MaterialTheme.typography.bodyLarge,
-                color = AppColors.TextSecondaryLight,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                ShimmerPlaceholder(
+                    width = 28.dp,
+                    height = 28.dp,
+                    cornerRadius = 4.dp,
+                )
+                ShimmerPlaceholder(
+                    width = 150.dp,
+                    height = 32.dp,
+                    cornerRadius = 4.dp,
+                )
+            }
+            ShimmerPlaceholder(
+                width = 100.dp,
+                height = 36.dp,
+                cornerRadius = 8.dp,
             )
         }
-    }
-}
 
-@Composable
-private fun ErrorState(message: String, onRetry: () -> Unit) {
-    EmptyState(
-        icon = FontAwesomeIcons.Solid.ExclamationCircle,
-        title = "Failed to load dashboard",
-        description = message,
-        size = EmptyStateSize.Large,
-        action = {
-            AppButton(
-                text = "Retry",
-                onClick = onRetry,
-                style = AppButtonStyle.Primary,
-            )
-        },
-        modifier = Modifier.fillMaxSize(),
-    )
+        Spacer(modifier = Modifier.height(24.dp))
+
+        SkeletonDashboardMetrics()
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        ShimmerPlaceholder(
+            width = 200.dp,
+            height = 24.dp,
+            cornerRadius = 4.dp,
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SkeletonSalesTable(rowCount = 5)
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        ShimmerPlaceholder(
+            width = 150.dp,
+            height = 24.dp,
+            cornerRadius = 4.dp,
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            repeat(3) {
+                ShimmerPlaceholder(
+                    width = 150.dp,
+                    height = 48.dp,
+                    cornerRadius = 8.dp,
+                )
+            }
+        }
+    }
 }

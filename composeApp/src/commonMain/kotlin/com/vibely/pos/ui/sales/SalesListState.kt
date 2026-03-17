@@ -2,6 +2,7 @@ package com.vibely.pos.ui.sales
 
 import com.vibely.pos.shared.domain.sales.entity.Sale
 import com.vibely.pos.shared.domain.sales.valueobject.SaleStatus
+import com.vibely.pos.ui.common.PaginationState
 import kotlin.time.Instant
 
 /**
@@ -16,6 +17,7 @@ import kotlin.time.Instant
  * @property startDate Start date filter (null = no start date).
  * @property endDate End date filter (null = no end date).
  * @property selectedSale Currently selected sale for detail view.
+ * @property pagination Pagination state for navigating through sales.
  */
 data class SalesListState(
     val sales: List<Sale> = emptyList(),
@@ -30,6 +32,7 @@ data class SalesListState(
     val selectedSale: Sale? = null,
     val confirmRefundSaleId: String? = null,
     val refundItemsCount: Int = 0,
+    val pagination: PaginationState = PaginationState(),
 ) {
     val hasSales: Boolean get() = sales.isNotEmpty()
     val hasFilters: Boolean get() = statusFilter != null || startDate != null || endDate != null

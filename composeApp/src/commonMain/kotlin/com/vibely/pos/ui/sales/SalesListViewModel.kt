@@ -8,6 +8,7 @@ import com.vibely.pos.shared.domain.sales.entity.Sale
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.sales.usecase.GetSalesUseCase
 import com.vibely.pos.shared.domain.sales.valueobject.SaleStatus
+import com.vibely.pos.ui.common.PaginatedResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,19 +33,26 @@ class SalesListViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
+            val currentPagination = _state.value.pagination
             when (
                 val result = getSalesUseCase(
                     startDate = _state.value.startDate,
                     endDate = _state.value.endDate,
                     status = _state.value.statusFilter,
+                    page = currentPagination.currentPage,
+                    pageSize = currentPagination.pageSize,
                 )
             ) {
                 is Result.Success -> {
+                    val sales = result.data
+                    val paginatedResult = PaginatedResult.from(sales, currentPagination.pageSize)
+
                     _state.update {
                         it.copy(
-                            sales = result.data,
+                            sales = sales,
                             isLoading = false,
                             errorMessage = null,
+                            pagination = currentPagination.withHasMore(paginatedResult.hasMore),
                         )
                     }
                 }
@@ -64,19 +72,26 @@ class SalesListViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isRefreshing = true, errorMessage = null) }
 
+            val currentPagination = _state.value.pagination
             when (
                 val result = getSalesUseCase(
                     startDate = _state.value.startDate,
                     endDate = _state.value.endDate,
                     status = _state.value.statusFilter,
+                    page = currentPagination.currentPage,
+                    pageSize = currentPagination.pageSize,
                 )
             ) {
                 is Result.Success -> {
+                    val sales = result.data
+                    val paginatedResult = PaginatedResult.from(sales, currentPagination.pageSize)
+
                     _state.update {
                         it.copy(
-                            sales = result.data,
+                            sales = sales,
                             isRefreshing = false,
                             errorMessage = null,
+                            pagination = currentPagination.withHasMore(paginatedResult.hasMore),
                         )
                     }
                 }
@@ -93,17 +108,17 @@ class SalesListViewModel(
     }
 
     fun onSearchQueryChange(query: String) {
-        _state.update { it.copy(searchQuery = query) }
+        _state.update { it.copy(searchQuery = query, pagination = it.pagination.reset()) }
         filterSales()
     }
 
     fun onStatusFilterChange(status: SaleStatus?) {
-        _state.update { it.copy(statusFilter = status) }
+        _state.update { it.copy(statusFilter = status, pagination = it.pagination.reset()) }
         loadSales()
     }
 
     fun onDateRangeChange(startDate: Instant?, endDate: Instant?) {
-        _state.update { it.copy(startDate = startDate, endDate = endDate) }
+        _state.update { it.copy(startDate = startDate, endDate = endDate, pagination = it.pagination.reset()) }
         loadSales()
     }
 
@@ -122,6 +137,7 @@ class SalesListViewModel(
                 startDate = null,
                 endDate = null,
                 searchQuery = "",
+                pagination = it.pagination.reset(),
             )
         }
         loadSales()
@@ -217,6 +233,16 @@ class SalesListViewModel(
 
     fun onSuccessMessageDismiss() {
         _state.update { it.copy(successMessage = null) }
+    }
+
+    fun onNextPage() {
+        _state.update { it.copy(pagination = it.pagination.nextPage()) }
+        loadSales()
+    }
+
+    fun onPreviousPage() {
+        _state.update { it.copy(pagination = it.pagination.previousPage()) }
+        loadSales()
     }
 
     private fun filterSales() {

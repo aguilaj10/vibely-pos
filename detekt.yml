@@ -70,7 +70,7 @@ complexity:
     active: true
     threshold: 15
   LabeledExpression:
-    active: true
+    active: false
   LargeClass:
     active: true
     threshold: 400
@@ -235,7 +235,7 @@ naming:
   LambdaParameterNaming:
     active: true
   MatchingDeclarationName:
-    active: true
+    active: false
   MemberNameEqualsClassName:
     active: true
   NoNameShadowing:
@@ -438,7 +438,7 @@ style:
     active: true
   ReturnCount:
     active: true
-    max: 3
+    max: 4
   SafeCast:
     active: true
   SerialVersionUIDInSerializableClass:

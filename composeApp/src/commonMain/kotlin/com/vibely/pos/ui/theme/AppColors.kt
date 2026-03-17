@@ -23,9 +23,9 @@ object AppColors {
     val OnSecondary = Color.White
 
     // Tertiary Colors - Warm Accent (kept for warnings/highlights)
-    val Tertiary = Color(0xFFF59E0B) // Amber - Energy, attention
+    val Tertiary = Color(0xFFB45309) // Dark amber - Energy, attention (darkened for WCAG AA)
     val TertiaryLight = Color(0xFFFBBF24)
-    val TertiaryDark = Color(0xFFD97706)
+    val TertiaryDark = Color(0xFF92400E)
     val OnTertiary = Color.White
 
     // Neutral Colors - Light Mode
@@ -51,34 +51,34 @@ object AppColors {
     val NeutralDark900 = Color(0xFFEAEAEA)
 
     // Status Colors - Success Green
-    val Success = Color(0xFF16A34A) // Green #16A34A
+    val Success = Color(0xFF15803D) // Darker green - darkened for WCAG AA
     val SuccessLight = Color(0xFF22C55E)
-    val SuccessDark = Color(0xFF15803D)
+    val SuccessDark = Color(0xFF166534)
     val OnSuccess = Color.White
 
     // Status Colors - Warning Amber
-    val Warning = Color(0xFFF59E0B) // Amber
+    val Warning = Color(0xFFB45309) // Dark amber - darkened for WCAG AA
     val WarningLight = Color(0xFFFBBF24)
-    val WarningDark = Color(0xFFD97706)
+    val WarningDark = Color(0xFF92400E)
     val OnWarning = Color.White
 
     // Status Colors - Error Red
-    val Error = Color(0xFFEF4444) // Red
+    val Error = Color(0xFFDC2626) // Darker red - darkened for WCAG AA
     val ErrorLight = Color(0xFFF87171)
-    val ErrorDark = Color(0xFFDC2626)
+    val ErrorDark = Color(0xFFB91C1C)
     val OnError = Color.White
 
     // Status Colors - Info Blue
-    val Info = Color(0xFF2563EB) // Blue #2563EB
+    val Info = Color(0xFF1D4ED8) // Darker blue - darkened for WCAG AA
     val InfoLight = Color(0xFF3B82F6)
-    val InfoDark = Color(0xFF1D4ED8)
+    val InfoDark = Color(0xFF1E40AF)
     val OnInfo = Color.White
 
     // Accent Colors for Icons (Figma)
-    val AccentGreen = Color(0xFF16A34A) // Green
-    val AccentBlue = Color(0xFF2563EB) // Blue
+    val AccentGreen = Color(0xFF15803D) // Darker green - darkened for WCAG AA
+    val AccentBlue = Color(0xFF1D4ED8) // Darker blue - darkened for WCAG AA
     val AccentPurple = Color(0xFF7C3AED) // Purple
-    val AccentOrange = Color(0xFFF97316) // Orange
+    val AccentOrange = Color(0xFFB45309) // Dark amber - darkened for WCAG AA
 
     // Surface Colors - Light Mode (Figma: White with subtle borders)
     val SurfaceLight = Color.White

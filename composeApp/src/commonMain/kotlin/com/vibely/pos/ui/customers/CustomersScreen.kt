@@ -41,6 +41,7 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.CustomerFormData
 import com.vibely.pos.ui.dialogs.CustomerFormDialog
@@ -116,6 +117,13 @@ fun CustomersScreen(
                         .weight(1f),
                 )
             }
+
+            PaginationControls(
+                paginationState = state.pagination,
+                onPreviousPage = viewModel::onPreviousPage,
+                onNextPage = viewModel::onNextPage,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
 
         SnackbarHost(

@@ -45,6 +45,7 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormData
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormDialog
@@ -115,6 +116,8 @@ fun PurchaseOrdersScreen(
             } else {
                 PurchaseOrdersTable(
                     purchaseOrders = state.purchaseOrders,
+                    state = state,
+                    viewModel = viewModel,
                     onViewPurchaseOrder = viewModel::onViewPurchaseOrder,
                     onEditPurchaseOrder = viewModel::onEditPurchaseOrder,
                     onDeletePurchaseOrder = viewModel::onDeletePurchaseOrder,
@@ -306,6 +309,8 @@ private fun KpiCard(
 @Composable
 private fun PurchaseOrdersTable(
     purchaseOrders: List<PurchaseOrder>,
+    state: PurchaseOrdersState,
+    viewModel: PurchaseOrdersViewModel,
     onViewPurchaseOrder: (String) -> Unit,
     onEditPurchaseOrder: (String) -> Unit,
     onDeletePurchaseOrder: (String) -> Unit,
@@ -355,6 +360,13 @@ private fun PurchaseOrdersTable(
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
+
+                PaginationControls(
+                    paginationState = state.pagination,
+                    onPreviousPage = viewModel::onPreviousPage,
+                    onNextPage = viewModel::onNextPage,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }

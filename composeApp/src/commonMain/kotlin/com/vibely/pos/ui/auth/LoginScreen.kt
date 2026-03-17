@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -153,6 +155,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                         IconButton(
                             onClick = viewModel::onPasswordVisibilityToggle,
                             enabled = !state.isLoading,
+                            modifier = Modifier.semantics {
+                                contentDescription = if (state.isPasswordVisible) "Hide password" else "Show password"
+                            }
                         ) {
                             Text(
                                 text = if (state.isPasswordVisible) "🙈" else "👁",

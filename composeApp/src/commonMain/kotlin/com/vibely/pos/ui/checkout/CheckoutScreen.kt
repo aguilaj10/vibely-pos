@@ -275,7 +275,7 @@ private fun ProductCard(product: Product, onClick: () -> Unit, modifier: Modifie
                 ) {
                     Icon(
                         imageVector = FontAwesomeIcons.Solid.Cube,
-                        contentDescription = null,
+                        contentDescription = "Product image placeholder",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(40.dp),
                     )
@@ -362,7 +362,7 @@ private fun CartSidebar(
                     ) {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.ShoppingCart,
-                            contentDescription = null,
+                            contentDescription = "Empty cart",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(64.dp),
                         )

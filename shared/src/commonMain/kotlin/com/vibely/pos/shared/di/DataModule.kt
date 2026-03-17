@@ -16,6 +16,7 @@ import com.vibely.pos.shared.data.inventory.repository.CategoryRepositoryImpl
 import com.vibely.pos.shared.data.inventory.repository.InventoryRepositoryImpl
 import com.vibely.pos.shared.data.purchaseorder.datasource.RemotePurchaseOrderDataSource
 import com.vibely.pos.shared.data.purchaseorder.repository.PurchaseOrderRepositoryImpl
+import com.vibely.pos.shared.data.reports.datasource.RemoteReportsDataSource
 import com.vibely.pos.shared.data.reports.repository.ReportsRepositoryImpl
 import com.vibely.pos.shared.data.sales.datasource.RemoteProductDataSource
 import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
@@ -39,6 +40,7 @@ import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.shift.repository.ShiftRepository
 import com.vibely.pos.shared.domain.supplier.repository.SupplierRepository
 import com.vibely.pos.shared.domain.user.repository.UserRepository
+import com.vibely.pos.shared.util.NetworkMonitor
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -263,6 +265,17 @@ val dataModule =
         // User repositories
         singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
 
+        // Reports data sources
+        single {
+            RemoteReportsDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
         // Reports repositories
         singleOf(::ReportsRepositoryImpl) { bind<ReportsRepository>() }
+
+        // Network monitor
+        single { NetworkMonitor() }
     }

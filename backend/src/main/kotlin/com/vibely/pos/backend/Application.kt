@@ -6,6 +6,7 @@ import com.vibely.pos.backend.config.configureCORS
 import com.vibely.pos.backend.config.configureCallLogging
 import com.vibely.pos.backend.config.configureContentNegotiation
 import com.vibely.pos.backend.config.configureKoin
+import com.vibely.pos.backend.config.configureSecurity
 import com.vibely.pos.backend.config.configureStatusPages
 import com.vibely.pos.backend.routes.authRoutes
 import com.vibely.pos.backend.routes.categoryRoutes
@@ -75,6 +76,7 @@ fun Application.module() {
     configureCORS()
     configureCallLogging()
     configureStatusPages()
+    configureSecurity()
     configureAuthentication()
 
     configureRouting(supabaseClient)

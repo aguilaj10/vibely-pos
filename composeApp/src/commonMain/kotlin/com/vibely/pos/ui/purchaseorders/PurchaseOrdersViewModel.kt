@@ -15,6 +15,8 @@ import com.vibely.pos.shared.domain.result.Result
 import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.supplier.entity.Supplier
 import com.vibely.pos.shared.domain.supplier.usecase.GetAllSuppliersUseCase
+import com.vibely.pos.ui.common.PaginatedResult
+import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormData
 import com.vibely.pos.ui.util.randomUuidString
 import kotlinx.coroutines.Job
@@ -41,6 +43,7 @@ data class PurchaseOrdersState(
     val showDeleteDialog: Boolean = false,
     val editingPO: PurchaseOrder? = null,
     val deletingPOId: String? = null,
+    val pagination: PaginationState = PaginationState(),
 )
 
 class PurchaseOrdersViewModel(
@@ -66,9 +69,16 @@ class PurchaseOrdersViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            when (val result = getAllPurchaseOrdersUseCase()) {
+            val currentPagination = _state.value.pagination
+            when (
+                val result = getAllPurchaseOrdersUseCase(
+                    page = currentPagination.currentPage,
+                    pageSize = currentPagination.pageSize,
+                )
+            ) {
                 is Result.Success -> {
                     val orders = result.data
+                    val paginatedResult = PaginatedResult.from(orders, currentPagination.pageSize)
 
                     _state.update {
                         it.copy(
@@ -77,6 +87,7 @@ class PurchaseOrdersViewModel(
                             totalOrders = orders.size,
                             pendingOrders = orders.count { order -> order.status == PurchaseOrderStatus.PENDING },
                             totalAmount = orders.sumOf { order -> order.totalAmount },
+                            pagination = currentPagination.withHasMore(paginatedResult.hasMore),
                         )
                     }
                 }
@@ -111,7 +122,7 @@ class PurchaseOrdersViewModel(
     }
 
     fun onSearchQueryChange(query: String) {
-        _state.update { it.copy(searchQuery = query) }
+        _state.update { it.copy(searchQuery = query, pagination = it.pagination.reset()) }
 
         searchJob?.cancel()
         if (query.isBlank()) {
@@ -144,7 +155,7 @@ class PurchaseOrdersViewModel(
     }
 
     fun onClearSearch() {
-        _state.update { it.copy(searchQuery = "") }
+        _state.update { it.copy(searchQuery = "", pagination = it.pagination.reset()) }
         loadPurchaseOrders()
     }
 
@@ -282,6 +293,16 @@ class PurchaseOrdersViewModel(
 
     fun onSuccessMessageDismiss() {
         _state.update { it.copy(successMessage = null) }
+    }
+
+    fun onNextPage() {
+        _state.update { it.copy(pagination = it.pagination.nextPage()) }
+        loadPurchaseOrders()
+    }
+
+    fun onPreviousPage() {
+        _state.update { it.copy(pagination = it.pagination.previousPage()) }
+        loadPurchaseOrders()
     }
 
     private fun generatePONumber(): String = "PO-${Clock.System.now().toEpochMilliseconds().toString().takeLast(6)}"

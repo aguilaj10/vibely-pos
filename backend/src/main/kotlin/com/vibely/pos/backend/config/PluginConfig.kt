@@ -3,6 +3,14 @@ package com.vibely.pos.backend.config
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.vibely.pos.backend.di.backendModule
+import com.vibely.pos.backend.security.CsrfProtectionConfig
+import com.vibely.pos.backend.security.CsrfProtectionPlugin
+import com.vibely.pos.backend.security.CsrfTokenManager
+import com.vibely.pos.backend.security.HttpsEnforcementPlugin
+import com.vibely.pos.backend.security.RateLimiter
+import com.vibely.pos.backend.security.RateLimitingConfig
+import com.vibely.pos.backend.security.RateLimitingPlugin
+import com.vibely.pos.backend.security.SecurityHeadersPlugin
 import com.vibely.pos.shared.di.sharedModules
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -24,6 +32,7 @@ import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import kotlinx.serialization.json.Json
 import org.koin.ktor.plugin.Koin
+import org.koin.ktor.ext.inject
 import org.koin.logger.slf4jLogger
 import org.slf4j.event.Level
 import org.slf4j.LoggerFactory
@@ -69,8 +78,12 @@ fun Application.configureCORS() {
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.AccessControlAllowOrigin)
         allowHeader("X-Client-Platform")
+        allowHeader("X-CSRF-Token")
+        exposeHeader("X-CSRF-Token")
+        exposeHeader("X-RateLimit-Limit")
+        exposeHeader("X-RateLimit-Remaining")
+        exposeHeader("X-RateLimit-Reset")
 
-        // Allow any host for development (should be restricted in production)
         anyHost()
     }
 }
@@ -137,6 +150,23 @@ fun Application.configureAuthentication() {
         if (isDebugMode) {
             runDebugMode()
         }
+    }
+}
+
+/**
+ * Configures security hardening plugins.
+ */
+fun Application.configureSecurity() {
+    val rateLimiter: Lazy<RateLimiter> = inject()
+    val csrfTokenManager: Lazy<CsrfTokenManager> = inject()
+    
+    install(SecurityHeadersPlugin)
+    install(HttpsEnforcementPlugin)
+    install(RateLimitingPlugin) {
+        RateLimitingConfig(rateLimiter = rateLimiter.value)
+    }
+    install(CsrfProtectionPlugin) {
+        CsrfProtectionConfig(tokenManager = csrfTokenManager.value)
     }
 }
 

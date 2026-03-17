@@ -60,3 +60,6 @@ composeResources/
 .internal/
 /design
 /migrations/003_insert_debug_user.sql
+/docs/PHASE4_STATUS.md
+/docs/SECURITY_HARDENING.md
+/docs/SESSION_2026-03-16_SUMMARY.md

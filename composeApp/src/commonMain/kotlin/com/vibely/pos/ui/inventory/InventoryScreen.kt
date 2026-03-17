@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,6 +42,9 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.PaginationControls
+import com.vibely.pos.ui.components.SkeletonKpiCardsRow
+import com.vibely.pos.ui.components.SkeletonProductsTable
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.ProductFormDialog
 import com.vibely.pos.ui.navigation.Screen
@@ -97,18 +99,23 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
                 lowStockCount = state.lowStockCount,
                 totalValue = state.totalValue,
                 categoriesCount = state.categoriesCount,
+                isLoading = state.isLoading,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             if (state.isLoading) {
-                Box(
+                AppCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    contentAlignment = Alignment.Center,
+                    style = AppCardStyle.Elevated,
+                    elevation = 1.dp,
                 ) {
-                    CircularProgressIndicator()
+                    SkeletonProductsTable(
+                        rowCount = 8,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             } else {
                 ProductsTable(
@@ -120,6 +127,13 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
                         .weight(1f),
                 )
             }
+
+            PaginationControls(
+                paginationState = state.pagination,
+                onPreviousPage = viewModel::onPreviousPage,
+                onNextPage = viewModel::onNextPage,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
 
         SnackbarHost(
@@ -204,44 +218,52 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
 }
 
 @Composable
-private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Double, categoriesCount: Int) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        KpiCard(
-            icon = FontAwesomeIcons.Solid.Boxes,
-            label = "Total Products",
-            value = totalProducts.toString(),
-            valueColor = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
+private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Double, categoriesCount: Int, isLoading: Boolean = false) {
+    if (isLoading) {
+        SkeletonKpiCardsRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
         )
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            KpiCard(
+                icon = FontAwesomeIcons.Solid.Boxes,
+                label = "Total Products",
+                value = totalProducts.toString(),
+                valueColor = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+            )
 
-        KpiCard(
-            icon = FontAwesomeIcons.Solid.ExclamationTriangle,
-            label = "Low Stock",
-            value = lowStockCount.toString(),
-            valueColor = AppColors.ErrorDark,
-            modifier = Modifier.weight(1f),
-        )
+            KpiCard(
+                icon = FontAwesomeIcons.Solid.ExclamationTriangle,
+                label = "Low Stock",
+                value = lowStockCount.toString(),
+                valueColor = AppColors.ErrorDark,
+                modifier = Modifier.weight(1f),
+            )
 
-        KpiCard(
-            icon = FontAwesomeIcons.Solid.Wallet,
-            label = "Total Value",
-            value = formatCurrency(totalValue),
-            valueColor = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
+            KpiCard(
+                icon = FontAwesomeIcons.Solid.Wallet,
+                label = "Total Value",
+                value = formatCurrency(totalValue),
+                valueColor = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+            )
 
-        KpiCard(
-            icon = FontAwesomeIcons.Solid.Tags,
-            label = "Categories",
-            value = categoriesCount.toString(),
-            valueColor = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
+            KpiCard(
+                icon = FontAwesomeIcons.Solid.Tags,
+                label = "Categories",
+                value = categoriesCount.toString(),
+                valueColor = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 

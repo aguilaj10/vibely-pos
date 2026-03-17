@@ -9,6 +9,8 @@ import com.vibely.pos.shared.domain.supplier.usecase.DeleteSupplierUseCase
 import com.vibely.pos.shared.domain.supplier.usecase.GetAllSuppliersUseCase
 import com.vibely.pos.shared.domain.supplier.usecase.SearchSuppliersUseCase
 import com.vibely.pos.shared.domain.supplier.usecase.UpdateSupplierUseCase
+import com.vibely.pos.ui.common.PaginatedResult
+import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.dialogs.SupplierFormData
 import com.vibely.pos.ui.util.randomUuidString
 import kotlinx.coroutines.Job
@@ -32,6 +34,7 @@ data class SuppliersState(
     val showDeleteDialog: Boolean = false,
     val editingSupplier: Supplier? = null,
     val deletingSupplierId: String? = null,
+    val pagination: PaginationState = PaginationState(),
 )
 
 class SuppliersViewModel(
@@ -55,9 +58,16 @@ class SuppliersViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            when (val result = getAllSuppliersUseCase()) {
+            val currentPagination = _state.value.pagination
+            when (
+                val result = getAllSuppliersUseCase(
+                    page = currentPagination.currentPage,
+                    pageSize = currentPagination.pageSize,
+                )
+            ) {
                 is Result.Success -> {
                     val suppliers = result.data
+                    val paginatedResult = PaginatedResult.from(suppliers, currentPagination.pageSize)
 
                     _state.update {
                         it.copy(
@@ -65,6 +75,7 @@ class SuppliersViewModel(
                             isLoading = false,
                             totalSuppliers = suppliers.size,
                             activeSuppliers = suppliers.count { s -> s.isActive },
+                            pagination = currentPagination.withHasMore(paginatedResult.hasMore),
                         )
                     }
                 }
@@ -81,7 +92,7 @@ class SuppliersViewModel(
     }
 
     fun onSearchQueryChange(query: String) {
-        _state.update { it.copy(searchQuery = query) }
+        _state.update { it.copy(searchQuery = query, pagination = it.pagination.reset()) }
 
         searchJob?.cancel()
         if (query.isBlank()) {
@@ -123,7 +134,7 @@ class SuppliersViewModel(
     }
 
     fun onClearSearch() {
-        _state.update { it.copy(searchQuery = "") }
+        _state.update { it.copy(searchQuery = "", pagination = it.pagination.reset()) }
         loadSuppliers()
     }
 
@@ -231,6 +242,16 @@ class SuppliersViewModel(
 
     fun onSuccessMessageDismiss() {
         _state.update { it.copy(successMessage = null) }
+    }
+
+    fun onNextPage() {
+        _state.update { it.copy(pagination = it.pagination.nextPage()) }
+        loadSuppliers()
+    }
+
+    fun onPreviousPage() {
+        _state.update { it.copy(pagination = it.pagination.previousPage()) }
+        loadSuppliers()
     }
 
     private fun generateSupplierCode(): String = "SUP-${Clock.System.now().toEpochMilliseconds().toString().takeLast(6)}"

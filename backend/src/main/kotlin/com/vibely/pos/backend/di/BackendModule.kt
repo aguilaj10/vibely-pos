@@ -1,6 +1,8 @@
 package com.vibely.pos.backend.di
 
 import com.vibely.pos.backend.config.SupabaseConfig
+import com.vibely.pos.backend.security.CsrfTokenManager
+import com.vibely.pos.backend.security.RateLimiter
 import com.vibely.pos.backend.services.AuthService
 import com.vibely.pos.backend.services.CategoryService
 import com.vibely.pos.backend.services.CustomerService
@@ -23,6 +25,10 @@ import org.koin.dsl.module
 val backendModule =
     module {
         single<SupabaseClient> { SupabaseConfig.client }
+
+        single { RateLimiter() }
+
+        single { CsrfTokenManager() }
 
         single { UserRepository(get()) }
 

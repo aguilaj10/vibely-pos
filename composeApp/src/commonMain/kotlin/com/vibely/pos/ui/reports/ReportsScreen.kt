@@ -26,6 +26,7 @@ import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
+import com.vibely.pos.ui.components.ErrorState
 import com.vibely.pos.ui.reports.components.CategoryBreakdownChart
 import com.vibely.pos.ui.reports.components.DateRangePicker
 import com.vibely.pos.ui.reports.components.MetricsCards
@@ -39,7 +40,6 @@ import compose.icons.fontawesomeicons.solid.Box
 import compose.icons.fontawesomeicons.solid.ChartBar
 import compose.icons.fontawesomeicons.solid.ChartLine
 import compose.icons.fontawesomeicons.solid.ChartPie
-import compose.icons.fontawesomeicons.solid.ExclamationCircle
 import compose.icons.fontawesomeicons.solid.Sync
 import compose.icons.fontawesomeicons.solid.Users
 import org.koin.compose.koinInject
@@ -86,7 +86,7 @@ fun ReportsScreen(
                     ) {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.ChartBar,
-                            contentDescription = null,
+                            contentDescription = "Reports overview",
                             modifier = Modifier.size(28.dp),
                             tint = MaterialTheme.colorScheme.primary,
                         )
@@ -104,7 +104,7 @@ fun ReportsScreen(
                         icon = {
                             Icon(
                                 imageVector = FontAwesomeIcons.Solid.Sync,
-                                contentDescription = null,
+                                contentDescription = "Refresh reports",
                                 modifier = Modifier.size(16.dp),
                             )
                         },
@@ -135,6 +135,7 @@ fun ReportsScreen(
                     ErrorState(
                         message = state.errorMessage!!,
                         onRetry = { viewModel.refreshReports() },
+                        title = "Failed to load reports",
                     )
                 }
                 // Data display
@@ -285,22 +286,4 @@ private fun LoadingState() {
             )
         }
     }
-}
-
-@Composable
-private fun ErrorState(message: String, onRetry: () -> Unit) {
-    EmptyState(
-        icon = FontAwesomeIcons.Solid.ExclamationCircle,
-        title = "Failed to load reports",
-        description = message,
-        size = EmptyStateSize.Large,
-        action = {
-            AppButton(
-                text = "Retry",
-                onClick = onRetry,
-                style = AppButtonStyle.Primary,
-            )
-        },
-        modifier = Modifier.fillMaxWidth(),
-    )
 }

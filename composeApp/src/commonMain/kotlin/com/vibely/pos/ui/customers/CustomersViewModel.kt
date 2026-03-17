@@ -9,6 +9,8 @@ import com.vibely.pos.shared.domain.customer.usecase.GetAllCustomersUseCase
 import com.vibely.pos.shared.domain.customer.usecase.SearchCustomersUseCase
 import com.vibely.pos.shared.domain.customer.usecase.UpdateCustomerUseCase
 import com.vibely.pos.shared.domain.result.Result
+import com.vibely.pos.ui.common.PaginatedResult
+import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.dialogs.CustomerFormData
 import com.vibely.pos.ui.util.randomUuidString
 import kotlinx.coroutines.Job
@@ -33,6 +35,7 @@ data class CustomersState(
     val showDeleteDialog: Boolean = false,
     val editingCustomer: Customer? = null,
     val deletingCustomerId: String? = null,
+    val pagination: PaginationState = PaginationState(),
 )
 
 class CustomersViewModel(
@@ -56,9 +59,16 @@ class CustomersViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            when (val result = getAllCustomersUseCase()) {
+            val currentPagination = _state.value.pagination
+            when (
+                val result = getAllCustomersUseCase(
+                    page = currentPagination.currentPage,
+                    pageSize = currentPagination.pageSize,
+                )
+            ) {
                 is Result.Success -> {
                     val customers = result.data
+                    val paginatedResult = PaginatedResult.from(customers, currentPagination.pageSize)
                     val totalLoyaltyPoints = customers.sumOf { it.loyaltyPoints }
 
                     _state.update {
@@ -68,6 +78,7 @@ class CustomersViewModel(
                             totalCustomers = customers.size,
                             activeCustomers = customers.count { c -> c.isActive },
                             totalLoyaltyPoints = totalLoyaltyPoints,
+                            pagination = currentPagination.withHasMore(paginatedResult.hasMore),
                         )
                     }
                 }
@@ -84,7 +95,7 @@ class CustomersViewModel(
     }
 
     fun onSearchQueryChange(query: String) {
-        _state.update { it.copy(searchQuery = query) }
+        _state.update { it.copy(searchQuery = query, pagination = it.pagination.reset()) }
 
         searchJob?.cancel()
         if (query.isBlank()) {
@@ -113,6 +124,7 @@ class CustomersViewModel(
                         totalCustomers = customers.size,
                         activeCustomers = customers.count { c -> c.isActive },
                         totalLoyaltyPoints = totalLoyaltyPoints,
+                        pagination = it.pagination.reset().withHasMore(false),
                     )
                 }
             }
@@ -128,7 +140,7 @@ class CustomersViewModel(
     }
 
     fun onClearSearch() {
-        _state.update { it.copy(searchQuery = "") }
+        _state.update { it.copy(searchQuery = "", pagination = it.pagination.reset()) }
         loadCustomers()
     }
 
@@ -238,6 +250,16 @@ class CustomersViewModel(
 
     fun onSuccessMessageDismiss() {
         _state.update { it.copy(successMessage = null) }
+    }
+
+    fun onNextPage() {
+        _state.update { it.copy(pagination = it.pagination.nextPage()) }
+        loadCustomers()
+    }
+
+    fun onPreviousPage() {
+        _state.update { it.copy(pagination = it.pagination.previousPage()) }
+        loadCustomers()
     }
 
     private fun generateCustomerCode(): String = "CUST-${Clock.System.now().toEpochMilliseconds().toString().takeLast(6)}"

@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,6 +42,8 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
+import com.vibely.pos.ui.components.PaginationControls
+import com.vibely.pos.ui.components.SkeletonSalesTable
 import com.vibely.pos.ui.dialogs.RefundDialog
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
@@ -91,7 +92,7 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
                 ) {
                     Icon(
                         imageVector = FontAwesomeIcons.Solid.Receipt,
-                        contentDescription = null,
+                        contentDescription = "Sales history",
                         modifier = Modifier.size(28.dp),
                         tint = AppColors.Primary,
                     )
@@ -110,7 +111,7 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
                     icon = {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Sync,
-                            contentDescription = null,
+                            contentDescription = "Refresh sales",
                             modifier = Modifier.size(16.dp),
                         )
                     },
@@ -176,6 +177,13 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
                                 )
                             }
                         }
+
+                        PaginationControls(
+                            paginationState = state.pagination,
+                            onPreviousPage = viewModel::onPreviousPage,
+                            onNextPage = viewModel::onNextPage,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
             }
@@ -372,19 +380,21 @@ private fun SaleStatusBadge(status: SaleStatus, modifier: Modifier = Modifier) {
 
 @Composable
 private fun LoadingState() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp,
+        ),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            CircularProgressIndicator(color = AppColors.Primary)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Loading sales...",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        Column(modifier = Modifier.fillMaxWidth()) {
+            SalesTableHeader()
+            SkeletonSalesTable(
+                rowCount = 8,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }

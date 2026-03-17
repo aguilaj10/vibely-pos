@@ -9,6 +9,8 @@ import com.vibely.pos.shared.domain.shift.entity.Shift
 import com.vibely.pos.shared.domain.shift.usecase.CloseShiftUseCase
 import com.vibely.pos.shared.domain.shift.usecase.GetShiftHistoryUseCase
 import com.vibely.pos.shared.domain.shift.usecase.OpenShiftUseCase
+import com.vibely.pos.ui.common.PaginatedResult
+import com.vibely.pos.ui.common.PaginationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +29,7 @@ data class ShiftsState(
     val showOpenShiftDialog: Boolean = false,
     val showCloseShiftDialog: Boolean = false,
     val closingShift: Shift? = null,
+    val pagination: PaginationState = PaginationState(),
 )
 
 class ShiftsViewModel(
@@ -46,9 +49,16 @@ class ShiftsViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            when (val result = getShiftHistoryUseCase()) {
+            val currentPagination = _state.value.pagination
+            when (
+                val result = getShiftHistoryUseCase(
+                    page = currentPagination.currentPage,
+                    pageSize = currentPagination.pageSize,
+                )
+            ) {
                 is Result.Success -> {
                     val shifts = result.data
+                    val paginatedResult = PaginatedResult.from(shifts, currentPagination.pageSize)
 
                     _state.update {
                         it.copy(
@@ -58,6 +68,7 @@ class ShiftsViewModel(
                             todaysSales = shifts.sumOf { shift -> shift.totalSales },
                             totalDiscrepancy = shifts.mapNotNull { shift -> shift.discrepancy }.sum(),
                             currentShift = shifts.firstOrNull { shift -> shift.isOpen },
+                            pagination = currentPagination.withHasMore(paginatedResult.hasMore),
                         )
                     }
                 }
@@ -158,5 +169,15 @@ class ShiftsViewModel(
 
     fun onSuccessMessageDismiss() {
         _state.update { it.copy(successMessage = null) }
+    }
+
+    fun onNextPage() {
+        _state.update { it.copy(pagination = it.pagination.nextPage()) }
+        loadShifts()
+    }
+
+    fun onPreviousPage() {
+        _state.update { it.copy(pagination = it.pagination.previousPage()) }
+        loadShifts()
     }
 }

@@ -60,15 +60,15 @@ fun StatusChip(label: String, variant: StatusChipVariant, modifier: Modifier = M
 
 @Composable
 private fun getVariantColors(variant: StatusChipVariant): Pair<Color, Color> = when (variant) {
-    StatusChipVariant.Active -> AppColors.SuccessLight.copy(alpha = 0.15f) to AppColors.Success
+    StatusChipVariant.Active -> AppColors.SuccessLight.copy(alpha = 0.15f) to AppColors.SuccessDark
     StatusChipVariant.Inactive -> AppColors.NeutralLight400.copy(alpha = 0.15f) to AppColors.NeutralLight600
-    StatusChipVariant.Success -> AppColors.SuccessLight.copy(alpha = 0.15f) to AppColors.Success
-    StatusChipVariant.Warning -> AppColors.WarningLight.copy(alpha = 0.15f) to AppColors.Warning
-    StatusChipVariant.Error -> AppColors.ErrorLight.copy(alpha = 0.15f) to AppColors.Error
-    StatusChipVariant.Info -> AppColors.InfoLight.copy(alpha = 0.15f) to AppColors.Info
-    StatusChipVariant.StockLow -> AppColors.ErrorLight.copy(alpha = 0.15f) to AppColors.Error
-    StatusChipVariant.StockMedium -> AppColors.WarningLight.copy(alpha = 0.15f) to AppColors.Warning
-    StatusChipVariant.StockGood -> AppColors.SuccessLight.copy(alpha = 0.15f) to AppColors.Success
+    StatusChipVariant.Success -> AppColors.SuccessLight.copy(alpha = 0.15f) to AppColors.SuccessDark
+    StatusChipVariant.Warning -> AppColors.WarningLight.copy(alpha = 0.15f) to AppColors.WarningDark
+    StatusChipVariant.Error -> AppColors.ErrorLight.copy(alpha = 0.15f) to AppColors.ErrorDark
+    StatusChipVariant.Info -> AppColors.InfoLight.copy(alpha = 0.15f) to AppColors.InfoDark
+    StatusChipVariant.StockLow -> AppColors.ErrorLight.copy(alpha = 0.15f) to AppColors.ErrorDark
+    StatusChipVariant.StockMedium -> AppColors.WarningLight.copy(alpha = 0.15f) to AppColors.WarningDark
+    StatusChipVariant.StockGood -> AppColors.SuccessLight.copy(alpha = 0.15f) to AppColors.SuccessDark
 }
 
 @Composable

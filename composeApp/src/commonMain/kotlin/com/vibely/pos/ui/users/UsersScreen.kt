@@ -49,6 +49,7 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.UserFormData
 import com.vibely.pos.ui.dialogs.UserFormDialog
@@ -121,6 +122,8 @@ fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vie
             } else {
                 UsersTable(
                     users = state.users,
+                    state = state,
+                    viewModel = viewModel,
                     onEditUser = viewModel::onEditUser,
                     onDeleteUser = viewModel::onDeleteUser,
                     modifier = Modifier
@@ -445,7 +448,14 @@ private fun KpiCard(
 }
 
 @Composable
-private fun UsersTable(users: List<User>, onEditUser: (String) -> Unit, onDeleteUser: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun UsersTable(
+    users: List<User>,
+    state: UsersState,
+    viewModel: UsersViewModel,
+    onEditUser: (String) -> Unit,
+    onDeleteUser: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     AppCard(
         modifier = modifier.padding(horizontal = 16.dp),
         style = AppCardStyle.Elevated,
@@ -489,6 +499,13 @@ private fun UsersTable(users: List<User>, onEditUser: (String) -> Unit, onDelete
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                     }
                 }
+
+                PaginationControls(
+                    paginationState = state.pagination,
+                    onPreviousPage = viewModel::onPreviousPage,
+                    onNextPage = viewModel::onNextPage,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }
