@@ -37,7 +37,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
             supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
-                        eq("cashier_id", userId)
+                        eq(DatabaseColumns.CASHIER_ID, userId)
                     }
                 }
                 .decodeList<ShiftDTO>()
@@ -51,7 +51,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, shiftId)
-                        eq("cashier_id", userId)
+                        eq(DatabaseColumns.CASHIER_ID, userId)
                     }
                 }
                 .decodeSingle<ShiftDTO>()
@@ -69,9 +69,9 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
             supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
-                        eq("cashier_id", cashierId ?: userId)
+                        eq(DatabaseColumns.CASHIER_ID, cashierId ?: userId)
                     }
-                    order("opened_at", Order.DESCENDING)
+                    order(DatabaseColumns.OPENED_AT, Order.DESCENDING)
                     range(from, to)
                 }
                 .decodeList<ShiftDTO>()
@@ -83,7 +83,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
             val existingShift = supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
-                        eq("cashier_id", userId)
+                        eq(DatabaseColumns.CASHIER_ID, userId)
                     }
                 }
                 .decodeList<ShiftDTO>()
@@ -96,14 +96,14 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
             val shiftNumber = generateNextShiftNumber(userId)
 
             val data = buildJsonObject {
-                put("shift_number", shiftNumber)
-                put("cashier_id", userId)
-                put("opening_balance", openingBalance)
-                put("total_sales", 0.0)
-                put("total_cash", 0.0)
-                put("total_card", 0.0)
-                put("total_other", 0.0)
-                put("opened_at", java.time.Instant.now().toString())
+                put(DatabaseColumns.SHIFT_NUMBER, shiftNumber)
+                put(DatabaseColumns.CASHIER_ID, userId)
+                put(DatabaseColumns.OPENING_BALANCE, openingBalance)
+                put(DatabaseColumns.TOTAL_SALES, 0.0)
+                put(DatabaseColumns.TOTAL_CASH, 0.0)
+                put(DatabaseColumns.TOTAL_CARD, 0.0)
+                put(DatabaseColumns.TOTAL_OTHER, 0.0)
+                put(DatabaseColumns.OPENED_AT, java.time.Instant.now().toString())
             }
 
             supabaseClient.from(TableNames.SHIFTS)
@@ -122,7 +122,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, shiftId)
-                        eq("cashier_id", userId)
+                        eq(DatabaseColumns.CASHIER_ID, userId)
                     }
                 }
                 .decodeSingle<ShiftDTO>()
@@ -135,9 +135,9 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
             val discrepancy = request.closingBalance - expectedBalance
 
             val data = buildJsonObject {
-                put("closing_balance", request.closingBalance)
-                put("expected_balance", expectedBalance)
-                put("discrepancy", discrepancy)
+                put(DatabaseColumns.CLOSING_BALANCE, request.closingBalance)
+                put(DatabaseColumns.EXPECTED_BALANCE, expectedBalance)
+                put(DatabaseColumns.DISCREPANCY, discrepancy)
                 put(DatabaseColumns.CLOSED_AT, java.time.Instant.now().toString())
                 request.notes?.let { put(DatabaseColumns.NOTES, it) }
             }
@@ -157,7 +157,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, shiftId)
-                        eq("cashier_id", userId)
+                        eq(DatabaseColumns.CASHIER_ID, userId)
                     }
                 }
                 .decodeSingle<ShiftDTO>()
@@ -188,8 +188,8 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
         val existingShifts = supabaseClient.from(TableNames.SHIFTS)
             .select {
                 filter {
-                    eq("cashier_id", userId)
-                    ilike("shift_number", "$prefix%")
+                    eq(DatabaseColumns.CASHIER_ID, userId)
+                    ilike(DatabaseColumns.SHIFT_NUMBER, "$prefix%")
                 }
             }
             .decodeList<ShiftDTO>()

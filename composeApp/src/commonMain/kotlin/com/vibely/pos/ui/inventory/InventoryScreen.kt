@@ -382,9 +382,9 @@ private fun TableHeader() {
         TableHeaderCell("Name", modifier = Modifier.weight(0.8f))
         TableHeaderCell("Category", modifier = Modifier.width(150.dp))
         TableHeaderCell("Price", modifier = Modifier.width(80.dp))
+        TableHeaderCell("Currency", modifier = Modifier.width(80.dp))
         TableHeaderCell("Stock", modifier = Modifier.width(60.dp))
         TableHeaderCell("Size", modifier = Modifier.width(60.dp))
-        TableHeaderCell("Weight", modifier = Modifier.width(80.dp))
         TableHeaderCell("Status", modifier = Modifier.width(100.dp))
         TableHeaderCell("Actions", modifier = Modifier.width(80.dp))
     }
@@ -419,11 +419,11 @@ private fun TableRow(product: Product, onEdit: () -> Unit, onDelete: () -> Unit)
             modifier = Modifier.width(80.dp),
             textAlign = TextAlign.End,
         )
+        TableCell("MNX", modifier = Modifier.width(80.dp))
         TableCell(product.currentStock.toString(), modifier = Modifier.width(60.dp), textAlign = TextAlign.End)
-        TableCell(product.unit, modifier = Modifier.width(60.dp))
-        TableCell("-", modifier = Modifier.width(80.dp))
+        TableCell(product.unit, modifier = Modifier.width(80.dp))
 
-        StatusChip(status, modifier = Modifier.width(100.dp))
+        StatusChip(status, modifier = Modifier.width(80.dp))
 
         Row(
             modifier = Modifier.width(80.dp),

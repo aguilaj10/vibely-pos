@@ -76,10 +76,10 @@ private fun buildInventoryTransactionData(
 ): JsonObject {
     return buildJsonObject {
         put(DatabaseColumns.USER_ID, userId)
-        put("product_id", productId)
+        put(DatabaseColumns.PRODUCT_ID, productId)
         put(DatabaseColumns.QUANTITY, request.quantity)
         put(DatabaseColumns.TRANSACTION_TYPE, request.transactionType)
-        put("quantity_after", newStock)
+        put(DatabaseColumns.QUANTITY_AFTER, newStock)
         request.referenceType?.let { put(DatabaseColumns.REFERENCE_TYPE, it) }
         request.referenceId?.let { put(DatabaseColumns.REFERENCE_ID, it) }
         request.notes?.let { put(DatabaseColumns.NOTES, it) }

@@ -32,7 +32,7 @@ private fun buildSaleData(
 ): JsonObject {
     return buildJsonObject {
         put("invoice_number", invoiceNumber)
-        put("customer_id", request.customerId)
+        put(DatabaseColumns.CUSTOMER_ID, request.customerId)
         put("cashier_id", cashierId)
         put("subtotal", subtotal.toDouble())
         put("tax_amount", 0.0)

@@ -68,3 +68,6 @@ composeResources/
 /buildSrc/.kotlin/sessions
 /TEST_PLAN.md
 /migrations/004_add_multi_currency_support.sql
+/.claude
+/.opencode
+/openspec/config.yaml

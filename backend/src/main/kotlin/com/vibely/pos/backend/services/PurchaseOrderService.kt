@@ -52,11 +52,11 @@ class PurchaseOrderService(
             supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .select {
                     filter {
-                        eq("created_by", userId)
+                        eq(DatabaseColumns.CREATED_BY, userId)
                         supplierId?.let { eq(DatabaseColumns.SUPPLIER_ID, it) }
                         status?.let { eq(DatabaseColumns.STATUS, it) }
                     }
-                    order("order_date", Order.DESCENDING)
+                    order(DatabaseColumns.ORDER_DATE, Order.DESCENDING)
                     range(from, to)
                 }
                 .decodeList<PurchaseOrderDTO>()
@@ -73,7 +73,7 @@ class PurchaseOrderService(
                 ) {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
-                        eq("created_by", userId)
+                        eq(DatabaseColumns.CREATED_BY, userId)
                     }
                 }
                 .decodeSingle<PurchaseOrderWithItemsDTO>()
@@ -87,13 +87,13 @@ class PurchaseOrderService(
             val totalAmount = request.items.sumOf { it.quantity * it.unitCost }
 
             val data = buildJsonObject {
-                put("po_number", poNumber)
+                put(DatabaseColumns.PO_NUMBER, poNumber)
                 put(DatabaseColumns.SUPPLIER_ID, request.supplierId)
                 put("created_by", userId)
-                put("total_amount", totalAmount)
+                put(DatabaseColumns.TOTAL_AMOUNT, totalAmount)
                 put(DatabaseColumns.STATUS, "draft")
-                put("order_date", java.time.Instant.now().toString())
-                request.expectedDeliveryDate?.let { put("expected_delivery_date", it) }
+                put(DatabaseColumns.ORDER_DATE, java.time.Instant.now().toString())
+                request.expectedDeliveryDate?.let { put(DatabaseColumns.EXPECTED_DELIVERY_DATE, it) }
                 request.notes?.let { put(DatabaseColumns.NOTES, it) }
             }
 
@@ -112,13 +112,13 @@ class PurchaseOrderService(
     private suspend fun createPurchaseOrderItems(purchaseOrderId: String, request: CreatePurchaseOrderRequest) {
         val itemsData = request.items.map { item ->
             buildJsonObject {
-                put("purchase_order_id", purchaseOrderId)
+                put(DatabaseColumns.PURCHASE_ORDER_ID, purchaseOrderId)
                 put(DatabaseColumns.PRODUCT_ID, item.productId)
                 put(DatabaseColumns.QUANTITY, item.quantity)
-                put("unit_cost", item.unitCost)
-                put("cost_currency_code", item.costCurrencyCode)
-                put("subtotal", item.quantity * item.unitCost)
-                put("received_quantity", 0)
+                put(DatabaseColumns.UNIT_COST, item.unitCost)
+                put(DatabaseColumns.COST_CURRENCY_CODE, item.costCurrencyCode)
+                put(DatabaseColumns.SUBTOTAL, item.quantity * item.unitCost)
+                put(DatabaseColumns.RECEIVED_QUANTITY, 0)
             }
         }
 
@@ -134,7 +134,7 @@ class PurchaseOrderService(
         return executeQuery(ERROR_UPDATE_FAILED) {
             val data = buildJsonObject {
                 request.supplierId?.let { put(DatabaseColumns.SUPPLIER_ID, it) }
-                request.expectedDeliveryDate?.let { put("expected_delivery_date", it) }
+                request.expectedDeliveryDate?.let { put(DatabaseColumns.EXPECTED_DELIVERY_DATE, it) }
                 request.notes?.let { put(DatabaseColumns.NOTES, it) }
             }
 
@@ -142,7 +142,7 @@ class PurchaseOrderService(
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
-                        eq("created_by", userId)
+                        eq(DatabaseColumns.CREATED_BY, userId)
                     }
                     select()
                 }
@@ -164,7 +164,7 @@ class PurchaseOrderService(
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
-                        eq("created_by", userId)
+                        eq(DatabaseColumns.CREATED_BY, userId)
                     }
                     select()
                 }
@@ -176,14 +176,14 @@ class PurchaseOrderService(
         return executeQuery(ERROR_DELETE_FAILED) {
             supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
                 .delete {
-                    filter { eq("purchase_order_id", purchaseOrderId) }
+                    filter { eq(DatabaseColumns.PURCHASE_ORDER_ID, purchaseOrderId) }
                 }
 
             supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .delete {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
-                        eq("created_by", userId)
+                        eq(DatabaseColumns.CREATED_BY, userId)
                     }
                 }
         }
@@ -209,7 +209,7 @@ class PurchaseOrderService(
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
-                        eq("created_by", userId)
+                        eq(DatabaseColumns.CREATED_BY, userId)
                     }
                 }
                 .decodeSingle<PurchaseOrderDTO>()
@@ -217,7 +217,7 @@ class PurchaseOrderService(
             val orderItems = supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
                 .select {
                     filter {
-                        eq("purchase_order_id", purchaseOrderId)
+                        eq(DatabaseColumns.PURCHASE_ORDER_ID, purchaseOrderId)
                     }
                 }
                 .decodeList<PurchaseOrderItemDTO>()
@@ -227,14 +227,14 @@ class PurchaseOrderService(
 
             val statusData = buildJsonObject {
                 put(DatabaseColumns.STATUS, "received")
-                put("received_date", java.time.Instant.now().toString())
+                put(DatabaseColumns.RECEIVED_DATE, java.time.Instant.now().toString())
             }
 
             supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .update(statusData) {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
-                        eq("created_by", userId)
+                        eq(DatabaseColumns.CREATED_BY, userId)
                     }
                     select()
                 }
@@ -248,13 +248,13 @@ class PurchaseOrderService(
     ) {
         items.forEach { itemUpdate ->
             val updateData = buildJsonObject {
-                put("received_quantity", itemUpdate.receivedQuantity)
+                put(DatabaseColumns.RECEIVED_QUANTITY, itemUpdate.receivedQuantity)
             }
             supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
                 .update(updateData) {
                     filter {
                         eq(DatabaseColumns.ID, itemUpdate.itemId)
-                        eq("purchase_order_id", purchaseOrderId)
+                        eq(DatabaseColumns.PURCHASE_ORDER_ID, purchaseOrderId)
                     }
                 }
         }
@@ -270,7 +270,7 @@ class PurchaseOrderService(
                 )?.let { convertedCost ->
                     val productData = buildJsonObject {
                         put("cost_price", convertedCost)
-                        put("cost_currency_code", "MXN")
+                        put(DatabaseColumns.COST_CURRENCY_CODE, "MXN")
                     }
                     supabaseClient.from(TableNames.PRODUCTS)
                         .update(productData) {
@@ -295,8 +295,8 @@ class PurchaseOrderService(
         val existingOrders = supabaseClient.from(TableNames.PURCHASE_ORDERS)
             .select {
                 filter {
-                    eq("created_by", userId)
-                    ilike("po_number", "$prefix%")
+                    eq(DatabaseColumns.CREATED_BY, userId)
+                    ilike(DatabaseColumns.PO_NUMBER, "$prefix%")
                 }
             }
             .decodeList<PurchaseOrderDTO>()

@@ -44,10 +44,10 @@ class UserManagementService(
             supabaseClient.from(TableNames.USERS)
                 .select {
                     filter {
-                        role?.let { eq("role", it) }
+                        role?.let { eq(DatabaseColumns.ROLE, it) }
                         status?.let { eq(DatabaseColumns.STATUS, it) }
                     }
-                    order("full_name", Order.ASCENDING)
+                    order(DatabaseColumns.FULL_NAME, Order.ASCENDING)
                     range(from, to)
                 }
                 .decodeList<UserDTO>()
@@ -76,11 +76,11 @@ class UserManagementService(
             val passwordHash = userRepository.hashPassword(request.password)
 
             val data = buildJsonObject {
-                put("email", request.email)
-                put("full_name", request.fullName)
-                put("role", request.role)
+                put(DatabaseColumns.EMAIL, request.email)
+                put(DatabaseColumns.FULL_NAME, request.fullName)
+                put(DatabaseColumns.ROLE, request.role)
                 put(DatabaseColumns.STATUS, "active")
-                put("password_hash", passwordHash)
+                put(DatabaseColumns.PASSWORD_HASH, passwordHash)
             }
 
             supabaseClient.from(TableNames.USERS)
@@ -92,8 +92,8 @@ class UserManagementService(
     suspend fun updateUser(userId: String, request: UpdateUserRequest): Result<UserDTO> {
         return executeQuery(ERROR_UPDATE_FAILED) {
             val data = buildJsonObject {
-                request.fullName?.let { put("full_name", it) }
-                request.role?.let { put("role", it) }
+                request.fullName?.let { put(DatabaseColumns.FULL_NAME, it) }
+                request.role?.let { put(DatabaseColumns.ROLE, it) }
             }
 
             supabaseClient.from(TableNames.USERS)
@@ -123,7 +123,7 @@ class UserManagementService(
     suspend fun assignRole(userId: String, newRole: String): Result<UserDTO> {
         return executeQuery(ERROR_UPDATE_FAILED) {
             val data = buildJsonObject {
-                put("role", newRole)
+                put(DatabaseColumns.ROLE, newRole)
             }
 
             supabaseClient.from(TableNames.USERS)
@@ -147,7 +147,7 @@ class UserManagementService(
             val newPasswordHash = userRepository.hashPassword(request.newPassword)
 
             val data = buildJsonObject {
-                put("password_hash", newPasswordHash)
+                put(DatabaseColumns.PASSWORD_HASH, newPasswordHash)
             }
 
             supabaseClient.from(TableNames.USERS)
@@ -162,7 +162,7 @@ class UserManagementService(
             val newPasswordHash = userRepository.hashPassword(newPassword)
 
             val data = buildJsonObject {
-                put("password_hash", newPasswordHash)
+                put(DatabaseColumns.PASSWORD_HASH, newPasswordHash)
             }
 
             supabaseClient.from(TableNames.USERS)
@@ -188,11 +188,11 @@ class UserManagementService(
                 .select {
                     filter {
                         or {
-                            ilike("full_name", searchPattern)
-                            ilike("email", searchPattern)
+                            ilike(DatabaseColumns.FULL_NAME, searchPattern)
+                            ilike(DatabaseColumns.EMAIL, searchPattern)
                         }
                     }
-                    order("full_name", Order.ASCENDING)
+                    order(DatabaseColumns.FULL_NAME, Order.ASCENDING)
                 }
                 .decodeList<UserDTO>()
         }

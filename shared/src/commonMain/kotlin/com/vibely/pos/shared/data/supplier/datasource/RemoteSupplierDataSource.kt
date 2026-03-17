@@ -11,17 +11,19 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.serialization.json.JsonObject
 
 class RemoteSupplierDataSource(private val httpClient: HttpClient, private val baseUrl: String) {
-
     suspend fun getAllSuppliers(isActive: Boolean? = null, page: Int = 1, pageSize: Int = 50): Result<List<SupplierDTO>> = Result.runCatching {
-        val response: HttpResponse = httpClient.get("$baseUrl/api/suppliers") {
-            isActive?.let { parameter("is_active", it) }
-            parameter("page", page)
-            parameter("page_size", pageSize)
-        }
+        val response: HttpResponse =
+            httpClient.get("$baseUrl/api/suppliers") {
+                isActive?.let { parameter("is_active", it) }
+                parameter("page", page)
+                parameter("page_size", pageSize)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }
@@ -37,9 +39,11 @@ class RemoteSupplierDataSource(private val httpClient: HttpClient, private val b
     }
 
     suspend fun createSupplier(supplier: JsonObject): Result<SupplierDTO> = Result.runCatching {
-        val response: HttpResponse = httpClient.post("$baseUrl/api/suppliers") {
-            setBody(supplier)
-        }
+        val response: HttpResponse =
+            httpClient.post("$baseUrl/api/suppliers") {
+                contentType(ContentType.Application.Json)
+                setBody(supplier)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }
@@ -47,9 +51,11 @@ class RemoteSupplierDataSource(private val httpClient: HttpClient, private val b
     }
 
     suspend fun updateSupplier(id: String, supplier: JsonObject): Result<SupplierDTO> = Result.runCatching {
-        val response: HttpResponse = httpClient.put("$baseUrl/api/suppliers/$id") {
-            setBody(supplier)
-        }
+        val response: HttpResponse =
+            httpClient.put("$baseUrl/api/suppliers/$id") {
+                contentType(ContentType.Application.Json)
+                setBody(supplier)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }
@@ -64,9 +70,10 @@ class RemoteSupplierDataSource(private val httpClient: HttpClient, private val b
     }
 
     suspend fun searchSuppliers(query: String): Result<List<SupplierDTO>> = Result.runCatching {
-        val response: HttpResponse = httpClient.get("$baseUrl/api/suppliers") {
-            parameter("search", query)
-        }
+        val response: HttpResponse =
+            httpClient.get("$baseUrl/api/suppliers") {
+                parameter("search", query)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }

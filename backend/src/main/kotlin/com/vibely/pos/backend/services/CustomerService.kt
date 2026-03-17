@@ -189,7 +189,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
             supabaseClient.from(TableNames.SALES)
                 .select {
                     filter {
-                        eq("customer_id", customerId)
+                        eq(DatabaseColumns.CUSTOMER_ID, customerId)
                         eq(DatabaseColumns.USER_ID, userId)
                     }
                     order(DatabaseColumns.SALE_DATE, Order.DESCENDING)
