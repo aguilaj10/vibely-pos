@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,9 +29,6 @@ import com.vibely.pos.ui.components.DebugModeBadge
 import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
 import com.vibely.pos.ui.components.ErrorState
-import com.vibely.pos.ui.components.ShimmerPlaceholder
-import com.vibely.pos.ui.components.SkeletonDashboardMetrics
-import com.vibely.pos.ui.components.SkeletonSalesTable
 import com.vibely.pos.ui.dashboard.components.MetricCard
 import com.vibely.pos.ui.dashboard.components.QuickActionButtons
 import com.vibely.pos.ui.dashboard.components.RecentTransactionsTable
@@ -231,76 +229,10 @@ fun DashboardScreen(
 
 @Composable
 private fun LoadingState() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                ShimmerPlaceholder(
-                    width = 28.dp,
-                    height = 28.dp,
-                    cornerRadius = 4.dp,
-                )
-                ShimmerPlaceholder(
-                    width = 150.dp,
-                    height = 32.dp,
-                    cornerRadius = 4.dp,
-                )
-            }
-            ShimmerPlaceholder(
-                width = 100.dp,
-                height = 36.dp,
-                cornerRadius = 8.dp,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        SkeletonDashboardMetrics()
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        ShimmerPlaceholder(
-            width = 200.dp,
-            height = 24.dp,
-            cornerRadius = 4.dp,
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        SkeletonSalesTable(rowCount = 5)
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        ShimmerPlaceholder(
-            width = 150.dp,
-            height = 24.dp,
-            cornerRadius = 4.dp,
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            repeat(3) {
-                ShimmerPlaceholder(
-                    width = 150.dp,
-                    height = 48.dp,
-                    cornerRadius = 8.dp,
-                )
-            }
-        }
+        CircularProgressIndicator()
     }
 }

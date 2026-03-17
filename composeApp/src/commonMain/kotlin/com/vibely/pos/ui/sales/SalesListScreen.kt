@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,7 +44,6 @@ import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
 import com.vibely.pos.ui.components.PaginationControls
-import com.vibely.pos.ui.components.SkeletonSalesTable
 import com.vibely.pos.ui.dialogs.RefundDialog
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
@@ -380,23 +380,11 @@ private fun SaleStatusBadge(status: SaleStatus, modifier: Modifier = Modifier) {
 
 @Composable
 private fun LoadingState() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
-        ),
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            SalesTableHeader()
-            SkeletonSalesTable(
-                rowCount = 8,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+        CircularProgressIndicator()
     }
 }
 

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,8 +44,6 @@ import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.PaginationControls
-import com.vibely.pos.ui.components.SkeletonKpiCardsRow
-import com.vibely.pos.ui.components.SkeletonProductsTable
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.ProductFormDialog
 import com.vibely.pos.ui.navigation.Screen
@@ -105,17 +104,13 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
             Spacer(modifier = Modifier.height(24.dp))
 
             if (state.isLoading) {
-                AppCard(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    style = AppCardStyle.Elevated,
-                    elevation = 1.dp,
+                    contentAlignment = Alignment.Center,
                 ) {
-                    SkeletonProductsTable(
-                        rowCount = 8,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                    CircularProgressIndicator()
                 }
             } else {
                 ProductsTable(
@@ -220,11 +215,15 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
 @Composable
 private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Double, categoriesCount: Int, isLoading: Boolean = false) {
     if (isLoading) {
-        SkeletonKpiCardsRow(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-        )
+                .padding(horizontal = 16.dp)
+                .height(120.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            CircularProgressIndicator()
+        }
     } else {
         Row(
             modifier = Modifier

@@ -40,7 +40,6 @@ import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.shift.repository.ShiftRepository
 import com.vibely.pos.shared.domain.supplier.repository.SupplierRepository
 import com.vibely.pos.shared.domain.user.repository.UserRepository
-import com.vibely.pos.shared.util.PlatformNetworkMonitorFactory
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -275,6 +274,4 @@ val dataModule =
 
         // Reports repositories
         singleOf(::ReportsRepositoryImpl) { bind<ReportsRepository>() }
-
-        single { PlatformNetworkMonitorFactory.create() }
     }

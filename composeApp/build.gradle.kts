@@ -14,7 +14,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.vibely.pos.lib"
         compileSdk =
             libs.versions.android.compileSdk
@@ -78,6 +78,12 @@ kotlin {
             implementation(libs.ktor.clientLogging)
             implementation(libs.kotlinx.serialization.json)
             implementation(projects.shared)
+
+            // Network Connectivity Monitoring - Core + Compose integration
+            implementation(libs.connectivity.core)
+            implementation(libs.connectivity.http)
+            implementation(libs.connectivity.compose)
+            implementation(libs.connectivity.compose.http)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

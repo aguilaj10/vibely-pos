@@ -66,6 +66,10 @@ kotlin {
             // Cryptography KMP - for encryption across platforms
             implementation(libs.cryptography.core)
             implementation(libs.cryptography.provider.optimal)
+
+            // Network Connectivity Monitoring
+            implementation(libs.connectivity.core)
+            implementation(libs.connectivity.http)
         }
 
         androidMain.dependencies {
