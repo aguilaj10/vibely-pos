@@ -34,19 +34,8 @@ class CompleteSaleUseCase(private val saleRepository: SaleRepository, private va
         }
 
         return cart.validateStock(productsMap).flatMap {
-            // Deduct stock for each item in the cart
-            for (cartItem in cart.items) {
-                val product = productsMap[cartItem.productId] ?: continue
-                val newStock = product.currentStock - cartItem.quantity
-                val updatedProduct = product.copy(
-                    currentStock = newStock,
-                    updatedAt = Clock.System.now(),
-                )
-                when (val updateResult = productRepository.update(updatedProduct)) {
-                    is Result.Success -> productsMap[cartItem.productId] = updateResult.data
-                    is Result.Error -> return Result.Error("Failed to update stock: ${updateResult.message}")
-                }
-            }
+            // Backend handles stock deduction in SaleCreationHelper.deductStockAndLogTransactions()
+            // No need to update stock here - it would fail with wrong payload format anyway
 
             val now = Clock.System.now()
             val invoiceNumber = generateInvoiceNumber()

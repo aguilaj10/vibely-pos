@@ -22,7 +22,7 @@ import com.vibely.pos.ui.inventory.InventoryScreen
 import com.vibely.pos.ui.navigation.components.LeftSidebarNavigation
 import com.vibely.pos.ui.purchaseorders.PurchaseOrdersScreen
 import com.vibely.pos.ui.reports.ReportsScreen
-import com.vibely.pos.ui.screens.PlaceholderScreen
+import com.vibely.pos.ui.sales.SalesListScreen
 import com.vibely.pos.ui.screens.ThemeDemoScreen
 import com.vibely.pos.ui.screens.categories.CategoriesScreen
 import com.vibely.pos.ui.settings.SettingsScreen
@@ -137,11 +137,7 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                         }
 
                         is Screen.Sales -> NavEntry(key) {
-                            PlaceholderScreen(
-                                title = Screen.Sales.title,
-                                icon = Screen.Sales.icon,
-                                description = "View and manage sales history, refunds, and transaction details.",
-                            )
+                            SalesListScreen()
                         }
 
                         is Screen.Inventory -> NavEntry(key) {

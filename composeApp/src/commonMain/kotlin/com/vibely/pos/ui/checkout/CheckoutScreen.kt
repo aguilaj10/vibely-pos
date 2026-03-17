@@ -46,6 +46,7 @@ import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.sales.valueobject.CartItem
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
+import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -59,11 +60,7 @@ import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckoutScreen(
-    onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: CheckoutViewModel = koinInject(),
-) {
+fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: CheckoutViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -120,6 +117,7 @@ fun CheckoutScreen(
                                     }
                                 }
                             },
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     },
                     expanded = state.shouldExpand,

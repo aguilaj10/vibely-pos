@@ -9,6 +9,7 @@ import com.vibely.pos.shared.domain.sales.usecase.AddToCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.CompleteSaleUseCase
 import com.vibely.pos.shared.domain.sales.usecase.RemoveFromCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
+import com.vibely.pos.shared.domain.sales.usecase.UpdateCartUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ class CheckoutViewModel(
     private val removeFromCartUseCase: RemoveFromCartUseCase,
     private val completeSaleUseCase: CompleteSaleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val updateCartUseCase: UpdateCartUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CheckoutState())
@@ -134,24 +136,12 @@ class CheckoutViewModel(
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
-
-            when (val result = addToCartUseCase(_state.value.cart, productId, quantity)) {
-                is Result.Success -> {
-                    _state.update {
-                        it.copy(
-                            cart = result.data,
-                            isLoading = false,
-                        )
-                    }
-                }
-                is Result.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = result.message,
-                        )
-                    }
-                }
+            val result = updateCartUseCase(_state.value.cart, productId, quantity)
+            _state.update {
+                it.copy(
+                    cart = result,
+                    isLoading = false,
+                )
             }
         }
     }

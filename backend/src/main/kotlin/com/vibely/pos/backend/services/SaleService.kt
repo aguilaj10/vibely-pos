@@ -2,7 +2,6 @@ package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
 import com.vibely.pos.backend.common.TableNames
-import com.vibely.pos.backend.common.ErrorMessages
 import com.vibely.pos.backend.dto.request.GetAllSalesRequest
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.data.sales.dto.SaleDTO
@@ -11,6 +10,7 @@ import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
+import kotlinx.serialization.json.jsonPrimitive
 
 private const val ERROR_CREATE_SALE = "Failed to create sale"
 private const val ERROR_FETCH_SALES = "Failed to fetch sales"
@@ -35,18 +35,29 @@ class SaleService(
      */
     suspend fun createSale(request: CreateSaleRequest, cashierId: String): Result<SaleDTO> {
         return executeQuery(ERROR_CREATE_SALE) {
-            val saleItemsResult = creationHelper.validateAndBuildSaleItems(request)
-            if (saleItemsResult is Result.Error) {
-                throw IllegalStateException(saleItemsResult.message)
+            val validationResult = creationHelper.validateAndBuildSaleItems(request)
+            check(validationResult is Result.Success) {
+                (validationResult as Result.Error).message
             }
 
-            val (saleItems, subtotal) = (saleItemsResult as Result.Success).data
+            val (validatedItems, subtotal) = validationResult.data
 
-            val sale = creationHelper.insertSale(request, cashierId, subtotal)
-            creationHelper.insertSaleItems(saleItems, sale.id)
-            creationHelper.deductStockAndLogTransactions(request, sale, cashierId)
+            val saleJson = creationHelper.insertSale(request, cashierId, subtotal)
+            val saleId = saleJson[DatabaseColumns.ID]?.jsonPrimitive?.content
+                ?: error("Sale ID not returned from insert")
+            val invoiceNumber = saleJson["invoice_number"]?.jsonPrimitive?.content
+                ?: error("Invoice number not returned from insert")
 
-            sale
+            creationHelper.insertSaleItems(saleId, validatedItems)
+            creationHelper.deductStockAndLogTransactions(validatedItems, saleId, invoiceNumber, cashierId)
+
+            supabaseClient.from(TableNames.SALES)
+                .select {
+                    filter {
+                        eq(DatabaseColumns.ID, saleId)
+                    }
+                }
+                .decodeSingle<SaleDTO>()
         }
     }
 

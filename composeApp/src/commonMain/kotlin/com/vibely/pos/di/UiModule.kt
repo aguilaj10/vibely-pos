@@ -18,7 +18,7 @@ import org.koin.dsl.module
 val uiModule = module {
     factory { LoginViewModel(get()) }
     factory { DashboardViewModel(get(), get(), get()) }
-    factory { CheckoutViewModel(get(), get(), get(), get(), get()) }
+    factory { CheckoutViewModel(get(), get(), get(), get(), get(), get()) }
     factory { SalesListViewModel(get(), get(), get()) }
     factory { InventoryViewModel(get(), get(), get(), get(), get(), get()) }
     factory { CategoriesViewModel(get(), get(), get()) }
