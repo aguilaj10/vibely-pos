@@ -1,6 +1,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.shared.data.dashboard.dto.ActiveShiftInfoDTO
 import com.vibely.pos.shared.data.dashboard.dto.DashboardSummaryDTO
 import com.vibely.pos.shared.data.dashboard.dto.LowStockProductDTO
@@ -19,8 +20,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 // Database table names
-private const val TABLE_SALES = "sales"
-private const val TABLE_CASH_SHIFTS = "cash_shifts"
 private const val VIEW_LOW_STOCK_PRODUCTS = "low_stock_products"
 
 // Status values
@@ -69,7 +68,7 @@ class DashboardService(
      */
     private suspend fun fetchTodaySalesTotal(): Long {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
-        val salesResult = supabaseClient.from(TABLE_SALES)
+        val salesResult = supabaseClient.from(TableNames.SALES)
             .select(columns = Columns.list("total_amount")) {
                 filter {
                     eq(DatabaseColumns.STATUS, STATUS_COMPLETED)
@@ -87,7 +86,7 @@ class DashboardService(
      */
     private suspend fun fetchTodayTransactionCount(): Int {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
-        val transactions = supabaseClient.from(TABLE_SALES)
+        val transactions = supabaseClient.from(TableNames.SALES)
             .select(columns = Columns.list("id")) {
                 filter {
                     eq(DatabaseColumns.STATUS, STATUS_COMPLETED)
@@ -125,7 +124,7 @@ class DashboardService(
         )
 
         val activeShiftResult = try {
-            supabaseClient.from(TABLE_CASH_SHIFTS)
+            supabaseClient.from(TableNames.SHIFTS)
                 .select(columns = activeShiftColumns) {
                     filter {
                         exact(DatabaseColumns.CLOSED_AT, null)
@@ -163,7 +162,7 @@ class DashboardService(
      */
     suspend fun getRecentTransactions(limit: Int = DEFAULT_TRANSACTIONS_LIMIT): Result<List<RecentTransactionDTO>> {
         return executeQuery("Failed to fetch recent transactions") {
-            val transactions = supabaseClient.from(TABLE_SALES)
+            val transactions = supabaseClient.from(TableNames.SALES)
                 .select(
                     columns = Columns.list(
                         "id",

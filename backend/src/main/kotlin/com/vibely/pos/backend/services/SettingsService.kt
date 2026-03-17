@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.services
 
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.backend.dto.request.UpdateReceiptSettingsRequest
 import com.vibely.pos.backend.dto.request.UpdateStoreInfoRequest
 import com.vibely.pos.backend.dto.request.UpdateTaxSettingsRequest
@@ -17,7 +18,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-private const val TABLE_SETTINGS = "app_settings"
 private const val SETTING_KEY_STORE = "store_settings"
 private const val SETTING_KEY_RECEIPT = "receipt_settings"
 private const val SETTING_KEY_TAX = "tax_settings"
@@ -57,7 +57,7 @@ class SettingsService(
      *         [Result.Error] if not found or on error.
      */
     suspend fun getStoreSettings(): Result<StoreSettingsDTO> = executeQuery("Failed to get store settings") {
-        val row = supabaseClient.from(TABLE_SETTINGS)
+        val row = supabaseClient.from(TableNames.SETTINGS)
             .select(columns = Columns.list(COL_ID, COL_SETTING_VALUE, COL_CREATED_AT, COL_UPDATED_AT)) {
                 filter { eq(COL_SETTING_KEY, SETTING_KEY_STORE) }
                 limit(1)
@@ -95,7 +95,7 @@ class SettingsService(
         )
         val jsonValue = json.encodeToString(settingsData)
 
-        val existing = supabaseClient.from(TABLE_SETTINGS)
+        val existing = supabaseClient.from(TableNames.SETTINGS)
             .select(columns = Columns.list(COL_ID)) {
                 filter { eq(COL_SETTING_KEY, SETTING_KEY_STORE) }
                 limit(1)
@@ -103,7 +103,7 @@ class SettingsService(
             .decodeSingleOrNull<SettingsIdRow>()
 
         if (existing != null) {
-            supabaseClient.from(TABLE_SETTINGS)
+            supabaseClient.from(TableNames.SETTINGS)
                 .update(
                     mapOf(
                         COL_SETTING_VALUE to jsonValue,
@@ -113,7 +113,7 @@ class SettingsService(
                     filter { eq(COL_SETTING_KEY, SETTING_KEY_STORE) }
                 }
         } else {
-            supabaseClient.from(TABLE_SETTINGS)
+            supabaseClient.from(TableNames.SETTINGS)
                 .insert(
                     mapOf(
                         COL_SETTING_KEY to SETTING_KEY_STORE,
@@ -131,7 +131,7 @@ class SettingsService(
      *         [Result.Error] if not found or on error.
      */
     suspend fun getReceiptSettings(): Result<ReceiptSettingsDTO> = executeQuery("Failed to get receipt settings") {
-        val row = supabaseClient.from(TABLE_SETTINGS)
+        val row = supabaseClient.from(TableNames.SETTINGS)
             .select(columns = Columns.list(COL_ID, COL_SETTING_VALUE, COL_CREATED_AT, COL_UPDATED_AT)) {
                 filter { eq(COL_SETTING_KEY, SETTING_KEY_RECEIPT) }
                 limit(1)
@@ -169,7 +169,7 @@ class SettingsService(
         )
         val jsonValue = json.encodeToString(settingsData)
 
-        val existing = supabaseClient.from(TABLE_SETTINGS)
+        val existing = supabaseClient.from(TableNames.SETTINGS)
             .select(columns = Columns.list(COL_ID)) {
                 filter { eq(COL_SETTING_KEY, SETTING_KEY_RECEIPT) }
                 limit(1)
@@ -177,7 +177,7 @@ class SettingsService(
             .decodeSingleOrNull<SettingsIdRow>()
 
         if (existing != null) {
-            supabaseClient.from(TABLE_SETTINGS)
+            supabaseClient.from(TableNames.SETTINGS)
                 .update(
                     mapOf(
                         COL_SETTING_VALUE to jsonValue,
@@ -187,7 +187,7 @@ class SettingsService(
                     filter { eq(COL_SETTING_KEY, SETTING_KEY_RECEIPT) }
                 }
         } else {
-            supabaseClient.from(TABLE_SETTINGS)
+            supabaseClient.from(TableNames.SETTINGS)
                 .insert(
                     mapOf(
                         COL_SETTING_KEY to SETTING_KEY_RECEIPT,
@@ -205,7 +205,7 @@ class SettingsService(
      *         [Result.Error] if not found or on error.
      */
     suspend fun getTaxSettings(): Result<TaxSettingsDTO> = executeQuery("Failed to get tax settings") {
-        val row = supabaseClient.from(TABLE_SETTINGS)
+        val row = supabaseClient.from(TableNames.SETTINGS)
             .select(columns = Columns.list(COL_ID, COL_SETTING_VALUE, COL_CREATED_AT, COL_UPDATED_AT)) {
                 filter { eq(COL_SETTING_KEY, SETTING_KEY_TAX) }
                 limit(1)
@@ -239,7 +239,7 @@ class SettingsService(
         )
         val jsonValue = json.encodeToString(settingsData)
 
-        val existing = supabaseClient.from(TABLE_SETTINGS)
+        val existing = supabaseClient.from(TableNames.SETTINGS)
             .select(columns = Columns.list(COL_ID)) {
                 filter { eq(COL_SETTING_KEY, SETTING_KEY_TAX) }
                 limit(1)
@@ -247,7 +247,7 @@ class SettingsService(
             .decodeSingleOrNull<SettingsIdRow>()
 
         if (existing != null) {
-            supabaseClient.from(TABLE_SETTINGS)
+            supabaseClient.from(TableNames.SETTINGS)
                 .update(
                     mapOf(
                         COL_SETTING_VALUE to jsonValue,
@@ -257,7 +257,7 @@ class SettingsService(
                     filter { eq(COL_SETTING_KEY, SETTING_KEY_TAX) }
                 }
         } else {
-            supabaseClient.from(TABLE_SETTINGS)
+            supabaseClient.from(TableNames.SETTINGS)
                 .insert(
                     mapOf(
                         COL_SETTING_KEY to SETTING_KEY_TAX,
@@ -279,7 +279,7 @@ class SettingsService(
         executeQuery("Failed to get user preferences") {
         val settingKey = "$SETTING_KEY_USER_PREFIX$userId"
 
-        val row = supabaseClient.from(TABLE_SETTINGS)
+        val row = supabaseClient.from(TableNames.SETTINGS)
             .select(columns = Columns.list(COL_ID, COL_SETTING_VALUE, COL_CREATED_AT, COL_UPDATED_AT)) {
                 filter { eq(COL_SETTING_KEY, settingKey) }
                 limit(1)
@@ -321,7 +321,7 @@ class SettingsService(
         )
         val jsonValue = json.encodeToString(settingsData)
 
-        val existing = supabaseClient.from(TABLE_SETTINGS)
+        val existing = supabaseClient.from(TableNames.SETTINGS)
             .select(columns = Columns.list(COL_ID)) {
                 filter { eq(COL_SETTING_KEY, settingKey) }
                 limit(1)
@@ -329,7 +329,7 @@ class SettingsService(
             .decodeSingleOrNull<SettingsIdRow>()
 
         if (existing != null) {
-            supabaseClient.from(TABLE_SETTINGS)
+            supabaseClient.from(TableNames.SETTINGS)
                 .update(
                     mapOf(
                         COL_SETTING_VALUE to jsonValue,
@@ -340,7 +340,7 @@ class SettingsService(
                     filter { eq(COL_SETTING_KEY, settingKey) }
                 }
         } else {
-            supabaseClient.from(TABLE_SETTINGS)
+            supabaseClient.from(TableNames.SETTINGS)
                 .insert(
                     mapOf(
                         COL_SETTING_KEY to settingKey,

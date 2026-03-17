@@ -1,5 +1,7 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.common.ErrorKeys
+import com.vibely.pos.backend.common.ErrorMessages
 import com.vibely.pos.backend.services.AuthService
 import com.vibely.pos.shared.data.auth.dto.LoginRequestDTO
 import com.vibely.pos.shared.data.auth.dto.RefreshTokenRequestDTO
@@ -16,17 +18,10 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.util.date.GMTDate
 
-// Error message constants
-private const val ERROR_INVALID_CREDENTIALS = "Invalid email or password"
-private const val ERROR_INVALID_TOKEN = "Invalid token"
 private const val ERROR_NO_TOKEN = "No token provided"
 private const val ERROR_TOKEN_REVOKED = "Token has been revoked"
-private const val ERROR_USER_NOT_FOUND = "User not found"
 private const val ERROR_REFRESH_REQUIRED = "Refresh token is required"
-private const val ERROR_INVALID_REFRESH = "Invalid or expired refresh token"
 private const val ERROR_EMAIL_PASSWORD_REQUIRED = "Email and password are required"
-
-private const val ERROR = "error"
 
 private const val REFRESH_TOKEN_COOKIE_NAME = "vibely_refresh"
 private const val WEB_REFRESH_TOKEN_PLACEHOLDER = "cookie"
@@ -60,13 +55,13 @@ private suspend fun ApplicationCall.handleLogin(authService: AuthService) {
     val request = receive<LoginRequestDTO>()
 
     if (request.email.isBlank() || request.password.isBlank()) {
-        respond(HttpStatusCode.BadRequest, mapOf(ERROR to ERROR_EMAIL_PASSWORD_REQUIRED))
+        respond(HttpStatusCode.BadRequest, mapOf(ErrorKeys.ERROR to ERROR_EMAIL_PASSWORD_REQUIRED))
         return
     }
 
     val authResponse = authService.login(request.email, request.password)
     if (authResponse == null) {
-        respond(HttpStatusCode.Unauthorized, mapOf(ERROR to ERROR_INVALID_CREDENTIALS))
+        respond(HttpStatusCode.Unauthorized, mapOf(ErrorKeys.ERROR to ErrorMessages.INVALID_CREDENTIALS))
         return
     }
 
@@ -84,12 +79,12 @@ private suspend fun ApplicationCall.handleLogin(authService: AuthService) {
  */
 private suspend fun ApplicationCall.handleLogout(authService: AuthService) {
     val userId = extractUserId() ?: run {
-        respond(HttpStatusCode.Unauthorized, mapOf(ERROR to ERROR_INVALID_TOKEN))
+        respond(HttpStatusCode.Unauthorized, mapOf(ErrorKeys.ERROR to ErrorMessages.INVALID_TOKEN))
         return
     }
 
     val token = extractBearerToken() ?: run {
-        respond(HttpStatusCode.BadRequest, mapOf(ERROR to ERROR_NO_TOKEN))
+        respond(HttpStatusCode.BadRequest, mapOf(ErrorKeys.ERROR to ERROR_NO_TOKEN))
         return
     }
 
@@ -106,19 +101,19 @@ private suspend fun ApplicationCall.handleLogout(authService: AuthService) {
  */
 private suspend fun ApplicationCall.handleGetCurrentUser(authService: AuthService) {
     val userId = extractUserId() ?: run {
-        respond(HttpStatusCode.Unauthorized, mapOf(ERROR to ERROR_INVALID_TOKEN))
+        respond(HttpStatusCode.Unauthorized, mapOf(ErrorKeys.ERROR to ErrorMessages.INVALID_TOKEN))
         return
     }
 
     val token = extractBearerToken()
     if (token != null && authService.isTokenBlacklisted(token)) {
-        respond(HttpStatusCode.Unauthorized, mapOf(ERROR to ERROR_TOKEN_REVOKED))
+        respond(HttpStatusCode.Unauthorized, mapOf(ErrorKeys.ERROR to ERROR_TOKEN_REVOKED))
         return
     }
 
     val user = authService.getCurrentUser(userId)
     if (user == null) {
-        respond(HttpStatusCode.NotFound, mapOf(ERROR to ERROR_USER_NOT_FOUND))
+        respond(HttpStatusCode.NotFound, mapOf(ErrorKeys.ERROR to ErrorMessages.USER_NOT_FOUND))
         return
     }
 
@@ -139,13 +134,13 @@ private suspend fun ApplicationCall.handleRefreshToken(authService: AuthService)
     val refreshToken = refreshTokenFromBody ?: request.cookies[REFRESH_TOKEN_COOKIE_NAME]
 
     if (refreshToken.isNullOrBlank()) {
-        respond(HttpStatusCode.BadRequest, mapOf(ERROR to ERROR_REFRESH_REQUIRED))
+        respond(HttpStatusCode.BadRequest, mapOf(ErrorKeys.ERROR to ERROR_REFRESH_REQUIRED))
         return
     }
 
     val authResponse = authService.refreshAccessToken(refreshToken)
     if (authResponse == null) {
-        respond(HttpStatusCode.Unauthorized, mapOf(ERROR to ERROR_INVALID_REFRESH))
+        respond(HttpStatusCode.Unauthorized, mapOf(ErrorKeys.ERROR to ErrorMessages.INVALID_REFRESH))
         return
     }
 

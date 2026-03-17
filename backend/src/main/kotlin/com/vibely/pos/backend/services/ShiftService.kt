@@ -10,6 +10,8 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
+import com.vibely.pos.backend.common.ErrorMessages
 import com.vibely.pos.backend.dto.request.CloseShiftRequest
 import com.vibely.pos.shared.data.shift.dto.ShiftDTO
 import com.vibely.pos.shared.data.shift.dto.ShiftSummaryDTO
@@ -20,9 +22,7 @@ import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-private const val TABLE_SHIFTS = "cash_shifts"
 private const val ERROR_FETCH_FAILED = "Failed to fetch shifts"
-private const val ERROR_NOT_FOUND = "Shift not found"
 private const val ERROR_OPEN_FAILED = "Failed to open shift"
 private const val ERROR_CLOSE_FAILED = "Failed to close shift"
 private const val ERROR_SUMMARY_FAILED = "Failed to get shift summary"
@@ -34,7 +34,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
 
     suspend fun getCurrentShift(userId: String): Result<ShiftDTO?> {
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_SHIFTS)
+            supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
                         eq("cashier_id", userId)
@@ -46,8 +46,8 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
     }
 
     suspend fun getShiftById(userId: String, shiftId: String): Result<ShiftDTO> {
-        return executeQuery(ERROR_NOT_FOUND) {
-            supabaseClient.from(TABLE_SHIFTS)
+        return executeQuery(ErrorMessages.SHIFT_NOT_FOUND) {
+            supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, shiftId)
@@ -66,7 +66,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
     ): Result<List<ShiftDTO>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_SHIFTS)
+            supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
                         eq("cashier_id", cashierId ?: userId)
@@ -80,7 +80,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
 
     suspend fun openShift(userId: String, openingBalance: Double): Result<ShiftDTO> {
         return executeQuery(ERROR_OPEN_FAILED) {
-            val existingShift = supabaseClient.from(TABLE_SHIFTS)
+            val existingShift = supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
                         eq("cashier_id", userId)
@@ -106,7 +106,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
                 put("opened_at", java.time.Instant.now().toString())
             }
 
-            supabaseClient.from(TABLE_SHIFTS)
+            supabaseClient.from(TableNames.SHIFTS)
                 .insert(data) { select() }
                 .decodeSingle<ShiftDTO>()
         }
@@ -118,7 +118,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
         request: CloseShiftRequest,
     ): Result<ShiftDTO> {
         return executeQuery(ERROR_CLOSE_FAILED) {
-            val currentShift = supabaseClient.from(TABLE_SHIFTS)
+            val currentShift = supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, shiftId)
@@ -142,7 +142,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
                 request.notes?.let { put(DatabaseColumns.NOTES, it) }
             }
 
-            supabaseClient.from(TABLE_SHIFTS)
+            supabaseClient.from(TableNames.SHIFTS)
                 .update(data) {
                     filter { eq(DatabaseColumns.ID, shiftId) }
                     select()
@@ -153,7 +153,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
 
     suspend fun getShiftSummary(userId: String, shiftId: String): Result<ShiftSummaryDTO> {
         return executeQuery(ERROR_SUMMARY_FAILED) {
-            val shift = supabaseClient.from(TABLE_SHIFTS)
+            val shift = supabaseClient.from(TableNames.SHIFTS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, shiftId)
@@ -185,7 +185,7 @@ class ShiftService(private val supabaseClient: SupabaseClient) : BaseService() {
         val today = java.time.LocalDate.now()
         val prefix = "SH-${today.year}${today.monthValue.toString().padStart(2, '0')}${today.dayOfMonth.toString().padStart(2, '0')}"
 
-        val existingShifts = supabaseClient.from(TABLE_SHIFTS)
+        val existingShifts = supabaseClient.from(TableNames.SHIFTS)
             .select {
                 filter {
                     eq("cashier_id", userId)

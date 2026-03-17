@@ -2,6 +2,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.backend.dto.request.AddLoyaltyPointsRequest
 import com.vibely.pos.backend.dto.request.CreateCustomerRequest
 import com.vibely.pos.backend.dto.request.UpdateCustomerRequest
@@ -14,8 +15,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-private const val TABLE_CUSTOMERS = "customers"
-private const val TABLE_SALES = "sales"
 private const val ERROR_FETCH_FAILED = "Failed to fetch customers"
 private const val ERROR_CUSTOMER_NOT_FOUND = "Customer not found"
 private const val ERROR_CREATE_FAILED = "Failed to create customer"
@@ -35,7 +34,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
     ): Result<List<CustomerDTO>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_CUSTOMERS)
+            supabaseClient.from(TableNames.CUSTOMERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.USER_ID, userId)
@@ -59,7 +58,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
 
     suspend fun getCustomerById(userId: String, customerId: String): Result<CustomerDTO> {
         return executeQuery(ERROR_CUSTOMER_NOT_FOUND) {
-            supabaseClient.from(TABLE_CUSTOMERS)
+            supabaseClient.from(TableNames.CUSTOMERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
@@ -84,7 +83,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
                 put(DatabaseColumns.IS_ACTIVE, request.isActive)
             }
 
-            supabaseClient.from(TABLE_CUSTOMERS)
+            supabaseClient.from(TableNames.CUSTOMERS)
                 .insert(data) {
                     select()
                 }
@@ -111,7 +110,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
                 request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
             }
 
-            supabaseClient.from(TABLE_CUSTOMERS)
+            supabaseClient.from(TableNames.CUSTOMERS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
@@ -125,7 +124,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
 
     suspend fun deleteCustomer(userId: String, customerId: String): Result<Unit> {
         return executeQuery(ERROR_DELETE_FAILED) {
-            supabaseClient.from(TABLE_CUSTOMERS)
+            supabaseClient.from(TableNames.CUSTOMERS)
                 .delete {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
@@ -141,7 +140,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
         request: AddLoyaltyPointsRequest,
     ): Result<CustomerDTO> {
         return executeQuery(ERROR_LOYALTY_FAILED) {
-            val currentCustomer = supabaseClient.from(TABLE_CUSTOMERS)
+            val currentCustomer = supabaseClient.from(TableNames.CUSTOMERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
@@ -158,7 +157,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
                 put(DatabaseColumns.LOYALTY_TIER, newTier)
             }
 
-            supabaseClient.from(TABLE_CUSTOMERS)
+            supabaseClient.from(TableNames.CUSTOMERS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
@@ -187,7 +186,7 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
     ): Result<List<JsonObject>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_PURCHASE_HISTORY_FAILED) {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .select {
                     filter {
                         eq("customer_id", customerId)

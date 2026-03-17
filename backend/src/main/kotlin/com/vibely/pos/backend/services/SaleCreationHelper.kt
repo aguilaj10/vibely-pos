@@ -1,6 +1,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.data.sales.dto.ProductDTO
 import com.vibely.pos.shared.data.sales.dto.SaleDTO
@@ -15,10 +16,6 @@ import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-private const val TABLE_SALES = "sales"
-private const val TABLE_SALE_ITEMS = "sale_items"
-private const val TABLE_PRODUCTS = "products"
-private const val TABLE_INVENTORY_TRANSACTIONS = "inventory_transactions"
 private const val STATUS_COMPLETED = "completed"
 private const val TRANSACTION_TYPE_SALE = "sale"
 private const val REFERENCE_TYPE_SALE = "sale"
@@ -80,7 +77,7 @@ internal class SaleCreationHelper(
         }
 
     suspend fun fetchProduct(productId: String): ProductDTO {
-        return supabaseClient.from(TABLE_PRODUCTS)
+        return supabaseClient.from(TableNames.PRODUCTS)
             .select {
                 filter {
                     eq(DatabaseColumns.ID, productId)
@@ -111,7 +108,7 @@ internal class SaleCreationHelper(
             "sale_date" to now
         )
 
-        return supabaseClient.from(TABLE_SALES)
+        return supabaseClient.from(TableNames.SALES)
             .insert(saleData) {
                 select()
             }
@@ -120,7 +117,7 @@ internal class SaleCreationHelper(
 
     suspend fun insertSaleItems(saleItems: List<SaleItemDTO>, saleId: String) {
         val saleItemsWithSaleId = saleItems.map { it.copy(saleId = saleId) }
-        supabaseClient.from(TABLE_SALE_ITEMS).insert(saleItemsWithSaleId)
+        supabaseClient.from(TableNames.SALE_ITEMS).insert(saleItemsWithSaleId)
     }
 
     suspend fun deductStockAndLogTransactions(
@@ -131,7 +128,7 @@ internal class SaleCreationHelper(
         for (item in request.items) {
             val product = fetchProduct(item.productId)
 
-            supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TableNames.PRODUCTS)
                 .update(mapOf(DatabaseColumns.CURRENT_STOCK to (product.currentStock - item.quantity))) {
                     filter {
                         eq(DatabaseColumns.ID, item.productId)
@@ -148,12 +145,12 @@ internal class SaleCreationHelper(
                 "notes" to "Sale ${sale.invoiceNumber}"
             )
 
-            supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS).insert(transactionData)
+            supabaseClient.from(TableNames.INVENTORY_TRANSACTIONS).insert(transactionData)
         }
     }
 
     private suspend fun generateInvoiceNumber(): String {
-        val sales = supabaseClient.from(TABLE_SALES)
+        val sales = supabaseClient.from(TableNames.SALES)
             .select(Columns.list(DatabaseColumns.ID))
             .decodeList<Map<String, String>>()
 

@@ -9,6 +9,8 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
+import com.vibely.pos.backend.common.ErrorMessages
 import com.vibely.pos.backend.dto.request.ChangePasswordRequest
 import com.vibely.pos.backend.dto.request.CreateUserRequest
 import com.vibely.pos.backend.dto.request.UpdateUserRequest
@@ -20,15 +22,11 @@ import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-private const val TABLE_USERS = "users"
 private const val ERROR_FETCH_FAILED = "Failed to fetch users"
-private const val ERROR_NOT_FOUND = "User not found"
 private const val ERROR_CREATE_FAILED = "Failed to create user"
 private const val ERROR_UPDATE_FAILED = "Failed to update user"
 private const val ERROR_DELETE_FAILED = "Failed to delete user"
 private const val ERROR_PASSWORD_FAILED = "Failed to change password"
-private const val ERROR_INVALID_PASSWORD = "Invalid current password"
-private const val ERROR_EMAIL_EXISTS = "Email already exists"
 
 class UserManagementService(
     private val supabaseClient: SupabaseClient,
@@ -43,7 +41,7 @@ class UserManagementService(
     ): Result<List<UserDTO>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .select {
                     filter {
                         role?.let { eq("role", it) }
@@ -57,8 +55,8 @@ class UserManagementService(
     }
 
     suspend fun getUserById(userId: String): Result<UserDTO> {
-        return executeQuery(ERROR_NOT_FOUND) {
-            supabaseClient.from(TABLE_USERS)
+        return executeQuery(ErrorMessages.USER_NOT_FOUND) {
+            supabaseClient.from(TableNames.USERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, userId)
@@ -72,7 +70,7 @@ class UserManagementService(
         return executeQuery(ERROR_CREATE_FAILED) {
             val existingUser = userRepository.getUserByEmail(request.email)
             if (existingUser != null) {
-                throw IllegalStateException(ERROR_EMAIL_EXISTS)
+                throw IllegalStateException(ErrorMessages.EMAIL_EXISTS)
             }
 
             val passwordHash = userRepository.hashPassword(request.password)
@@ -85,7 +83,7 @@ class UserManagementService(
                 put("password_hash", passwordHash)
             }
 
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .insert(data) { select() }
                 .decodeSingle<UserDTO>()
         }
@@ -98,7 +96,7 @@ class UserManagementService(
                 request.role?.let { put("role", it) }
             }
 
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .update(data) {
                     filter { eq(DatabaseColumns.ID, userId) }
                     select()
@@ -113,7 +111,7 @@ class UserManagementService(
                 put(DatabaseColumns.STATUS, newStatus)
             }
 
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .update(data) {
                     filter { eq(DatabaseColumns.ID, userId) }
                     select()
@@ -128,7 +126,7 @@ class UserManagementService(
                 put("role", newRole)
             }
 
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .update(data) {
                     filter { eq(DatabaseColumns.ID, userId) }
                     select()
@@ -140,10 +138,10 @@ class UserManagementService(
     suspend fun changePassword(userId: String, request: ChangePasswordRequest): Result<Unit> {
         return executeQuery(ERROR_PASSWORD_FAILED) {
             val user = userRepository.getUserById(userId)
-                ?: throw IllegalStateException(ERROR_NOT_FOUND)
+                ?: throw IllegalStateException(ErrorMessages.USER_NOT_FOUND)
 
             if (!userRepository.verifyPassword(request.currentPassword, user.passwordHash)) {
-                throw IllegalStateException(ERROR_INVALID_PASSWORD)
+                throw IllegalStateException(ErrorMessages.INVALID_PASSWORD)
             }
 
             val newPasswordHash = userRepository.hashPassword(request.newPassword)
@@ -152,7 +150,7 @@ class UserManagementService(
                 put("password_hash", newPasswordHash)
             }
 
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .update(data) {
                     filter { eq(DatabaseColumns.ID, userId) }
                 }
@@ -167,7 +165,7 @@ class UserManagementService(
                 put("password_hash", newPasswordHash)
             }
 
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .update(data) {
                     filter { eq(DatabaseColumns.ID, userId) }
                 }
@@ -176,7 +174,7 @@ class UserManagementService(
 
     suspend fun deleteUser(userId: String): Result<Unit> {
         return executeQuery(ERROR_DELETE_FAILED) {
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .delete {
                     filter { eq(DatabaseColumns.ID, userId) }
                 }
@@ -186,7 +184,7 @@ class UserManagementService(
     suspend fun searchUsers(query: String): Result<List<UserDTO>> {
         return executeQuery(ERROR_FETCH_FAILED) {
             val searchPattern = "%$query%"
-            supabaseClient.from(TABLE_USERS)
+            supabaseClient.from(TableNames.USERS)
                 .select {
                     filter {
                         or {

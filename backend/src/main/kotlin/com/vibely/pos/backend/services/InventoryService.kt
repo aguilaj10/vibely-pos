@@ -1,6 +1,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.backend.dto.request.GetTransactionsRequest
 import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
@@ -8,7 +9,6 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.JsonObject
 
-private const val TABLE_INVENTORY_TRANSACTIONS = "inventory_transactions"
 private const val ERROR_FETCH_FAILED = "Failed to fetch inventory transactions"
 
 /**
@@ -30,7 +30,7 @@ class InventoryService(
     ): Result<List<JsonObject>> {
         val (from, to) = calculatePaginationRange(request.page, request.pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS)
+            supabaseClient.from(TableNames.INVENTORY_TRANSACTIONS)
                 .select {
                     filter {
                         eq(DatabaseColumns.USER_ID, userId)
@@ -57,7 +57,7 @@ class InventoryService(
         userId: String,
         transactionId: String
     ): Result<JsonObject> = executeQuery("Failed to fetch inventory transaction") {
-        supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS)
+        supabaseClient.from(TableNames.INVENTORY_TRANSACTIONS)
             .select {
                 filter {
                     eq(DatabaseColumns.ID, transactionId)
@@ -78,7 +78,7 @@ class InventoryService(
         userId: String,
         transactionData: JsonObject
     ): Result<JsonObject> = executeQuery("Failed to create inventory transaction") {
-        supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS)
+        supabaseClient.from(TableNames.INVENTORY_TRANSACTIONS)
             .insert(transactionData)
             .decodeSingle<JsonObject>()
     }

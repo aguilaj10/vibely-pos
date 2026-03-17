@@ -1,6 +1,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.backend.dto.request.CreateCategoryRequest
 import com.vibely.pos.backend.dto.request.UpdateCategoryRequest
 import com.vibely.pos.shared.domain.result.Result
@@ -11,7 +12,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-private const val TABLE_CATEGORIES = "categories"
 private const val ERROR_FETCH_FAILED = "Failed to fetch categories"
 private const val ERROR_CATEGORY_NOT_FOUND = "Category not found"
 private const val ERROR_CREATE_FAILED = "Failed to create category"
@@ -44,7 +44,7 @@ class CategoryService(
     ): Result<List<JsonObject>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_CATEGORIES)
+            supabaseClient.from(TableNames.CATEGORIES)
                 .select {
                     filter {
                         isActive?.let { eq(DatabaseColumns.IS_ACTIVE, it) }
@@ -67,7 +67,7 @@ class CategoryService(
      */
     suspend fun getCategoryById(userId: String, categoryId: String): Result<JsonObject> {
         return executeQuery(ERROR_CATEGORY_NOT_FOUND) {
-            supabaseClient.from(TABLE_CATEGORIES)
+            supabaseClient.from(TableNames.CATEGORIES)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
@@ -98,7 +98,7 @@ class CategoryService(
                 put(DatabaseColumns.IS_ACTIVE, request.isActive)
             }
 
-            supabaseClient.from(TABLE_CATEGORIES)
+            supabaseClient.from(TableNames.CATEGORIES)
                 .insert(data) {
                     select()
                 }
@@ -128,7 +128,7 @@ class CategoryService(
                 request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
             }
 
-            supabaseClient.from(TABLE_CATEGORIES)
+            supabaseClient.from(TableNames.CATEGORIES)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
@@ -148,7 +148,7 @@ class CategoryService(
      */
     suspend fun deleteCategory(userId: String, categoryId: String): Result<Unit> {
         return executeQuery(ERROR_DELETE_FAILED) {
-            supabaseClient.from(TABLE_CATEGORIES)
+            supabaseClient.from(TableNames.CATEGORIES)
                 .delete {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
@@ -168,7 +168,7 @@ class CategoryService(
      */
     suspend fun searchCategories(userId: String, query: String): Result<List<JsonObject>> {
         return executeQuery(ERROR_SEARCH_FAILED) {
-            supabaseClient.from(TABLE_CATEGORIES)
+            supabaseClient.from(TableNames.CATEGORIES)
                 .select {
                     filter {
                         or {

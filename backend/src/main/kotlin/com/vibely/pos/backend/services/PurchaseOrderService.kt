@@ -9,6 +9,9 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
+import com.vibely.pos.backend.common.ErrorMessages
+import com.vibely.pos.backend.common.putIfNotNull
 import com.vibely.pos.backend.dto.request.CreatePurchaseOrderRequest
 import com.vibely.pos.backend.dto.request.ReceivePurchaseOrderRequest
 import com.vibely.pos.backend.dto.request.UpdatePurchaseOrderRequest
@@ -25,11 +28,8 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 
-private const val TABLE_PURCHASE_ORDERS = "purchase_orders"
-private const val TABLE_PURCHASE_ORDER_ITEMS = "purchase_order_items"
 private const val PO_NUMBER_PADDING = 4
 private const val ERROR_FETCH_FAILED = "Failed to fetch purchase orders"
-private const val ERROR_NOT_FOUND = "Purchase order not found"
 private const val ERROR_CREATE_FAILED = "Failed to create purchase order"
 private const val ERROR_UPDATE_FAILED = "Failed to update purchase order"
 private const val ERROR_DELETE_FAILED = "Failed to delete purchase order"
@@ -48,7 +48,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
     ): Result<List<PurchaseOrderDTO>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_PURCHASE_ORDERS)
+            supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .select {
                     filter {
                         eq("created_by", userId)
@@ -63,8 +63,8 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
     }
 
     suspend fun getPurchaseOrderById(userId: String, purchaseOrderId: String): Result<PurchaseOrderWithItemsDTO> {
-        return executeQuery(ERROR_NOT_FOUND) {
-            supabaseClient.from(TABLE_PURCHASE_ORDERS)
+        return executeQuery(ErrorMessages.PURCHASE_ORDER_NOT_FOUND) {
+            supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .select(
                     Columns.raw(
                         """*, purchase_order_items(*)""".trimIndent()
@@ -96,7 +96,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
                 request.notes?.let { put(DatabaseColumns.NOTES, it) }
             }
 
-            val purchaseOrder = supabaseClient.from(TABLE_PURCHASE_ORDERS)
+            val purchaseOrder = supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .insert(data) { select() }
                 .decodeSingle<PurchaseOrderDTO>()
 
@@ -120,7 +120,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
             }
         }
 
-        supabaseClient.from(TABLE_PURCHASE_ORDER_ITEMS)
+        supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
             .insert(itemsData)
     }
 
@@ -136,7 +136,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
                 request.notes?.let { put(DatabaseColumns.NOTES, it) }
             }
 
-            supabaseClient.from(TABLE_PURCHASE_ORDERS)
+            supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
@@ -158,7 +158,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
                 put(DatabaseColumns.STATUS, newStatus)
             }
 
-            supabaseClient.from(TABLE_PURCHASE_ORDERS)
+            supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
@@ -172,12 +172,12 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
 
     suspend fun deletePurchaseOrder(userId: String, purchaseOrderId: String): Result<Unit> {
         return executeQuery(ERROR_DELETE_FAILED) {
-            supabaseClient.from(TABLE_PURCHASE_ORDER_ITEMS)
+            supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
                 .delete {
                     filter { eq("purchase_order_id", purchaseOrderId) }
                 }
 
-            supabaseClient.from(TABLE_PURCHASE_ORDERS)
+            supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .delete {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
@@ -193,7 +193,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
         request: ReceivePurchaseOrderRequest,
     ): Result<PurchaseOrderDTO> {
         return executeQuery(ERROR_RECEIVE_FAILED) {
-            val purchaseOrder = supabaseClient.from(TABLE_PURCHASE_ORDERS)
+            val purchaseOrder = supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
@@ -206,7 +206,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
                 val updateData = buildJsonObject {
                     put("received_quantity", itemUpdate.receivedQuantity)
                 }
-                supabaseClient.from(TABLE_PURCHASE_ORDER_ITEMS)
+                supabaseClient.from(TableNames.PURCHASE_ORDER_ITEMS)
                     .update(updateData) {
                         filter {
                             eq(DatabaseColumns.ID, itemUpdate.itemId)
@@ -220,7 +220,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
                 put("received_date", java.time.Instant.now().toString())
             }
 
-            supabaseClient.from(TABLE_PURCHASE_ORDERS)
+            supabaseClient.from(TableNames.PURCHASE_ORDERS)
                 .update(statusData) {
                     filter {
                         eq(DatabaseColumns.ID, purchaseOrderId)
@@ -242,7 +242,7 @@ class PurchaseOrderService(private val supabaseClient: SupabaseClient) : BaseSer
         val today = java.time.LocalDate.now()
         val prefix = "PO-${today.year}${today.monthValue.toString().padStart(2, '0')}"
 
-        val existingOrders = supabaseClient.from(TABLE_PURCHASE_ORDERS)
+        val existingOrders = supabaseClient.from(TableNames.PURCHASE_ORDERS)
             .select {
                 filter {
                     eq("created_by", userId)

@@ -1,6 +1,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.backend.common.putIfNotNull
 import com.vibely.pos.backend.dto.request.AdjustStockRequest
 import com.vibely.pos.backend.dto.request.CreateProductRequest
@@ -16,8 +17,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-private const val TABLE_PRODUCTS = "products"
-private const val TABLE_INVENTORY_TRANSACTIONS = "inventory_transactions"
 private const val SEARCH_RESULT_LIMIT = 50L
 private const val ERROR_SEARCH_FAILED = "Failed to search products"
 private const val ERROR_PRODUCT_NOT_FOUND = "Product not found"
@@ -106,7 +105,7 @@ private suspend fun insertInventoryTransaction(
     val transactionData = buildInventoryTransactionData(
         params.userId, params.productId, params.request, params.newStock
     )
-    supabaseClient.from(TABLE_INVENTORY_TRANSACTIONS)
+    supabaseClient.from(TableNames.INVENTORY_TRANSACTIONS)
         .insert(transactionData)
 }
 
@@ -115,7 +114,7 @@ private suspend fun fetchProduct(
     userId: String,
     productId: String
 ): ProductDTO {
-    return supabaseClient.from(TABLE_PRODUCTS)
+    return supabaseClient.from(TableNames.PRODUCTS)
         .select(
             columns = Columns.list(
                 DatabaseColumns.ID,
@@ -148,7 +147,7 @@ private suspend fun updateStockWithOptimisticLock(
     supabaseClient: SupabaseClient,
     params: StockUpdateParams
 ): JsonObject {
-    return supabaseClient.from(TABLE_PRODUCTS)
+    return supabaseClient.from(TableNames.PRODUCTS)
         .update(mapOf(DatabaseColumns.CURRENT_STOCK to params.newStock)) {
             filter {
                 eq(DatabaseColumns.ID, params.productId)
@@ -175,7 +174,7 @@ class ProductService(
     suspend fun search(query: String): Result<List<ProductDTO>> {
         return executeQuery(ERROR_SEARCH_FAILED) {
             val searchPattern = "%$query%"
-            supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TableNames.PRODUCTS)
                 .select(
                     columns = Columns.list(
                         DatabaseColumns.ID,
@@ -219,7 +218,7 @@ class ProductService(
      */
     suspend fun getById(id: String): Result<ProductDTO> {
         return executeQuery(ERROR_PRODUCT_NOT_FOUND) {
-            supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TableNames.PRODUCTS)
                 .select(
                     columns = Columns.list(
                         DatabaseColumns.ID,
@@ -257,7 +256,7 @@ class ProductService(
     suspend fun getAll(request: GetAllProductsRequest): Result<List<ProductDTO>> {
         val (from, to) = calculatePaginationRange(request.page, request.pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TableNames.PRODUCTS)
                 .select(
                     columns = Columns.list(
                         DatabaseColumns.ID,
@@ -306,7 +305,7 @@ class ProductService(
         return executeQuery(ERROR_CREATE_FAILED) {
             val data = buildProductCreateData(userId, request)
 
-            supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TableNames.PRODUCTS)
                 .insert(data) {
                     select()
                 }
@@ -330,7 +329,7 @@ class ProductService(
         return executeQuery(ERROR_UPDATE_FAILED) {
             val data = buildProductUpdateData(request)
 
-            supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TableNames.PRODUCTS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, productId)
@@ -351,7 +350,7 @@ class ProductService(
      */
     suspend fun deleteProduct(userId: String, productId: String): Result<Unit> {
         return executeQuery(ERROR_DELETE_FAILED) {
-            supabaseClient.from(TABLE_PRODUCTS)
+            supabaseClient.from(TableNames.PRODUCTS)
                 .delete {
                     filter {
                         eq(DatabaseColumns.ID, productId)

@@ -1,6 +1,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.shared.data.reports.dto.CategoryBreakdownDTO
 import com.vibely.pos.shared.data.reports.dto.CustomerAnalyticsDTO
 import com.vibely.pos.shared.data.reports.dto.ProductPerformanceDTO
@@ -14,8 +15,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // Database table names
-private const val TABLE_SALES = "sales"
-private const val TABLE_SALE_ITEMS = "sale_items"
 
 // Status value for completed sales
 private const val STATUS_COMPLETED = "completed"
@@ -70,7 +69,7 @@ class ReportService(
      */
     suspend fun getSalesReport(startTime: String, endTime: String): SalesReportDTO {
         val salesData = try {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .select(
                     columns = Columns.list(
                         "total_amount",
@@ -145,7 +144,7 @@ class ReportService(
 
         // First, get the sale IDs in the date range
         val saleIds = try {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .select(columns = Columns.list(DatabaseColumns.ID)) {
                     filter {
                         eq(DatabaseColumns.STATUS, STATUS_COMPLETED)
@@ -166,7 +165,7 @@ class ReportService(
 
         // Get sale items with product information
         val saleItems = try {
-            supabaseClient.from(TABLE_SALE_ITEMS)
+            supabaseClient.from(TableNames.SALE_ITEMS)
                 .select(
                     columns = Columns.list(
                         "id",
@@ -220,7 +219,7 @@ class ReportService(
     suspend fun getCategoryBreakdown(startTime: String, endTime: String): List<CategoryBreakdownDTO> {
         // First, get the sale IDs in the date range
         val saleIds = try {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .select(columns = Columns.list(DatabaseColumns.ID)) {
                     filter {
                         eq(DatabaseColumns.STATUS, STATUS_COMPLETED)
@@ -241,7 +240,7 @@ class ReportService(
 
         // Get sale items with category information
         val saleItems = try {
-            supabaseClient.from(TABLE_SALE_ITEMS)
+            supabaseClient.from(TableNames.SALE_ITEMS)
                 .select(
                     columns = Columns.list(
                         "id",
@@ -294,7 +293,7 @@ class ReportService(
         val effectiveLimit = limit.coerceIn(1, MAX_LIMIT)
 
         val salesWithCustomers = try {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .select(
                     columns = Columns.list(
                         "id",
@@ -368,7 +367,7 @@ class ReportService(
         granularity: String = "daily"
     ): List<SalesTrendDTO> {
         val salesData = try {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .select(
                     columns = Columns.list(
                         "id",

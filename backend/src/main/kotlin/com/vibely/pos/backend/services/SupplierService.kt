@@ -2,6 +2,7 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.backend.dto.request.CreateSupplierRequest
 import com.vibely.pos.backend.dto.request.UpdateSupplierRequest
 import com.vibely.pos.shared.data.supplier.dto.SupplierDTO
@@ -12,7 +13,6 @@ import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-private const val TABLE_SUPPLIERS = "suppliers"
 private const val ERROR_FETCH_FAILED = "Failed to fetch suppliers"
 private const val ERROR_SUPPLIER_NOT_FOUND = "Supplier not found"
 private const val ERROR_CREATE_FAILED = "Failed to create supplier"
@@ -30,7 +30,7 @@ class SupplierService(private val supabaseClient: SupabaseClient) : BaseService(
     ): Result<List<SupplierDTO>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TABLE_SUPPLIERS)
+            supabaseClient.from(TableNames.SUPPLIERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.USER_ID, userId)
@@ -55,7 +55,7 @@ class SupplierService(private val supabaseClient: SupabaseClient) : BaseService(
 
     suspend fun getSupplierById(userId: String, supplierId: String): Result<SupplierDTO> {
         return executeQuery(ERROR_SUPPLIER_NOT_FOUND) {
-            supabaseClient.from(TABLE_SUPPLIERS)
+            supabaseClient.from(TableNames.SUPPLIERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, supplierId)
@@ -79,7 +79,7 @@ class SupplierService(private val supabaseClient: SupabaseClient) : BaseService(
                 put(DatabaseColumns.IS_ACTIVE, request.isActive)
             }
 
-            supabaseClient.from(TABLE_SUPPLIERS)
+            supabaseClient.from(TableNames.SUPPLIERS)
                 .insert(data) {
                     select()
                 }
@@ -99,7 +99,7 @@ class SupplierService(private val supabaseClient: SupabaseClient) : BaseService(
                 request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
             }
 
-            supabaseClient.from(TABLE_SUPPLIERS)
+            supabaseClient.from(TableNames.SUPPLIERS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, supplierId)
@@ -113,7 +113,7 @@ class SupplierService(private val supabaseClient: SupabaseClient) : BaseService(
 
     suspend fun deleteSupplier(userId: String, supplierId: String): Result<Unit> {
         return executeQuery(ERROR_DELETE_FAILED) {
-            supabaseClient.from(TABLE_SUPPLIERS)
+            supabaseClient.from(TableNames.SUPPLIERS)
                 .delete {
                     filter {
                         eq(DatabaseColumns.ID, supplierId)

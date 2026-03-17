@@ -1,6 +1,8 @@
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
+import com.vibely.pos.backend.common.TableNames
+import com.vibely.pos.backend.common.ErrorMessages
 import com.vibely.pos.backend.dto.request.GetAllSalesRequest
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.data.sales.dto.SaleDTO
@@ -10,8 +12,6 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
 
-private const val TABLE_SALES = "sales"
-private const val TABLE_SALE_ITEMS = "sale_items"
 private const val ERROR_CREATE_SALE = "Failed to create sale"
 private const val ERROR_FETCH_SALES = "Failed to fetch sales"
 private const val ERROR_SALE_NOT_FOUND = "Sale not found"
@@ -58,7 +58,7 @@ class SaleService(
      */
     suspend fun getAll(request: GetAllSalesRequest): Result<List<SaleDTO>> {
         return executeQuery(ERROR_FETCH_SALES) {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .select {
                     filter {
                         request.startDate?.let { gte(DatabaseColumns.SALE_DATE, it) }
@@ -83,7 +83,7 @@ class SaleService(
      */
     suspend fun getById(id: String): Result<SaleDTO> {
         return executeQuery(ERROR_SALE_NOT_FOUND) {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, id)
@@ -101,7 +101,7 @@ class SaleService(
      */
     suspend fun getItems(saleId: String): Result<List<SaleItemDTO>> {
         return executeQuery(ERROR_FETCH_ITEMS) {
-            supabaseClient.from(TABLE_SALE_ITEMS)
+            supabaseClient.from(TableNames.SALE_ITEMS)
                 .select {
                     filter {
                         eq(DatabaseColumns.SALE_ID, saleId)
@@ -120,7 +120,7 @@ class SaleService(
      */
     suspend fun updateStatus(saleId: String, status: String): Result<SaleDTO> {
         return executeQuery(ERROR_UPDATE_STATUS) {
-            supabaseClient.from(TABLE_SALES)
+            supabaseClient.from(TableNames.SALES)
                 .update(mapOf(DatabaseColumns.STATUS to status)) {
                     filter {
                         eq(DatabaseColumns.ID, saleId)

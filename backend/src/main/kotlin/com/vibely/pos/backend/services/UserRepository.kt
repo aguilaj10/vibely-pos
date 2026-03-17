@@ -1,6 +1,7 @@
 package com.vibely.pos.backend.services
 
 import at.favre.lib.crypto.bcrypt.BCrypt
+import com.vibely.pos.backend.common.TableNames
 import com.vibely.pos.shared.util.TimeUtil
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
@@ -8,7 +9,6 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-private const val USERS = "users"
 private const val BCRYPT_COST = 12
 
 /**
@@ -27,7 +27,7 @@ class UserRepository(
      */
     internal suspend fun getUserByEmail(email: String): UserEntity? {
         return try {
-            val result = supabaseClient.from(USERS)
+            val result = supabaseClient.from(TableNames.USERS)
                 .select {
                     filter {
                         eq("email", email)
@@ -46,7 +46,7 @@ class UserRepository(
      */
     internal suspend fun getUserById(userId: String): UserEntity? {
         return try {
-            val result = supabaseClient.from(USERS)
+            val result = supabaseClient.from(TableNames.USERS)
                 .select {
                     filter {
                         eq("id", userId)
@@ -65,7 +65,7 @@ class UserRepository(
      */
     suspend fun updateLastLogin(userId: String) {
         try {
-            supabaseClient.from(USERS).update(
+            supabaseClient.from(TableNames.USERS).update(
                 mapOf("last_login_at" to TimeUtil.now().toString())
             ) {
                 filter {
