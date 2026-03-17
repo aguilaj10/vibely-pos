@@ -180,10 +180,10 @@ jobs:
           ${{ runner.os }}-konan-
 
     - name: Build iOS Framework
-      run: ./gradlew composeApp:linkDebugFrameworkIosSimulatorArm64 shared:linkDebugFrameworkIosSimulatorArm64 --no-daemon --stacktrace
+      run: ./gradlew linkDebugFrameworkIosSimulatorArm64 --no-daemon --stacktrace
 
     - name: Run iOS tests
-      run: ./gradlew composeApp:iosSimulatorArm64Test shared:iosSimulatorArm64Test --no-daemon --stacktrace
+      run: ./gradlew iosSimulatorArm64Test --no-daemon --stacktrace
 
   # Job 5: Build Web (JS/Wasm)
   build-web:
@@ -217,13 +217,13 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Build JS target
-      run: ./gradlew composeApp:jsBrowserProductionWebpack shared:jsBrowserProductionWebpack --no-daemon --stacktrace
+      run: ./gradlew composeApp:jsBrowserProductionWebpack --no-daemon --stacktrace
 
     - name: Build Wasm target
-      run: ./gradlew composeApp:wasmJsBrowserProductionWebpack shared:wasmJsBrowserProductionWebpack --no-daemon --stacktrace
+      run: ./gradlew composeApp:wasmJsBrowserProductionWebpack --no-daemon --stacktrace
 
     - name: Run JS tests
-      run: ./gradlew composeApp:jsTest shared:jsTest --no-daemon --stacktrace
+      run: ./gradlew jsBrowserTest --no-daemon --stacktrace
       continue-on-error: true
 
   # Job 6: Test Coverage
