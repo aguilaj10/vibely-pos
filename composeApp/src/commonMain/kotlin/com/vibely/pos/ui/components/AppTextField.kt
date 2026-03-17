@@ -230,7 +230,7 @@ fun AppSearchField(
                     onClick = { onValueChange("") },
                     modifier = Modifier.semantics {
                         contentDescription = "Clear search"
-                    }
+                    },
                 ) {
                     Text("✕")
                 }

@@ -1,0 +1,4275 @@
+openapi: 3.0.3
+info:
+  title: Vibely POS API
+  description: |
+    REST API for the Vibely Point of Sale system. 
+    
+    This API provides endpoints for authentication, product management, sales processing, inventory tracking, customer management, supplier management, purchase orders, shift management, reporting, dashboard metrics, and user administration.
+    
+    ## Authentication
+    Most endpoints require JWT authentication. To authenticate:
+    1. Call `POST /api/auth/login` with email and password to receive access and refresh tokens
+    2. Include the access token in the Authorization header: `Authorization: Bearer <access_token>`
+    
+    ## Pagination
+    Endpoints that return lists support pagination via `page` and `page_size` query parameters.
+    - Default page: 1
+    - Default page size: 50
+    
+    ## Error Responses
+    All endpoints may return standard HTTP error codes:
+    - 400: Bad Request - Invalid parameters or missing required fields
+    - 401: Unauthorized - Invalid or missing authentication token
+    - 404: Not Found - Resource not found
+    - 500: Internal Server Error - Server-side error
+  contact:
+    name: Vibely POS Support
+    email: support@vibely.pos
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://api.vibely.pos
+    description: Production server
+security:
+  - bearerAuth: []
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Products
+    description: Product catalog management
+  - name: Categories
+    description: Product category management
+  - name: Sales
+    description: Sales transactions processing
+  - name: Customers
+    description: Customer management and loyalty programs
+  - name: Suppliers
+    description: Supplier/vendor management
+  - name: Inventory
+    description: Inventory tracking and transactions
+  - name: Purchase Orders
+    description: Purchase order management
+  - name: Shifts
+    description: Cash shift management
+  - name: Reports
+    description: Analytics and reporting endpoints
+  - name: Dashboard
+    description: Dashboard summary and metrics
+  - name: Settings
+    description: Store, receipt, tax, and user preferences
+  - name: Users
+    description: User management and administration
+
+paths:
+  # ==================== AUTHENTICATION ====================
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user and obtain tokens
+      description: |
+        Authenticates a user with email and password credentials.
+        Returns access and refresh tokens for subsequent API requests.
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: "user@example.com"
+              password: "securePassword123"
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                expires_in: 3600
+                user:
+                  id: "550e8400-e29b-41d4-a716-446655440000"
+                  email: "user@example.com"
+                  fullName: "John Doe"
+                  role: "admin"
+                  status: "active"
+                  createdAt: "2024-01-15T10:30:00Z"
+        '400':
+          description: Bad Request - Missing email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Email and password are required"
+        '401':
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid email or password"
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Log out current user
+      description: Logs out the current user by blacklisting their access token.
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: "Logged out successfully"
+        '400':
+          description: Bad Request - No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "No token provided"
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid token"
+
+  /api/auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current authenticated user
+      description: Returns the profile of the currently authenticated user.
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized - Invalid or revoked token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid token"
+        '404':
+          description: Not Found - User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "User not found"
+
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: |
+        Refreshes an expired access token using a valid refresh token.
+        The refresh token can be provided in the request body or as a cookie (for web clients).
+      operationId: refreshToken
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+            example:
+              refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Bad Request - Refresh token required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Refresh token is required"
+        '401':
+          description: Unauthorized - Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid or expired refresh token"
+
+  # ==================== PRODUCTS ====================
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      description: Returns a paginated list of products with optional filtering.
+      operationId: getAllProducts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: category_id
+          in: query
+          description: Filter by category ID
+          schema:
+            type: string
+        - name: is_active
+          in: query
+          description: Filter by active status
+          schema:
+            type: boolean
+        - name: low_stock
+          in: query
+          description: Filter to show only low stock products
+          schema:
+            type: boolean
+            default: false
+        - name: page
+          in: query
+          description: Page number (default: 1)
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page (default: 50)
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Products
+      summary: Create a new product
+      description: Creates a new product in the inventory.
+      operationId: createProduct
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+            example:
+              name: "Organic Coffee Beans"
+              sku: "ORG-COF-001"
+              barcode: "1234567890123"
+              description: "Premium organic coffee beans"
+              category_id: "550e8400-e29b-41d4-a716-446655440001"
+              supplier_id: "550e8400-e29b-41d4-a716-446655440002"
+              selling_price: 24.99
+              cost_price: 15.00
+              current_stock: 100
+              min_stock_level: 20
+              max_stock_level: 500
+              reorder_point: 30
+              unit: "kg"
+              is_active: true
+              tax_rate: 10.0
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request - Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/products/search:
+    get:
+      tags:
+        - Products
+      summary: Search products
+      description: Search products by name, SKU, or barcode.
+      operationId: searchProducts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          description: Search query string
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request - Missing search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      description: Returns a single product by its unique identifier.
+      operationId: getProductById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Product UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request - Missing product ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Products
+      summary: Update a product
+      description: Updates an existing product's information.
+      operationId: updateProduct
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Product UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request - Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Products
+      summary: Delete a product
+      description: Permanently deletes a product from the system.
+      operationId: deleteProduct
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Product UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Product deleted successfully
+        '400':
+          description: Bad Request - Missing product ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/products/{id}/adjust-stock:
+    post:
+      tags:
+        - Products
+      summary: Adjust product stock
+      description: Adjusts the stock quantity for a product (add or remove inventory).
+      operationId: adjustStock
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Product UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdjustStockRequest'
+            example:
+              quantity: 50
+              transaction_type: "purchase"
+              reference_type: "purchase_order"
+              reference_id: "550e8400-e29b-41d4-a716-446655440010"
+              notes: "Received from supplier"
+      responses:
+        '200':
+          description: Stock adjusted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request - Invalid quantity or transaction type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== CATEGORIES ====================
+  /api/categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all categories
+      description: Returns a paginated list of product categories.
+      operationId: getAllCategories
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: is_active
+          in: query
+          description: Filter by active status
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Categories
+      summary: Create a new category
+      description: Creates a new product category.
+      operationId: createCategory
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+            example:
+              name: "Beverages"
+              description: "Drinks and beverages"
+              color: "#FF5733"
+              icon: "beverage"
+              is_active: true
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Bad Request - Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/categories/search:
+    get:
+      tags:
+        - Categories
+      summary: Search categories
+      description: Search categories by name.
+      operationId: searchCategories
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          description: Search query string
+          schema:
+            type: string
+            default: ""
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: Get category by ID
+      operationId: getCategoryById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Category UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Category found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Categories
+      summary: Update a category
+      operationId: updateCategory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Category UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Categories
+      summary: Delete a category
+      operationId: deleteCategory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Category UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Category deleted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== SALES ====================
+  /api/sales:
+    post:
+      tags:
+        - Sales
+      summary: Create a new sale
+      description: Processes a new sale transaction.
+      operationId: createSale
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSaleRequest'
+            example:
+              cashier_id: "550e8400-e29b-41d4-a716-446655440000"
+              customer_id: "550e8400-e29b-41d4-a716-446655440001"
+              subtotal: 74.97
+              tax_amount: 7.50
+              discount_amount: 2.47
+              total_amount: 80.00
+              notes: "Customer requested gift wrap"
+              items:
+                - product_id: "550e8400-e29b-41d4-a716-446655440010"
+                  quantity: 3
+                  unit_price: 24.99
+                  discount_amount: 0
+      responses:
+        '201':
+          description: Sale created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Sales
+      summary: Get all sales
+      description: Returns a paginated list of sales with optional filtering.
+      operationId: getAllSales
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: start_date
+          in: query
+          description: Filter by start date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          description: Filter by end date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: status
+          in: query
+          description: Filter by sale status
+          schema:
+            type: string
+            enum: [completed, refunded, cancelled]
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Sales retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/sales/{id}:
+    get:
+      tags:
+        - Sales
+      summary: Get sale by ID
+      operationId: getSaleById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Sale UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sale found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/sales/{id}/items:
+    get:
+      tags:
+        - Sales
+      summary: Get sale items
+      description: Returns all items associated with a sale.
+      operationId: getSaleItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Sale UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sale items retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SaleItem'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/sales/{id}/status:
+    put:
+      tags:
+        - Sales
+      summary: Update sale status
+      description: Updates the status of a sale (e.g., refund a sale).
+      operationId: updateSaleStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Sale UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [completed, refunded, cancelled]
+            example:
+              status: "refunded"
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== CUSTOMERS ====================
+  /api/customers:
+    get:
+      tags:
+        - Customers
+      summary: Get all customers
+      description: Returns a paginated list of customers.
+      operationId: getAllCustomers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: is_active
+          in: query
+          description: Filter by active status
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          description: Search by name or code
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Customers retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Customers
+      summary: Create a new customer
+      operationId: createCustomer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequest'
+            example:
+              code: "CUST-001"
+              firstName: "Jane"
+              lastName: "Smith"
+              email: "jane.smith@example.com"
+              phone: "+1234567890"
+              loyalty_points: 0
+              loyalty_tier: "bronze"
+              is_active: true
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/customers/{id}:
+    get:
+      tags:
+        - Customers
+      summary: Get customer by ID
+      operationId: getCustomerById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Customers
+      summary: Update a customer
+      operationId: updateCustomer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomerRequest'
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Customers
+      summary: Delete a customer
+      operationId: deleteCustomer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Customer deleted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/customers/{id}/loyalty-points:
+    post:
+      tags:
+        - Customers
+      summary: Add loyalty points
+      description: Adds loyalty points to a customer's account.
+      operationId: addLoyaltyPoints
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLoyaltyPointsRequest'
+            example:
+              points: 100
+      responses:
+        '200':
+          description: Loyalty points added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/customers/{id}/purchase-history:
+    get:
+      tags:
+        - Customers
+      summary: Get customer purchase history
+      description: Returns the purchase history for a specific customer.
+      operationId: getPurchaseHistory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Purchase history retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleListResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== SUPPLIERS ====================
+  /api/suppliers:
+    get:
+      tags:
+        - Suppliers
+      summary: Get all suppliers
+      operationId: getAllSuppliers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: is_active
+          in: query
+          description: Filter by active status
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          description: Search by name or code
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Suppliers retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Suppliers
+      summary: Create a new supplier
+      operationId: createSupplier
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupplierRequest'
+            example:
+              code: "SUP-001"
+              name: "Acme Distributors"
+              contact_person: "John Doe"
+              email: "contact@acme.com"
+              phone: "+1234567890"
+              address: "123 Main St, City, State 12345"
+              is_active: true
+      responses:
+        '201':
+          description: Supplier created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/suppliers/{id}:
+    get:
+      tags:
+        - Suppliers
+      summary: Get supplier by ID
+      operationId: getSupplierById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Supplier UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Supplier found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Suppliers
+      summary: Update a supplier
+      operationId: updateSupplier
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Supplier UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSupplierRequest'
+      responses:
+        '200':
+          description: Supplier updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Suppliers
+      summary: Delete a supplier
+      operationId: deleteSupplier
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Supplier UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Supplier deleted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== INVENTORY ====================
+  /api/inventory/transactions:
+    get:
+      tags:
+        - Inventory
+      summary: Get inventory transactions
+      description: Returns a paginated list of inventory transactions.
+      operationId: getInventoryTransactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product_id
+          in: query
+          description: Filter by product ID
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Filter by transaction type
+          schema:
+            type: string
+            enum: [purchase, sale, adjustment, transfer]
+        - name: start_date
+          in: query
+          description: Filter by start date
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          description: Filter by end date
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Transactions retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryTransactionListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Inventory
+      summary: Create inventory transaction
+      description: Creates a new inventory transaction (e.g., stock adjustment).
+      operationId: createInventoryTransaction
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              example:
+                product_id: "550e8400-e29b-41d4-a716-446655440010"
+                quantity: 10
+                type: "adjustment"
+                notes: "Inventory count correction"
+      responses:
+        '201':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryTransaction'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/inventory/transactions/{id}:
+    get:
+      tags:
+        - Inventory
+      summary: Get transaction by ID
+      operationId: getInventoryTransactionById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Transaction UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Transaction found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryTransaction'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== PURCHASE ORDERS ====================
+  /api/purchase-orders:
+    get:
+      tags:
+        - Purchase Orders
+      summary: Get all purchase orders
+      operationId: getAllPurchaseOrders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: supplier_id
+          in: query
+          description: Filter by supplier ID
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [draft, pending, ordered, partially_received, received, cancelled]
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Purchase orders retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrderListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Purchase Orders
+      summary: Create a purchase order
+      operationId: createPurchaseOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePurchaseOrderRequest'
+            example:
+              supplier_id: "550e8400-e29b-41d4-a716-446655440002"
+              expected_delivery_date: "2024-02-15"
+              notes: "Urgent delivery needed"
+              items:
+                - product_id: "550e8400-e29b-41d4-a716-446655440010"
+                  quantity: 50
+                  unit_cost: 15.00
+      responses:
+        '201':
+          description: Purchase order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/purchase-orders/generate-po-number:
+    get:
+      tags:
+        - Purchase Orders
+      summary: Generate PO number
+      description: Generates a new unique purchase order number.
+      operationId: generatePoNumber
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: PO number generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  po_number:
+                    type: string
+              example:
+                po_number: "PO-2024-00042"
+
+  /api/purchase-orders/{id}:
+    get:
+      tags:
+        - Purchase Orders
+      summary: Get purchase order by ID
+      operationId: getPurchaseOrderById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Purchase Order UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Purchase order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Purchase Orders
+      summary: Update a purchase order
+      operationId: updatePurchaseOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Purchase Order UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePurchaseOrderRequest'
+      responses:
+        '200':
+          description: Purchase order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Purchase Orders
+      summary: Delete a purchase order
+      operationId: deletePurchaseOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Purchase Order UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Purchase order deleted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/purchase-orders/{id}/status:
+    patch:
+      tags:
+        - Purchase Orders
+      summary: Update purchase order status
+      operationId: updatePurchaseOrderStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Purchase Order UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePurchaseOrderStatusRequest'
+            example:
+              status: "ordered"
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/purchase-orders/{id}/receive:
+    post:
+      tags:
+        - Purchase Orders
+      summary: Receive purchase order items
+      description: Records the receipt of items from a purchase order.
+      operationId: receivePurchaseOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Purchase Order UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceivePurchaseOrderRequest'
+            example:
+              items:
+                - item_id: "550e8400-e29b-41d4-a716-446655440020"
+                  received_quantity: 48
+      responses:
+        '200':
+          description: Items received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== SHIFTS ====================
+  /api/shifts:
+    get:
+      tags:
+        - Shifts
+      summary: Get shift history
+      description: Returns a paginated list of all shifts.
+      operationId: getShiftHistory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cashier_id
+          in: query
+          description: Filter by cashier ID
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Shifts retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShiftListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/shifts/current:
+    get:
+      tags:
+        - Shifts
+      summary: Get current shift
+      description: Returns the currently open shift, if any.
+      operationId: getCurrentShift
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current shift returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+        '404':
+          description: No open shift found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/shifts/generate-shift-number:
+    get:
+      tags:
+        - Shifts
+      summary: Generate shift number
+      description: Generates a new unique shift number.
+      operationId: generateShiftNumber
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Shift number generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shift_number:
+                    type: string
+              example:
+                shift_number: "SHIFT-2024-00142"
+
+  /api/shifts/{id}:
+    get:
+      tags:
+        - Shifts
+      summary: Get shift by ID
+      operationId: getShiftById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Shift UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Shift found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/shifts/{id}/summary:
+    get:
+      tags:
+        - Shifts
+      summary: Get shift summary
+      description: Returns financial summary for a specific shift.
+      operationId: getShiftSummary
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Shift UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Shift summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShiftSummary'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/shifts/open:
+    post:
+      tags:
+        - Shifts
+      summary: Open a new shift
+      description: Opens a new cash shift with an opening balance.
+      operationId: openShift
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenShiftRequest'
+            example:
+              opening_balance: 500.00
+      responses:
+        '201':
+          description: Shift opened
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/shifts/{id}/close:
+    post:
+      tags:
+        - Shifts
+      summary: Close a shift
+      description: Closes an open shift with a closing balance.
+      operationId: closeShift
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Shift UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseShiftRequest'
+            example:
+              closing_balance: 1250.75
+              notes: "Day shift closed successfully"
+      responses:
+        '200':
+          description: Shift closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== REPORTS ====================
+  /api/reports/sales:
+    post:
+      tags:
+        - Reports
+      summary: Get sales report
+      description: Returns aggregated sales metrics for a given time period.
+      operationId: getSalesReport
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimePeriodRequest'
+            example:
+              start_time: "2024-01-01T00:00:00Z"
+              end_time: "2024-01-31T23:59:59Z"
+      responses:
+        '200':
+          description: Sales report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesReport'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/reports/top-products:
+    get:
+      tags:
+        - Reports
+      summary: Get top products
+      description: Returns top performing products by revenue.
+      operationId: getTopProducts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Number of products to return (1-100)
+          schema:
+            type: integer
+            default: 10
+        - name: start_time
+          in: query
+          description: Start time (ISO 8601)
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          description: End time (ISO 8601)
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Top products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductPerformance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/reports/category-breakdown:
+    post:
+      tags:
+        - Reports
+      summary: Get category breakdown
+      description: Returns category-wise sales breakdown.
+      operationId: getCategoryBreakdown
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimePeriodRequest'
+      responses:
+        '200':
+          description: Category breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryBreakdown'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/reports/customer-analytics:
+    get:
+      tags:
+        - Reports
+      summary: Get customer analytics
+      description: Returns customer purchase analytics.
+      operationId: getCustomerAnalytics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Number of customers to return
+          schema:
+            type: integer
+            default: 10
+        - name: start_time
+          in: query
+          description: Start time
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          description: End time
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Customer analytics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerAnalytics'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/reports/sales-trend:
+    post:
+      tags:
+        - Reports
+      summary: Get sales trend
+      description: Returns sales trend data with configurable time granularity.
+      operationId: getSalesTrend
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalesTrendRequest'
+            example:
+              start_time: "2024-01-01T00:00:00Z"
+              end_time: "2024-03-31T23:59:59Z"
+              granularity: "daily"
+      responses:
+        '200':
+          description: Sales trend
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesTrend'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== DASHBOARD ====================
+  /api/dashboard/summary:
+    get:
+      tags:
+        - Dashboard
+      summary: Get dashboard summary
+      description: Returns aggregated dashboard metrics for today.
+      operationId: getDashboardSummary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/dashboard/recent-transactions:
+    get:
+      tags:
+        - Dashboard
+      summary: Get recent transactions
+      description: Returns recent transactions ordered by date descending.
+      operationId: getRecentTransactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Number of transactions to return (1-100)
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Recent transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecentTransaction'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/dashboard/low-stock:
+    get:
+      tags:
+        - Dashboard
+      summary: Get low stock products
+      description: Returns products with current stock below minimum threshold.
+      operationId: getLowStockProducts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Low stock products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LowStockProduct'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== SETTINGS ====================
+  /api/settings/store:
+    get:
+      tags:
+        - Settings
+      summary: Get store settings
+      operationId: getStoreSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Store settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreSettings'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Settings
+      summary: Update store settings
+      operationId: updateStoreSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStoreInfoRequest'
+            example:
+              storeName: "Vibely POS Store"
+              address: "123 Main Street, City, State 12345"
+              phone: "+1234567890"
+              email: "store@vibely.pos"
+      responses:
+        '200':
+          description: Store settings updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreSettings'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/settings/receipt:
+    get:
+      tags:
+        - Settings
+      summary: Get receipt settings
+      operationId: getReceiptSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Receipt settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptSettings'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Settings
+      summary: Update receipt settings
+      operationId: updateReceiptSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReceiptSettingsRequest'
+            example:
+              header: "Thank you for shopping!"
+              footer: "Please come again"
+      responses:
+        '200':
+          description: Receipt settings updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptSettings'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/settings/tax:
+    get:
+      tags:
+        - Settings
+      summary: Get tax settings
+      operationId: getTaxSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Tax settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxSettings'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Settings
+      summary: Update tax settings
+      operationId: updateTaxSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaxSettingsRequest'
+            example:
+              taxRate: 10.0
+              currency: "USD"
+      responses:
+        '200':
+          description: Tax settings updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxSettings'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/settings/preferences:
+    get:
+      tags:
+        - Settings
+      summary: Get user preferences
+      operationId: getUserPreferences
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferences'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Settings
+      summary: Update user preferences
+      operationId: updateUserPreferences
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserPreferencesRequest'
+            example:
+              language: "en"
+              theme: "light"
+      responses:
+        '200':
+          description: User preferences updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferences'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== USER MANAGEMENT ====================
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      description: Returns a paginated list of users.
+      operationId: getAllUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: role
+          in: query
+          description: Filter by role
+          schema:
+            type: string
+            enum: [admin, manager, cashier, warehouse, viewer]
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [active, inactive, suspended]
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Users retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      operationId: createUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+            example:
+              email: "newuser@vibely.pos"
+              password: "securePassword123"
+              fullName: "New User"
+              role: "cashier"
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/search:
+    get:
+      tags:
+        - Users
+      summary: Search users
+      operationId: searchUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          description: Search query
+          schema:
+            type: string
+            default: ""
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      operationId: getUserById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Users
+      summary: Update a user
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      operationId: deleteUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: User deleted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}/status:
+    patch:
+      tags:
+        - Users
+      summary: Update user status
+      operationId: updateUserStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserStatusRequest'
+            example:
+              status: "inactive"
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}/role:
+    patch:
+      tags:
+        - Users
+      summary: Assign user role
+      operationId: assignUserRole
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignRoleRequest'
+            example:
+              role: "manager"
+      responses:
+        '200':
+          description: Role assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}/change-password:
+    post:
+      tags:
+        - Users
+      summary: Change user password
+      operationId: changePassword
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+            example:
+              current_password: "oldPassword123"
+              new_password: "newPassword456"
+      responses:
+        '200':
+          description: Password changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: "Password changed successfully"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}/reset-password:
+    post:
+      tags:
+        - Users
+      summary: Reset user password
+      description: Admin function to reset a user's password.
+      operationId: resetPassword
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User UUID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+            example:
+              new_password: "temporaryPass123"
+      responses:
+        '200':
+          description: Password reset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: "Password reset successfully"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token received from `/api/auth/login` endpoint
+
+  schemas:
+    # ==================== ERROR & BASE SCHEMAS ====================
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message
+
+    # ==================== AUTH SCHEMAS ====================
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User email address
+        password:
+          type: string
+          format: password
+          description: User password
+
+    RefreshTokenRequest:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          description: Refresh token received during login
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access token
+        refresh_token:
+          type: string
+          description: JWT refresh token
+        expires_in:
+          type: integer
+          format: int64
+          description: Token expiration time in seconds
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User unique identifier
+        email:
+          type: string
+          format: email
+          description: User email
+        fullName:
+          type: string
+          description: User full name
+        role:
+          type: string
+          enum: [admin, manager, cashier, warehouse, viewer]
+          description: User role
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+          description: User status
+        createdAt:
+          type: string
+          format: date-time
+          description: User creation timestamp
+        lastLoginAt:
+          type: string
+          format: date-time
+          description: Last login timestamp
+
+    UserListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    # ==================== PRODUCT SCHEMAS ====================
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        sku:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        supplierId:
+          type: string
+          format: uuid
+          nullable: true
+        sellingPrice:
+          type: number
+          format: double
+        costPrice:
+          type: number
+          format: double
+          nullable: true
+        currentStock:
+          type: integer
+        minStockLevel:
+          type: integer
+          nullable: true
+        maxStockLevel:
+          type: integer
+          nullable: true
+        reorderPoint:
+          type: integer
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        taxRate:
+          type: number
+          format: double
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProductListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    CreateProductRequest:
+      type: object
+      required:
+        - name
+        - selling_price
+        - current_stock
+      properties:
+        name:
+          type: string
+        sku:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        category_id:
+          type: string
+          format: uuid
+          nullable: true
+        supplier_id:
+          type: string
+          format: uuid
+          nullable: true
+        selling_price:
+          type: number
+          format: double
+        cost_price:
+          type: number
+          format: double
+          nullable: true
+        current_stock:
+          type: integer
+        min_stock_level:
+          type: integer
+          nullable: true
+        max_stock_level:
+          type: integer
+          nullable: true
+        reorder_point:
+          type: integer
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          default: true
+        tax_rate:
+          type: number
+          format: double
+          nullable: true
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        sku:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        category_id:
+          type: string
+          format: uuid
+          nullable: true
+        supplier_id:
+          type: string
+          format: uuid
+          nullable: true
+        selling_price:
+          type: number
+          format: double
+          nullable: true
+        cost_price:
+          type: number
+          format: double
+          nullable: true
+        min_stock_level:
+          type: integer
+          nullable: true
+        max_stock_level:
+          type: integer
+          nullable: true
+        reorder_point:
+          type: integer
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          nullable: true
+        tax_rate:
+          type: number
+          format: double
+          nullable: true
+
+    AdjustStockRequest:
+      type: object
+      required:
+        - quantity
+        - transaction_type
+      properties:
+        quantity:
+          type: integer
+          description: Positive to add, negative to remove
+        transaction_type:
+          type: string
+          enum: [purchase, sale, adjustment, transfer]
+        reference_type:
+          type: string
+          nullable: true
+        reference_id:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    # ==================== CATEGORY SCHEMAS ====================
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+        icon:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CategoryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    CreateCategoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+        icon:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          default: true
+
+    UpdateCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+        icon:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          nullable: true
+
+    # ==================== SALE SCHEMAS ====================
+    Sale:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        saleNumber:
+          type: string
+        cashierId:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+          nullable: true
+        subtotal:
+          type: number
+          format: double
+        taxAmount:
+          type: number
+          format: double
+        discountAmount:
+          type: number
+          format: double
+        totalAmount:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: [completed, refunded, cancelled]
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    SaleListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sale'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    SaleItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        saleId:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+          format: double
+        discountAmount:
+          type: number
+          format: double
+
+    CreateSaleRequest:
+      type: object
+      required:
+        - cashier_id
+        - subtotal
+        - total_amount
+        - items
+      properties:
+        cashier_id:
+          type: string
+          format: uuid
+        customer_id:
+          type: string
+          format: uuid
+          nullable: true
+        subtotal:
+          type: number
+          format: double
+        tax_amount:
+          type: number
+          format: double
+          default: 0.0
+        discount_amount:
+          type: number
+          format: double
+          default: 0.0
+        total_amount:
+          type: number
+          format: double
+        notes:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateSaleItemRequest'
+
+    CreateSaleItemRequest:
+      type: object
+      required:
+        - product_id
+        - quantity
+        - unit_price
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        unit_price:
+          type: number
+          format: double
+        discount_amount:
+          type: number
+          format: double
+          default: 0.0
+
+    # ==================== CUSTOMER SCHEMAS ====================
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        loyaltyPoints:
+          type: integer
+        loyaltyTier:
+          type: string
+          nullable: true
+        totalPurchases:
+          type: number
+          format: double
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CustomerListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    CreateCustomerRequest:
+      type: object
+      required:
+        - code
+        - first_name
+        - last_name
+      properties:
+        code:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        loyalty_points:
+          type: integer
+          default: 0
+        loyalty_tier:
+          type: string
+          nullable: true
+        total_purchases:
+          type: number
+          format: double
+          default: 0.0
+        is_active:
+          type: boolean
+          default: true
+
+    UpdateCustomerRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          nullable: true
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        loyalty_points:
+          type: integer
+          nullable: true
+        loyalty_tier:
+          type: string
+          nullable: true
+        total_purchases:
+          type: number
+          format: double
+          nullable: true
+        is_active:
+          type: boolean
+          nullable: true
+
+    AddLoyaltyPointsRequest:
+      type: object
+      required:
+        - points
+      properties:
+        points:
+          type: integer
+          description: Points to add (can be positive or negative)
+
+    # ==================== SUPPLIER SCHEMAS ====================
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        contactPerson:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    SupplierListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supplier'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    CreateSupplierRequest:
+      type: object
+      required:
+        - code
+        - name
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        contact_person:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          default: true
+
+    UpdateSupplierRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        contact_person:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          nullable: true
+
+    # ==================== INVENTORY SCHEMAS ====================
+    InventoryTransaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        type:
+          type: string
+          enum: [purchase, sale, adjustment, transfer]
+        referenceType:
+          type: string
+          nullable: true
+        referenceId:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    InventoryTransactionListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryTransaction'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    # ==================== PURCHASE ORDER SCHEMAS ====================
+    PurchaseOrder:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        poNumber:
+          type: string
+        supplierId:
+          type: string
+          format: uuid
+        expectedDeliveryDate:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, pending, ordered, partially_received, received, cancelled]
+        totalAmount:
+          type: number
+          format: double
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItem'
+        createdAt:
+          type: string
+          format: date-time
+
+    PurchaseOrderListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrder'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    PurchaseOrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        unitCost:
+          type: number
+          format: double
+        receivedQuantity:
+          type: integer
+
+    CreatePurchaseOrderRequest:
+      type: object
+      required:
+        - supplier_id
+      properties:
+        supplier_id:
+          type: string
+          format: uuid
+        expected_delivery_date:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItemRequest'
+          default: []
+
+    PurchaseOrderItemRequest:
+      type: object
+      required:
+        - product_id
+        - quantity
+        - unit_cost
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        unit_cost:
+          type: number
+          format: double
+
+    UpdatePurchaseOrderRequest:
+      type: object
+      properties:
+        supplier_id:
+          type: string
+          format: uuid
+          nullable: true
+        expected_delivery_date:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItemRequest'
+          nullable: true
+
+    UpdatePurchaseOrderStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [draft, pending, ordered, partially_received, received, cancelled]
+
+    ReceivePurchaseOrderRequest:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReceivePurchaseOrderItemRequest'
+
+    ReceivePurchaseOrderItemRequest:
+      type: object
+      required:
+        - item_id
+        - received_quantity
+      properties:
+        item_id:
+          type: string
+          format: uuid
+        received_quantity:
+          type: integer
+
+    # ==================== SHIFT SCHEMAS ====================
+    Shift:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        shiftNumber:
+          type: string
+        userId:
+          type: string
+          format: uuid
+        openingBalance:
+          type: number
+          format: double
+        closingBalance:
+          type: number
+          format: double
+          nullable: true
+        status:
+          type: string
+          enum: [open, closed]
+        notes:
+          type: string
+          nullable: true
+        openedAt:
+          type: string
+          format: date-time
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    ShiftListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shift'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    ShiftSummary:
+      type: object
+      properties:
+        shiftId:
+          type: string
+          format: uuid
+        totalSales:
+          type: number
+          format: double
+        totalTransactions:
+          type: integer
+        totalCash:
+          type: number
+          format: double
+        totalCard:
+          type: number
+          format: double
+        expectedCash:
+          type: number
+          format: double
+        variance:
+          type: number
+          format: double
+
+    OpenShiftRequest:
+      type: object
+      required:
+        - opening_balance
+      properties:
+        opening_balance:
+          type: number
+          format: double
+
+    CloseShiftRequest:
+      type: object
+      required:
+        - closing_balance
+      properties:
+        closing_balance:
+          type: number
+          format: double
+        notes:
+          type: string
+          nullable: true
+
+    # ==================== REPORT SCHEMAS ====================
+    TimePeriodRequest:
+      type: object
+      required:
+        - start_time
+        - end_time
+      properties:
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+
+    SalesTrendRequest:
+      type: object
+      required:
+        - start_time
+        - end_time
+      properties:
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        granularity:
+          type: string
+          enum: [daily, weekly, monthly, yearly]
+          default: daily
+
+    SalesReport:
+      type: object
+      properties:
+        totalSales:
+          type: number
+          format: double
+        totalTransactions:
+          type: integer
+        averageTransactionValue:
+          type: number
+          format: double
+
+    ProductPerformance:
+      type: object
+      properties:
+        productId:
+          type: string
+          format: uuid
+        productName:
+          type: string
+        totalQuantitySold:
+          type: integer
+        totalRevenue:
+          type: number
+          format: double
+
+    CategoryBreakdown:
+      type: object
+      properties:
+        categoryId:
+          type: string
+          format: uuid
+        categoryName:
+          type: string
+        totalSales:
+          type: number
+          format: double
+        totalQuantity:
+          type: integer
+
+    CustomerAnalytics:
+      type: object
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        customerName:
+          type: string
+        totalPurchases:
+          type: number
+          format: double
+        transactionCount:
+          type: integer
+        averageTransactionValue:
+          type: number
+          format: double
+
+    SalesTrend:
+      type: object
+      properties:
+        period:
+          type: string
+        totalSales:
+          type: number
+          format: double
+        transactionCount:
+          type: integer
+
+    # ==================== DASHBOARD SCHEMAS ====================
+    DashboardSummary:
+      type: object
+      properties:
+        todaySales:
+          type: number
+          format: double
+        todayTransactions:
+          type: integer
+        lowStockCount:
+          type: integer
+        activeShift:
+          $ref: '#/components/schemas/Shift'
+          nullable: true
+
+    RecentTransaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        saleNumber:
+          type: string
+        totalAmount:
+          type: number
+          format: double
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    LowStockProduct:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        currentStock:
+          type: integer
+        minStockLevel:
+          type: integer
+
+    # ==================== SETTINGS SCHEMAS ====================
+    StoreSettings:
+      type: object
+      properties:
+        storeName:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+
+    UpdateStoreInfoRequest:
+      type: object
+      required:
+        - storeName
+        - address
+        - phone
+        - email
+      properties:
+        storeName:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+
+    ReceiptSettings:
+      type: object
+      properties:
+        header:
+          type: string
+        footer:
+          type: string
+
+    UpdateReceiptSettingsRequest:
+      type: object
+      required:
+        - header
+        - footer
+      properties:
+        header:
+          type: string
+        footer:
+          type: string
+
+    TaxSettings:
+      type: object
+      properties:
+        taxRate:
+          type: number
+          format: double
+        currency:
+          type: string
+
+    UpdateTaxSettingsRequest:
+      type: object
+      required:
+        - taxRate
+        - currency
+      properties:
+        taxRate:
+          type: number
+          format: double
+        currency:
+          type: string
+
+    UserPreferences:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        language:
+          type: string
+        theme:
+          type: string
+
+    UpdateUserPreferencesRequest:
+      type: object
+      required:
+        - language
+        - theme
+      properties:
+        language:
+          type: string
+        theme:
+          type: string
+
+    # ==================== USER MANAGEMENT SCHEMAS ====================
+    CreateUserRequest:
+      type: object
+      required:
+        - email
+        - password
+        - fullName
+        - role
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        fullName:
+          type: string
+        role:
+          type: string
+          enum: [admin, manager, cashier, warehouse, viewer]
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: [admin, manager, cashier, warehouse, viewer]
+          nullable: true
+
+    UpdateUserStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+
+    AssignRoleRequest:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum: [admin, manager, cashier, warehouse, viewer]
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - current_password
+        - new_password
+      properties:
+        current_password:
+          type: string
+          format: password
+        new_password:
+          type: string
+          format: password
+
+    ResetPasswordRequest:
+      type: object
+      required:
+        - new_password
+      properties:
+        new_password:
+          type: string
+          format: password

@@ -157,7 +157,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                             enabled = !state.isLoading,
                             modifier = Modifier.semantics {
                                 contentDescription = if (state.isPasswordVisible) "Hide password" else "Show password"
-                            }
+                            },
                         ) {
                             Text(
                                 text = if (state.isPasswordVisible) "🙈" else "👁",
