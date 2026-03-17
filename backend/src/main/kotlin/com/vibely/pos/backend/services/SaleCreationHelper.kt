@@ -122,9 +122,14 @@ internal class SaleCreationHelper(
             .select(
                 columns = Columns.list(
                     DatabaseColumns.ID,
+                    DatabaseColumns.SKU,
                     DatabaseColumns.NAME,
+                    DatabaseColumns.COST_PRICE,
                     DatabaseColumns.SELLING_PRICE,
-                    DatabaseColumns.CURRENT_STOCK
+                    DatabaseColumns.CURRENT_STOCK,
+                    DatabaseColumns.MIN_STOCK_LEVEL,
+                    DatabaseColumns.CREATED_AT,
+                    DatabaseColumns.UPDATED_AT
                 )
             ) {
                 filter {

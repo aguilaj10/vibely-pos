@@ -8,16 +8,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.di.AppKoinContext
+import com.vibely.pos.ui.common.ConnectivityViewModel
 import com.vibely.pos.ui.navigation.AppNavigation
 import com.vibely.pos.ui.theme.AppTheme
-import dev.jordond.connectivity.Connectivity
-import dev.jordond.connectivity.compose.rememberConnectivityState
+import org.koin.compose.koinInject
 import org.koin.core.module.Module
 
 private const val OFFLINE_BANNER_DESCRIPTION = "Offline status banner"
@@ -26,15 +27,8 @@ private const val OFFLINE_BANNER_DESCRIPTION = "Offline status banner"
 fun App(platformModules: List<Module> = emptyList()) {
     AppKoinContext(platformModules = platformModules) {
         AppTheme {
-            val connectivityState = rememberConnectivityState {
-                autoStart = true
-                urls("cloudflare.com", "google.com", "dns.google")
-                port = 443
-                pollingIntervalMs = 10.seconds
-                timeoutMs = 5.seconds
-            }
-
-            val isOnline = connectivityState.status is Connectivity.Status.Connected
+            val connectivityViewModel = koinInject<ConnectivityViewModel>()
+            val isOnline = connectivityViewModel.isOnline.collectAsState()
 
             Surface(
                 modifier = Modifier.fillMaxSize(),
@@ -43,7 +37,7 @@ fun App(platformModules: List<Module> = emptyList()) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AppNavigation()
 
-                    if (!isOnline) {
+                    if (!isOnline.value) {
                         OfflineBanner(
                             modifier = Modifier
                                 .align(Alignment.TopCenter)
