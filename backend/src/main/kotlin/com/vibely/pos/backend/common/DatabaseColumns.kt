@@ -28,6 +28,9 @@ object DatabaseColumns {
     const val SELLING_PRICE = "selling_price"
     const val COST_PRICE = "cost_price"
     const val TAX_RATE = "tax_rate"
+    const val IMAGE_URL = "image_url"
+    const val UPDATED_AT = "updated_at"
+    const val CATEGORIES_NAME = "categories(name)"
 
     const val SALE_ID = "sale_id"
     const val SALE_DATE = "sale_date"
@@ -40,8 +43,8 @@ object DatabaseColumns {
     const val QUANTITY = "quantity"
     const val NOTES = "notes"
 
-    const val COLOR = "color"
-    const val ICON = "icon"
+    const val COLOR = "color_hex"
+    const val ICON = "icon_name"
 
     const val TOKEN = "token"
     const val EXPIRES_AT = "expires_at"

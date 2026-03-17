@@ -4,6 +4,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class CategoryNameDTO(
+    @SerialName("name")
+    val name: String,
+)
+
+@Serializable
 data class ProductDTO(
     @SerialName("id")
     val id: String,
@@ -17,8 +23,8 @@ data class ProductDTO(
     val description: String? = null,
     @SerialName("category_id")
     val categoryId: String? = null,
-    @SerialName("category_name")
-    val categoryName: String? = null,
+    @SerialName("categories")
+    val categories: CategoryNameDTO? = null,
     @SerialName("cost_price")
     val costPrice: Double,
     @SerialName("selling_price")
@@ -37,4 +43,7 @@ data class ProductDTO(
     val createdAt: String,
     @SerialName("updated_at")
     val updatedAt: String,
-)
+) {
+    val categoryName: String?
+        get() = categories?.name
+}

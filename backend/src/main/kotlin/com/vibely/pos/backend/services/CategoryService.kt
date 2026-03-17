@@ -28,7 +28,9 @@ class CategoryService(
     /**
      * Retrieves all categories with optional filtering and pagination.
      *
-     * @param userId ID of the user
+     * Categories are global resources shared across all users.
+     *
+     * @param userId ID of the user (kept for API compatibility but not used for filtering)
      * @param isActive Optional active status filter
      * @param page Page number (1-indexed)
      * @param pageSize Number of items per page
@@ -45,7 +47,6 @@ class CategoryService(
             supabaseClient.from(TABLE_CATEGORIES)
                 .select {
                     filter {
-                        eq(DatabaseColumns.USER_ID, userId)
                         isActive?.let { eq(DatabaseColumns.IS_ACTIVE, it) }
                     }
                     order(DatabaseColumns.NAME, Order.ASCENDING)
@@ -58,7 +59,9 @@ class CategoryService(
     /**
      * Retrieves a category by its ID.
      *
-     * @param userId ID of the user
+     * Categories are global resources shared across all users.
+     *
+     * @param userId ID of the user (kept for API compatibility but not used for filtering)
      * @param categoryId Category ID
      * @return Result containing the category or error
      */
@@ -68,7 +71,6 @@ class CategoryService(
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
-                        eq(DatabaseColumns.USER_ID, userId)
                     }
                 }
                 .decodeSingle<JsonObject>()
@@ -130,7 +132,6 @@ class CategoryService(
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
-                        eq(DatabaseColumns.USER_ID, userId)
                     }
                     select()
                 }
@@ -151,7 +152,6 @@ class CategoryService(
                 .delete {
                     filter {
                         eq(DatabaseColumns.ID, categoryId)
-                        eq(DatabaseColumns.USER_ID, userId)
                     }
                 }
         }
@@ -160,7 +160,9 @@ class CategoryService(
     /**
      * Searches categories by name or description.
      *
-     * @param userId ID of the user
+     * Categories are global resources shared across all users.
+     *
+     * @param userId ID of the user (kept for API compatibility but not used for filtering)
      * @param query Search query string
      * @return Result containing list of matching categories
      */
@@ -169,7 +171,6 @@ class CategoryService(
             supabaseClient.from(TABLE_CATEGORIES)
                 .select {
                     filter {
-                        eq(DatabaseColumns.USER_ID, userId)
                         or {
                             ilike(DatabaseColumns.NAME, "%$query%")
                             ilike(DatabaseColumns.DESCRIPTION, "%$query%")

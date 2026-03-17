@@ -19,7 +19,6 @@ import com.vibely.pos.ui.theme.AppTheme
 import dev.jordond.connectivity.Connectivity
 import dev.jordond.connectivity.compose.rememberConnectivityState
 import org.koin.core.module.Module
-import kotlin.time.Duration.Companion.seconds
 
 private const val OFFLINE_BANNER_DESCRIPTION = "Offline status banner"
 

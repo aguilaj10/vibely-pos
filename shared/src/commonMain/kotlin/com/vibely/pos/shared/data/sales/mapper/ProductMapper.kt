@@ -38,6 +38,9 @@ object ProductMapper {
     /**
      * Maps a [Product] domain entity to a [ProductDTO] for the backend.
      *
+     * Note: The categoryName is not included in the DTO when sending to the backend,
+     * as it will be fetched via JOIN when reading from the database.
+     *
      * @param product The domain entity.
      * @return The DTO for the backend.
      */
@@ -48,7 +51,7 @@ object ProductMapper {
         name = product.name,
         description = product.description,
         categoryId = product.categoryId,
-        categoryName = product.categoryName,
+        categories = null, // Not sent to backend, only received
         costPrice = product.costPrice,
         sellingPrice = product.sellingPrice,
         currentStock = product.currentStock,

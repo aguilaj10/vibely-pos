@@ -505,10 +505,8 @@ private fun CategoriesTable(categories: List<Category>, onEditCategory: (String)
                     )
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    items(categories) { category ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    categories.forEach { category ->
                         TableRow(
                             category = category,
                             onEdit = { onEditCategory(category.id) },

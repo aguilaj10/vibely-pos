@@ -116,7 +116,26 @@ private suspend fun fetchProduct(
     productId: String
 ): ProductDTO {
     return supabaseClient.from(TABLE_PRODUCTS)
-        .select {
+        .select(
+            columns = Columns.list(
+                DatabaseColumns.ID,
+                DatabaseColumns.SKU,
+                DatabaseColumns.BARCODE,
+                DatabaseColumns.NAME,
+                DatabaseColumns.DESCRIPTION,
+                DatabaseColumns.CATEGORY_ID,
+                DatabaseColumns.COST_PRICE,
+                DatabaseColumns.SELLING_PRICE,
+                DatabaseColumns.CURRENT_STOCK,
+                DatabaseColumns.MIN_STOCK_LEVEL,
+                DatabaseColumns.UNIT,
+                DatabaseColumns.IMAGE_URL,
+                DatabaseColumns.IS_ACTIVE,
+                DatabaseColumns.CREATED_AT,
+                DatabaseColumns.UPDATED_AT,
+                DatabaseColumns.CATEGORIES_NAME,
+            )
+        ) {
             filter {
                 eq(DatabaseColumns.ID, productId)
                 eq(DatabaseColumns.USER_ID, userId)
@@ -157,7 +176,26 @@ class ProductService(
         return executeQuery(ERROR_SEARCH_FAILED) {
             val searchPattern = "%$query%"
             supabaseClient.from(TABLE_PRODUCTS)
-                .select {
+                .select(
+                    columns = Columns.list(
+                        DatabaseColumns.ID,
+                        DatabaseColumns.SKU,
+                        DatabaseColumns.BARCODE,
+                        DatabaseColumns.NAME,
+                        DatabaseColumns.DESCRIPTION,
+                        DatabaseColumns.CATEGORY_ID,
+                        DatabaseColumns.COST_PRICE,
+                        DatabaseColumns.SELLING_PRICE,
+                        DatabaseColumns.CURRENT_STOCK,
+                        DatabaseColumns.MIN_STOCK_LEVEL,
+                        DatabaseColumns.UNIT,
+                        DatabaseColumns.IMAGE_URL,
+                        DatabaseColumns.IS_ACTIVE,
+                        DatabaseColumns.CREATED_AT,
+                        DatabaseColumns.UPDATED_AT,
+                        DatabaseColumns.CATEGORIES_NAME,
+                    )
+                ) {
                     filter {
                         eq(DatabaseColumns.IS_ACTIVE, true)
                         or {
@@ -182,7 +220,26 @@ class ProductService(
     suspend fun getById(id: String): Result<ProductDTO> {
         return executeQuery(ERROR_PRODUCT_NOT_FOUND) {
             supabaseClient.from(TABLE_PRODUCTS)
-                .select {
+                .select(
+                    columns = Columns.list(
+                        DatabaseColumns.ID,
+                        DatabaseColumns.SKU,
+                        DatabaseColumns.BARCODE,
+                        DatabaseColumns.NAME,
+                        DatabaseColumns.DESCRIPTION,
+                        DatabaseColumns.CATEGORY_ID,
+                        DatabaseColumns.COST_PRICE,
+                        DatabaseColumns.SELLING_PRICE,
+                        DatabaseColumns.CURRENT_STOCK,
+                        DatabaseColumns.MIN_STOCK_LEVEL,
+                        DatabaseColumns.UNIT,
+                        DatabaseColumns.IMAGE_URL,
+                        DatabaseColumns.IS_ACTIVE,
+                        DatabaseColumns.CREATED_AT,
+                        DatabaseColumns.UPDATED_AT,
+                        DatabaseColumns.CATEGORIES_NAME,
+                    )
+                ) {
                     filter {
                         eq(DatabaseColumns.ID, id)
                     }
@@ -203,22 +260,22 @@ class ProductService(
             supabaseClient.from(TABLE_PRODUCTS)
                 .select(
                     columns = Columns.list(
-                        "id",
-                        "sku",
-                        "barcode",
-                        "name",
-                        "description",
-                        "category_id",
-                        "cost_price",
-                        "selling_price",
-                        "current_stock",
-                        "min_stock_level",
-                        "unit",
-                        "image_url",
-                        "is_active",
-                        "created_at",
-                        "updated_at",
-                        "categories(name)",
+                        DatabaseColumns.ID,
+                        DatabaseColumns.SKU,
+                        DatabaseColumns.BARCODE,
+                        DatabaseColumns.NAME,
+                        DatabaseColumns.DESCRIPTION,
+                        DatabaseColumns.CATEGORY_ID,
+                        DatabaseColumns.COST_PRICE,
+                        DatabaseColumns.SELLING_PRICE,
+                        DatabaseColumns.CURRENT_STOCK,
+                        DatabaseColumns.MIN_STOCK_LEVEL,
+                        DatabaseColumns.UNIT,
+                        DatabaseColumns.IMAGE_URL,
+                        DatabaseColumns.IS_ACTIVE,
+                        DatabaseColumns.CREATED_AT,
+                        DatabaseColumns.UPDATED_AT,
+                        DatabaseColumns.CATEGORIES_NAME,
                     )
                 ) {
                     filter {

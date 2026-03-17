@@ -123,34 +123,40 @@ fun ProductFormDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                if (categories.isNotEmpty()) {
-                    ExposedDropdownMenuBox(
-                        expanded = categoryExpanded,
-                        onExpandedChange = { categoryExpanded = it },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        OutlinedTextField(
-                            value = categories.find { it.id == formData.categoryId }?.name ?: "Select Category",
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Category") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
-                            modifier = Modifier
-                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                                .fillMaxWidth(),
-                        )
+                ExposedDropdownMenuBox(
+                    expanded = categoryExpanded,
+                    onExpandedChange = { categoryExpanded = it },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    OutlinedTextField(
+                        value = categories.find { it.id == formData.categoryId }?.name ?: "Select Category",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Category") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth(),
+                    )
 
-                        ExposedDropdownMenu(
-                            expanded = categoryExpanded,
-                            onDismissRequest = { categoryExpanded = false },
-                        ) {
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("No Category") },
+                            onClick = {
+                                formData = formData.copy(categoryId = null)
+                                categoryExpanded = false
+                            },
+                        )
+                        if (categories.isEmpty()) {
                             DropdownMenuItem(
-                                text = { Text("No Category") },
-                                onClick = {
-                                    formData = formData.copy(categoryId = null)
-                                    categoryExpanded = false
-                                },
+                                text = { Text("No categories available") },
+                                onClick = { categoryExpanded = false },
+                                enabled = false,
                             )
+                        } else {
                             categories.forEach { category ->
                                 DropdownMenuItem(
                                     text = { Text(category.name) },
@@ -162,9 +168,9 @@ fun ProductFormDialog(
                             }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

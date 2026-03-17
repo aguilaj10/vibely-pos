@@ -11,9 +11,9 @@ data class CategoryDTO(
     val name: String,
     @SerialName("description")
     val description: String? = null,
-    @SerialName("color")
+    @SerialName("color_hex")
     val color: String? = null,
-    @SerialName("icon")
+    @SerialName("icon_name")
     val icon: String? = null,
     @SerialName("is_active")
     val isActive: Boolean = true,
