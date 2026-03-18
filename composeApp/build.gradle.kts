@@ -96,6 +96,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.ktor.clientCio)
+            implementation(libs.logback)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.test)
