@@ -266,8 +266,8 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit,
             )
 
             Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-                when {
-                    sale.status == SaleStatus.DRAFT -> {
+                when (sale.status) {
+                    SaleStatus.DRAFT -> {
                         IconButton(
                             onClick = onEdit,
                             modifier = Modifier.size(32.dp),
@@ -275,13 +275,12 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit,
                             Icon(
                                 imageVector = FontAwesomeIcons.Solid.Edit,
                                 contentDescription = "Edit sale",
-                                tint = AppColors.Primary,
+                                tint = AppColors.Warning,
                                 modifier = Modifier.size(16.dp),
                             )
                         }
                     }
-
-                    sale.status == SaleStatus.COMPLETED && sale.paymentStatus == PaymentStatus.COMPLETED -> {
+                    SaleStatus.COMPLETED if sale.paymentStatus == PaymentStatus.COMPLETED -> {
                         IconButton(
                             onClick = onRefund,
                             modifier = Modifier.size(32.dp),
@@ -294,7 +293,6 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit,
                             )
                         }
                     }
-
                     else -> {
                         Spacer(modifier = Modifier.size(32.dp))
                     }

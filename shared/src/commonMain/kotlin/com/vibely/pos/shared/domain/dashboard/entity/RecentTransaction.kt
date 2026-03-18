@@ -63,6 +63,7 @@ data class RecentTransaction(
  * Subset of full sale_status enum focused on relevant states.
  */
 enum class TransactionStatus {
+    DRAFT,
     COMPLETED,
     CANCELLED,
     REFUNDED,
@@ -75,6 +76,7 @@ enum class TransactionStatus {
          * @throws IllegalArgumentException if the value is unknown.
          */
         fun fromDatabaseValue(value: String): TransactionStatus = when (value.lowercase()) {
+            "draft" -> DRAFT
             "completed" -> COMPLETED
             "cancelled" -> CANCELLED
             "refunded", "partially_refunded" -> REFUNDED

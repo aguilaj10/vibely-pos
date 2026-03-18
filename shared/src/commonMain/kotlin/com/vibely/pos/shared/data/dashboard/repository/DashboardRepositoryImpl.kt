@@ -60,7 +60,7 @@ class DashboardRepositoryImpl(private val remoteDataSource: RemoteDashboardDataS
     }
 
     override suspend fun getRecentTransactions(limit: Int): Result<List<RecentTransaction>> {
-        if (limit < 1 || limit > 100) {
+        if (limit !in 1..100) {
             return Result.Error(
                 message = "Limit must be between 1 and 100",
                 code = "INVALID_LIMIT",

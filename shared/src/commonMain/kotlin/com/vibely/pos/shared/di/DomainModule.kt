@@ -46,6 +46,11 @@ import com.vibely.pos.shared.domain.sales.usecase.RecordPaymentsUseCase
 import com.vibely.pos.shared.domain.sales.usecase.RemoveFromCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
 import com.vibely.pos.shared.domain.sales.usecase.UpdateCartUseCase
+import com.vibely.pos.shared.domain.settings.usecase.GetSettingsUseCase
+import com.vibely.pos.shared.domain.settings.usecase.UpdateReceiptSettingsUseCase
+import com.vibely.pos.shared.domain.settings.usecase.UpdateStoreInfoUseCase
+import com.vibely.pos.shared.domain.settings.usecase.UpdateTaxSettingsUseCase
+import com.vibely.pos.shared.domain.settings.usecase.UpdateUserPreferencesUseCase
 import com.vibely.pos.shared.domain.shift.usecase.CloseShiftUseCase
 import com.vibely.pos.shared.domain.shift.usecase.GetCurrentShiftUseCase
 import com.vibely.pos.shared.domain.shift.usecase.GetShiftHistoryUseCase
@@ -171,4 +176,11 @@ val domainModule =
         singleOf(::UpdateExchangeRateUseCase)
         singleOf(::DeleteExchangeRateUseCase)
         singleOf(::GetActiveCurrenciesUseCase)
+
+        // Settings use cases
+        singleOf(::GetSettingsUseCase)
+        singleOf(::UpdateStoreInfoUseCase)
+        singleOf(::UpdateReceiptSettingsUseCase)
+        singleOf(::UpdateTaxSettingsUseCase)
+        singleOf(::UpdateUserPreferencesUseCase)
     }

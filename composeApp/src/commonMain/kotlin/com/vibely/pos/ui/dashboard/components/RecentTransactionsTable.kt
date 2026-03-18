@@ -56,6 +56,7 @@ fun RecentTransactionsTable(
 private fun TransactionStatusChip(status: TransactionStatus) {
     val (label, variant) =
         when (status) {
+            TransactionStatus.DRAFT -> "Draft" to StatusChipVariant.Info
             TransactionStatus.COMPLETED -> "Completed" to StatusChipVariant.Success
             TransactionStatus.CANCELLED -> "Cancelled" to StatusChipVariant.Info
             TransactionStatus.REFUNDED -> "Refunded" to StatusChipVariant.Error
