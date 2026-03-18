@@ -14,6 +14,7 @@ import com.vibely.pos.backend.routes.currencyRoutes
 import com.vibely.pos.backend.routes.customerRoutes
 import com.vibely.pos.backend.routes.dashboardRoutes
 import com.vibely.pos.backend.routes.inventoryRoutes
+import com.vibely.pos.backend.routes.paymentsRoutes
 import com.vibely.pos.backend.routes.productRoutes
 import com.vibely.pos.backend.routes.purchaseOrderRoutes
 import com.vibely.pos.backend.routes.reportRoutes
@@ -28,6 +29,7 @@ import com.vibely.pos.backend.services.CurrencyService
 import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.InventoryService
+import com.vibely.pos.backend.services.PaymentService
 import com.vibely.pos.backend.services.ProductService
 import com.vibely.pos.backend.services.PurchaseOrderService
 import com.vibely.pos.backend.services.ReportService
@@ -91,32 +93,34 @@ private fun Application.configureRouting(supabaseClient: SupabaseClient) {
     }
 }
 
-private fun Application.configureHealthRoutes(supabaseClient: SupabaseClient) = routing {
-    get("/") {
-        call.respondText("Vibely POS Backend API - Ready!")
-    }
+private fun Application.configureHealthRoutes(supabaseClient: SupabaseClient) =
+    routing {
+        get("/") {
+            call.respondText("Vibely POS Backend API - Ready!")
+        }
 
-    get("/health") {
-        call.respond(
-            HttpStatusCode.OK,
-            mapOf(
-                STATUS_KEY to "healthy",
-                "service" to "vibely-pos-backend",
-                "supabase" to "connected"
+        get("/health") {
+            call.respond(
+                HttpStatusCode.OK,
+                mapOf(
+                    STATUS_KEY to "healthy",
+                    "service" to "vibely-pos-backend",
+                    "supabase" to "connected",
+                ),
             )
-        )
-    }
+        }
 
-    get("/api/test/database") {
-        handleDatabaseTest(supabaseClient)
+        get("/api/test/database") {
+            handleDatabaseTest(supabaseClient)
+        }
     }
-}
 
 private fun Application.configureApiRoutes() {
     val authService: Lazy<AuthService> = inject()
     val dashboardService: Lazy<DashboardService> = inject()
     val productService: Lazy<ProductService> = inject()
     val saleService: Lazy<SaleService> = inject()
+    val paymentService: Lazy<PaymentService> = inject()
     val categoryService: Lazy<CategoryService> = inject()
     val inventoryService: Lazy<InventoryService> = inject()
     val customerService: Lazy<CustomerService> = inject()
@@ -133,6 +137,7 @@ private fun Application.configureApiRoutes() {
         dashboardRoutes(dashboardService.value)
         productRoutes(productService.value)
         salesRoutes(saleService.value)
+        paymentsRoutes(paymentService.value)
         categoryRoutes(categoryService.value)
         inventoryRoutes(inventoryService.value)
         customerRoutes(customerService.value)
@@ -155,8 +160,8 @@ private suspend fun RoutingContext.handleDatabaseTest(supabaseClient: SupabaseCl
             mapOf(
                 STATUS_KEY to "success",
                 MESSAGE_KEY to "Database connection successful",
-                "database" to "connected"
-            )
+                "database" to "connected",
+            ),
         )
     } catch (e: RestException) {
         call.respond(
@@ -165,8 +170,8 @@ private suspend fun RoutingContext.handleDatabaseTest(supabaseClient: SupabaseCl
                 STATUS_KEY to "info",
                 MESSAGE_KEY to "Supabase client initialized successfully",
                 "note" to "Database query test skipped - ensure tables exist",
-                ERROR_KEY to (e.message ?: "Unknown error")
-            )
+                ERROR_KEY to (e.message ?: "Unknown error"),
+            ),
         )
     } catch (e: IllegalStateException) {
         call.respond(
@@ -174,8 +179,8 @@ private suspend fun RoutingContext.handleDatabaseTest(supabaseClient: SupabaseCl
             mapOf(
                 STATUS_KEY to ERROR_KEY,
                 MESSAGE_KEY to "Configuration error",
-                ERROR_KEY to (e.message ?: "Unknown configuration error")
-            )
+                ERROR_KEY to (e.message ?: "Unknown configuration error"),
+            ),
         )
     }
 }

@@ -10,6 +10,7 @@ object TableNames {
 
     const val SALES = "sales"
     const val SALE_ITEMS = "sale_items"
+    const val PAYMENTS = "payments"
     const val SHIFTS = "cash_shifts"
 
     const val INVENTORY_TRANSACTIONS = "inventory_transactions"

@@ -35,7 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -44,8 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.sales.valueobject.CartItem
+import com.vibely.pos.shared.domain.sales.valueobject.PaymentType
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
+import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
@@ -127,7 +131,8 @@ fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, 
                     when {
                         state.isSearching -> {
                             Box(
-                                modifier = Modifier
+                                modifier =
+                                Modifier
                                     .fillMaxWidth()
                                     .height(120.dp),
                                 contentAlignment = Alignment.Center,
@@ -138,7 +143,8 @@ fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, 
 
                         state.searchResults.isEmpty() -> {
                             Box(
-                                modifier = Modifier
+                                modifier =
+                                Modifier
                                     .fillMaxWidth()
                                     .height(120.dp)
                                     .padding(16.dp),
@@ -181,7 +187,8 @@ fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, 
 
                     if (state.cart.items.isEmpty()) {
                         Box(
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .weight(1f)
                                 .fillMaxWidth(),
                             contentAlignment = Alignment.Center,
@@ -265,7 +272,8 @@ fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, 
             if (state.isLoading) {
                 Spacer(modifier = Modifier.height(8.dp))
                 CircularProgressIndicator(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .size(24.dp)
                         .align(Alignment.CenterHorizontally),
                 )
@@ -280,8 +288,13 @@ fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, 
         if (state.showPaymentDialog) {
             PaymentDialog(
                 totalAmount = state.totalAmount,
+                paymentTenders = state.paymentTenders,
+                remainingAmount = state.remainingAmount,
+                canComplete = state.canCompleteSale,
                 isProcessing = state.isProcessingPayment,
-                onPaymentMethodSelected = viewModel::onPaymentComplete,
+                onAddTender = { type, amount -> viewModel.addPaymentTender(type, amount) },
+                onRemoveTender = viewModel::removePaymentTender,
+                onComplete = viewModel::recordPayments,
                 onDismiss = viewModel::onPaymentDialogDismiss,
             )
         }
@@ -291,24 +304,28 @@ fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, 
 @Composable
 private fun ProductSearchItem(product: Product, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(
+        colors =
+        CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ),
         shape = RoundedCornerShape(8.dp),
     ) {
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .size(56.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -376,7 +393,8 @@ private fun ProductSearchItem(product: Product, onClick: () -> Unit, modifier: M
 private fun CartItemCard(item: CartItem, onQuantityChange: (Int) -> Unit, onRemove: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
+        colors =
+        CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
@@ -469,88 +487,251 @@ private fun CartItemCard(item: CartItem, onQuantityChange: (Int) -> Unit, onRemo
 }
 
 @Composable
-private fun PaymentDialog(totalAmount: Double, isProcessing: Boolean, onPaymentMethodSelected: (String) -> Unit, onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss) {
+private fun PaymentDialog(
+    totalAmount: Double,
+    paymentTenders: List<PaymentTender>,
+    remainingAmount: Double,
+    canComplete: Boolean,
+    isProcessing: Boolean,
+    onAddTender: (PaymentType, Double) -> Unit,
+    onRemoveTender: (Int) -> Unit,
+    onComplete: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var selectedType by remember { mutableStateOf<PaymentType?>(null) }
+    var amountInput by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = { if (!isProcessing) onDismiss() }) {
         Card(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = CardDefaults.cardColors(
+            colors =
+            CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Payment",
+                    text = "Split Payment",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "Total Amount",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
-                Text(
-                    text = formatPrice(totalAmount),
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Column {
+                        Text(
+                            text = "Total Amount",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = formatPrice(totalAmount),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = "Remaining",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = formatPrice(remainingAmount),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = if (remainingAmount > 0) AppColors.Warning else AppColors.Success,
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Select Payment Method",
+                    text = "Add Payment",
                     style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     AppButton(
                         text = "Cash",
-                        onClick = { onPaymentMethodSelected("cash") },
-                        style = AppButtonStyle.Primary,
+                        onClick = { selectedType = PaymentType.CASH },
+                        style =
+                        if (selectedType ==
+                            PaymentType.CASH
+                        ) {
+                            AppButtonStyle.Primary
+                        } else {
+                            AppButtonStyle.Outlined
+                        },
                         modifier = Modifier.weight(1f),
                         enabled = !isProcessing,
                     )
-
                     AppButton(
                         text = "Card",
-                        onClick = { onPaymentMethodSelected("card") },
-                        style = AppButtonStyle.Outlined,
+                        onClick = { selectedType = PaymentType.CREDIT_CARD },
+                        style =
+                        if (selectedType ==
+                            PaymentType.CREDIT_CARD
+                        ) {
+                            AppButtonStyle.Primary
+                        } else {
+                            AppButtonStyle.Outlined
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = !isProcessing,
+                    )
+                    AppButton(
+                        text = "Transfer",
+                        onClick = { selectedType = PaymentType.BANK_TRANSFER },
+                        style =
+                        if (selectedType ==
+                            PaymentType.BANK_TRANSFER
+                        ) {
+                            AppButtonStyle.Primary
+                        } else {
+                            AppButtonStyle.Outlined
+                        },
                         modifier = Modifier.weight(1f),
                         enabled = !isProcessing,
                     )
                 }
 
-                if (isProcessing) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    CircularProgressIndicator()
-                    Text(
-                        text = "Processing payment...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    AppTextField(
+                        value = amountInput,
+                        onValueChange = { amountInput = it },
+                        placeholder = "Amount",
+                        modifier = Modifier.weight(1f),
+                        enabled = !isProcessing,
+                    )
+                    AppButton(
+                        text = "Add",
+                        onClick = {
+                            val amount = amountInput.toDoubleOrNull()
+                            if (amount != null && amount > 0 && selectedType != null) {
+                                onAddTender(selectedType!!, amount)
+                                amountInput = ""
+                                selectedType = null
+                            }
+                        },
+                        style = AppButtonStyle.Primary,
+                        enabled =
+                        !isProcessing &&
+                            selectedType != null &&
+                            amountInput.toDoubleOrNull()?.let { it > 0 } == true,
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                if (paymentTenders.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                TextButton(
-                    onClick = onDismiss,
-                    enabled = !isProcessing,
-                ) {
-                    Text("Cancel")
+                    Text(
+                        text = "Payment Tenders",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    paymentTenders.forEachIndexed { index, tender ->
+                        Row(
+                            modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text =
+                                    tender.type.name
+                                        .lowercase()
+                                        .replaceFirstChar { it.uppercase() },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium,
+                                )
+                                Text(
+                                    text = formatPrice(tender.amount),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                            IconButton(
+                                onClick = { onRemoveTender(index) },
+                                enabled = !isProcessing,
+                                modifier = Modifier.size(32.dp),
+                            ) {
+                                Icon(
+                                    imageVector = FontAwesomeIcons.Solid.Times,
+                                    contentDescription = "Remove",
+                                    tint = AppColors.Error,
+                                    modifier = Modifier.size(16.dp),
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                if (isProcessing) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Processing payments...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        TextButton(
+                            onClick = onDismiss,
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Text("Cancel")
+                        }
+                        AppButton(
+                            text = "Complete Sale",
+                            onClick = onComplete,
+                            style = AppButtonStyle.Primary,
+                            modifier = Modifier.weight(1f),
+                            enabled = canComplete,
+                        )
+                    }
                 }
             }
         }

@@ -74,6 +74,13 @@ object DatabaseColumns {
     const val SALE_ID = "sale_id"
     const val STATUS = "status"
 
+    // Payment columns
+    const val AMOUNT = "amount"
+    const val PAYMENT_DATE = "payment_date"
+    const val PAYMENT_STATUS = "payment_status"
+    const val PAYMENT_TYPE = "payment_type"
+    const val REFERENCE_NUMBER = "reference_number"
+
     // Shift columns
     const val CASHIER_ID = "cashier_id"
     const val CLOSED_AT = "closed_at"

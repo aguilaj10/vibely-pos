@@ -8,15 +8,16 @@ import com.vibely.pos.shared.domain.result.Result
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
-import java.math.BigDecimal
-import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import java.math.BigDecimal
+import kotlin.time.Clock
 
 private const val STATUS_COMPLETED = "completed"
+private const val PAYMENT_STATUS_PENDING = "pending"
 private const val TRANSACTION_TYPE_SALE = "sale"
 private const val REFERENCE_TYPE_SALE = "sale"
 private const val INVOICE_NUMBER_PADDING = 5
@@ -28,9 +29,9 @@ private fun buildSaleData(
     request: CreateSaleRequest,
     cashierId: String,
     subtotal: BigDecimal,
-    now: String
-): JsonObject {
-    return buildJsonObject {
+    now: String,
+): JsonObject =
+    buildJsonObject {
         put("invoice_number", invoiceNumber)
         put(DatabaseColumns.CUSTOMER_ID, request.customerId)
         put("cashier_id", cashierId)
@@ -39,11 +40,10 @@ private fun buildSaleData(
         put("discount_amount", 0.0)
         put("total_amount", subtotal.toDouble())
         put(DatabaseColumns.STATUS, STATUS_COMPLETED)
-        put("payment_status", STATUS_COMPLETED)
+        put("payment_status", PAYMENT_STATUS_PENDING)
         put(DatabaseColumns.NOTES, request.notes)
         put("sale_date", now)
     }
-}
 
 @Suppress("LongParameterList")
 private fun buildSaleItemData(
@@ -52,9 +52,9 @@ private fun buildSaleItemData(
     quantity: Int,
     unitPrice: Double,
     subtotal: Double,
-    now: String
-): JsonObject {
-    return buildJsonObject {
+    now: String,
+): JsonObject =
+    buildJsonObject {
         put(DatabaseColumns.SALE_ID, saleId)
         put(DatabaseColumns.PRODUCT_ID, productId)
         put(DatabaseColumns.QUANTITY, quantity)
@@ -63,7 +63,6 @@ private fun buildSaleItemData(
         put("subtotal", subtotal)
         put(DatabaseColumns.CREATED_AT, now)
     }
-}
 
 @Suppress("LongParameterList")
 private fun buildInventoryTransactionData(
@@ -71,9 +70,9 @@ private fun buildInventoryTransactionData(
     quantity: Int,
     referenceId: String,
     performedBy: String,
-    notes: String
-): JsonObject {
-    return buildJsonObject {
+    notes: String,
+): JsonObject =
+    buildJsonObject {
         put(DatabaseColumns.PRODUCT_ID, productId)
         put(DatabaseColumns.TRANSACTION_TYPE, TRANSACTION_TYPE_SALE)
         put(DatabaseColumns.QUANTITY, -quantity)
@@ -82,15 +81,14 @@ private fun buildInventoryTransactionData(
         put("performed_by", performedBy)
         put(DatabaseColumns.NOTES, notes)
     }
-}
 
 internal class SaleCreationHelper(
-    private val supabaseClient: SupabaseClient
+    private val supabaseClient: SupabaseClient,
 ) {
     suspend fun validateAndBuildSaleItems(
-        request: CreateSaleRequest
-    ): Result<Pair<List<Pair<String, Int>>, BigDecimal>> {
-        return try {
+        request: CreateSaleRequest,
+    ): Result<Pair<List<Pair<String, Int>>, BigDecimal>> =
+        try {
             var subtotal = BigDecimal.ZERO
             val validatedItems = mutableListOf<Pair<String, Int>>()
 
@@ -109,55 +107,57 @@ internal class SaleCreationHelper(
         } catch (e: NoSuchElementException) {
             Result.Error(e.message ?: "Product not found", cause = e)
         }
-    }
 
-    private fun validateStock(product: ProductDTO, requestedQuantity: Int) {
+    private fun validateStock(
+        product: ProductDTO,
+        requestedQuantity: Int,
+    ) {
         check(product.currentStock >= requestedQuantity) {
             "$ERROR_INSUFFICIENT_STOCK ${product.name}"
         }
     }
 
-    private suspend fun fetchProduct(productId: String): ProductDTO {
-        return supabaseClient.from(TableNames.PRODUCTS)
+    private suspend fun fetchProduct(productId: String): ProductDTO =
+        supabaseClient
+            .from(TableNames.PRODUCTS)
             .select(
-                columns = Columns.list(
-                    DatabaseColumns.ID,
-                    DatabaseColumns.SKU,
-                    DatabaseColumns.NAME,
-                    DatabaseColumns.COST_PRICE,
-                    DatabaseColumns.SELLING_PRICE,
-                    DatabaseColumns.CURRENT_STOCK,
-                    DatabaseColumns.MIN_STOCK_LEVEL,
-                    DatabaseColumns.CREATED_AT,
-                    DatabaseColumns.UPDATED_AT
-                )
+                columns =
+                    Columns.list(
+                        DatabaseColumns.ID,
+                        DatabaseColumns.SKU,
+                        DatabaseColumns.NAME,
+                        DatabaseColumns.COST_PRICE,
+                        DatabaseColumns.SELLING_PRICE,
+                        DatabaseColumns.CURRENT_STOCK,
+                        DatabaseColumns.MIN_STOCK_LEVEL,
+                        DatabaseColumns.CREATED_AT,
+                        DatabaseColumns.UPDATED_AT,
+                    ),
             ) {
                 filter {
                     eq(DatabaseColumns.ID, productId)
                 }
-            }
-            .decodeSingle<ProductDTO>()
-    }
+            }.decodeSingle<ProductDTO>()
 
     suspend fun insertSale(
         request: CreateSaleRequest,
         cashierId: String,
-        subtotal: BigDecimal
+        subtotal: BigDecimal,
     ): JsonObject {
         val invoiceNumber = generateInvoiceNumber()
         val now = Clock.System.now().toString()
         val data = buildSaleData(invoiceNumber, request, cashierId, subtotal, now)
 
-        return supabaseClient.from(TableNames.SALES)
+        return supabaseClient
+            .from(TableNames.SALES)
             .insert(data) {
                 select()
-            }
-            .decodeSingle<JsonObject>()
+            }.decodeSingle<JsonObject>()
     }
 
     suspend fun insertSaleItems(
         saleId: String,
-        items: List<Pair<String, Int>>
+        items: List<Pair<String, Int>>,
     ) {
         val now = Clock.System.now().toString()
 
@@ -173,38 +173,42 @@ internal class SaleCreationHelper(
         items: List<Pair<String, Int>>,
         saleId: String,
         invoiceNumber: String,
-        cashierId: String
+        cashierId: String,
     ) {
         for ((productId, quantity) in items) {
             val product = fetchProduct(productId)
             val newStock = product.currentStock - quantity
 
-            supabaseClient.from(TableNames.PRODUCTS)
+            supabaseClient
+                .from(TableNames.PRODUCTS)
                 .update(
                     buildJsonObject {
                         put(DatabaseColumns.CURRENT_STOCK, newStock)
-                    }
+                    },
                 ) {
                     filter {
                         eq(DatabaseColumns.ID, productId)
                     }
                 }
 
-            val transactionData = buildInventoryTransactionData(
-                productId,
-                quantity,
-                saleId,
-                cashierId,
-                "Sale $invoiceNumber"
-            )
+            val transactionData =
+                buildInventoryTransactionData(
+                    productId,
+                    quantity,
+                    saleId,
+                    cashierId,
+                    "Sale $invoiceNumber",
+                )
             supabaseClient.from(TableNames.INVENTORY_TRANSACTIONS).insert(transactionData)
         }
     }
 
     private suspend fun generateInvoiceNumber(): String {
-        val sales = supabaseClient.from(TableNames.SALES)
-            .select(Columns.list(DatabaseColumns.ID))
-            .decodeList<JsonObject>()
+        val sales =
+            supabaseClient
+                .from(TableNames.SALES)
+                .select(Columns.list(DatabaseColumns.ID))
+                .decodeList<JsonObject>()
 
         val localDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val year = localDateTime.year

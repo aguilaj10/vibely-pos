@@ -20,8 +20,10 @@ import com.vibely.pos.shared.data.purchaseorder.datasource.RemotePurchaseOrderDa
 import com.vibely.pos.shared.data.purchaseorder.repository.PurchaseOrderRepositoryImpl
 import com.vibely.pos.shared.data.reports.datasource.RemoteReportsDataSource
 import com.vibely.pos.shared.data.reports.repository.ReportsRepositoryImpl
+import com.vibely.pos.shared.data.sales.datasource.RemotePaymentDataSource
 import com.vibely.pos.shared.data.sales.datasource.RemoteProductDataSource
 import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
+import com.vibely.pos.shared.data.sales.repository.PaymentRepositoryImpl
 import com.vibely.pos.shared.data.sales.repository.ProductRepositoryImpl
 import com.vibely.pos.shared.data.sales.repository.SaleRepositoryImpl
 import com.vibely.pos.shared.data.shift.datasource.RemoteShiftDataSource
@@ -38,6 +40,7 @@ import com.vibely.pos.shared.domain.inventory.repository.CategoryRepository
 import com.vibely.pos.shared.domain.inventory.repository.InventoryRepository
 import com.vibely.pos.shared.domain.purchaseorder.repository.PurchaseOrderRepository
 import com.vibely.pos.shared.domain.reports.repository.ReportsRepository
+import com.vibely.pos.shared.domain.sales.repository.PaymentRepository
 import com.vibely.pos.shared.domain.sales.repository.ProductRepository
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.shift.repository.ShiftRepository
@@ -193,6 +196,17 @@ val dataModule =
         // Sales repositories
         singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
         singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
+
+        // Payment data source
+        single {
+            RemotePaymentDataSource(
+                httpClient = get(),
+                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+            )
+        }
+
+        // Payment repository
+        singleOf(::PaymentRepositoryImpl) { bind<PaymentRepository>() }
 
         // Inventory data sources
         single {

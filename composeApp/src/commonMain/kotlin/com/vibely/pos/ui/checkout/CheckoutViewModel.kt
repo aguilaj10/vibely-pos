@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.vibely.pos.shared.domain.auth.usecase.GetCurrentUserUseCase
 import com.vibely.pos.shared.domain.result.Result
 import com.vibely.pos.shared.domain.sales.entity.Product
+import com.vibely.pos.shared.domain.sales.repository.PaymentRepository
+import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.sales.usecase.AddToCartUseCase
-import com.vibely.pos.shared.domain.sales.usecase.CompleteSaleUseCase
 import com.vibely.pos.shared.domain.sales.usecase.RemoveFromCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
 import com.vibely.pos.shared.domain.sales.usecase.UpdateCartUseCase
+import com.vibely.pos.shared.domain.sales.valueobject.PaymentType
+import com.vibely.pos.ui.util.randomUuidString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,11 +25,11 @@ class CheckoutViewModel(
     private val searchProductsUseCase: SearchProductsUseCase,
     private val addToCartUseCase: AddToCartUseCase,
     private val removeFromCartUseCase: RemoveFromCartUseCase,
-    private val completeSaleUseCase: CompleteSaleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val updateCartUseCase: UpdateCartUseCase,
+    private val saleRepository: SaleRepository,
+    private val paymentRepository: PaymentRepository,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(CheckoutState())
     val state: StateFlow<CheckoutState> = _state.asStateFlow()
 
@@ -41,12 +44,13 @@ class CheckoutViewModel(
             return
         }
 
-        searchJob = viewModelScope.launch {
-            delay(300)
-            if (query.length >= 3) {
-                performSearch(query)
+        searchJob =
+            viewModelScope.launch {
+                delay(300)
+                if (query.length >= 3) {
+                    performSearch(query)
+                }
             }
-        }
     }
 
     private suspend fun performSearch(query: String) {
@@ -61,6 +65,7 @@ class CheckoutViewModel(
                     )
                 }
             }
+
             is Result.Error -> {
                 _state.update {
                     it.copy(
@@ -91,6 +96,7 @@ class CheckoutViewModel(
                         )
                     }
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
@@ -116,6 +122,7 @@ class CheckoutViewModel(
                         )
                     }
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
@@ -147,50 +154,102 @@ class CheckoutViewModel(
     }
 
     fun onCheckout() {
-        _state.update { it.copy(showPaymentDialog = true) }
+        _state.update { it.copy(showPaymentDialog = true, paymentTenders = emptyList()) }
     }
 
     fun onPaymentDialogDismiss() {
         _state.update { it.copy(showPaymentDialog = false) }
     }
 
-    fun onPaymentComplete(paymentMethod: String) {
+    fun addPaymentTender(type: PaymentType, amount: Double) {
+        if (amount <= 0) return
+        _state.update { currentState ->
+            currentState.copy(
+                paymentTenders = currentState.paymentTenders + PaymentTender(type, amount),
+            )
+        }
+    }
+
+    fun removePaymentTender(index: Int) {
+        _state.update { currentState ->
+            currentState.copy(
+                paymentTenders = currentState.paymentTenders.filterIndexed { i, _ -> i != index },
+            )
+        }
+    }
+
+    fun recordPayments() {
         viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    isProcessingPayment = true,
-                    showPaymentDialog = false,
-                    errorMessage = null,
-                )
-            }
+            _state.update { it.copy(isProcessingPayment = true, errorMessage = null) }
 
+            val currentState = _state.value
             val userResult = getCurrentUserUseCase()
-            val cashierId = when (userResult) {
-                is Result.Success -> userResult.data?.id ?: "unknown"
-                is Result.Error -> "unknown"
-            }
+            val cashierId =
+                when (userResult) {
+                    is Result.Success -> userResult.data?.id ?: "unknown"
+                    is Result.Error -> "unknown"
+                }
 
-            when (
-                val result = completeSaleUseCase(
-                    cart = _state.value.cart,
-                    cashierId = cashierId,
+            val saleResult =
+                saleRepository.create(
+                    com.vibely.pos.shared.domain.sales.entity.Sale.create(
+                        id = randomUuidString(),
+                        invoiceNumber = "",
+                        cashierId = cashierId,
+                        subtotal = currentState.cart.totalAmount,
+                        totalAmount = currentState.cart.totalAmount,
+                    ),
+                    emptyList(),
                 )
-            ) {
+
+            when (saleResult) {
                 is Result.Success -> {
-                    _state.update {
-                        it.copy(
-                            cart = it.cart.clear(),
-                            isProcessingPayment = false,
-                            checkoutSuccess = true,
-                            completedSaleId = result.data.id,
-                        )
+                    val saleId = saleResult.data.id
+                    var allPaymentsRecorded = true
+
+                    for (tender in currentState.paymentTenders) {
+                        when (
+                            val paymentResult =
+                                paymentRepository.recordPayment(
+                                    saleId = saleId,
+                                    amount = tender.amount,
+                                    paymentType = tender.type,
+                                )
+                        ) {
+                            is Result.Error -> {
+                                allPaymentsRecorded = false
+                                _state.update {
+                                    it.copy(
+                                        isProcessingPayment = false,
+                                        errorMessage = "Failed to record ${tender.type}: ${paymentResult.message}",
+                                    )
+                                }
+                                break
+                            }
+
+                            else -> {}
+                        }
+                    }
+
+                    if (allPaymentsRecorded) {
+                        _state.update {
+                            it.copy(
+                                cart = it.cart.clear(),
+                                isProcessingPayment = false,
+                                checkoutSuccess = true,
+                                completedSaleId = saleId,
+                                showPaymentDialog = false,
+                                paymentTenders = emptyList(),
+                            )
+                        }
                     }
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
                             isProcessingPayment = false,
-                            errorMessage = result.message,
+                            errorMessage = saleResult.message,
                         )
                     }
                 }

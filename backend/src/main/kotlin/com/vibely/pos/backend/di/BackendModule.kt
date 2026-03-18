@@ -9,6 +9,7 @@ import com.vibely.pos.backend.services.CurrencyService
 import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.backend.services.InventoryService
+import com.vibely.pos.backend.services.PaymentService
 import com.vibely.pos.backend.services.ProductService
 import com.vibely.pos.backend.services.PurchaseOrderService
 import com.vibely.pos.backend.services.ReportService
@@ -41,25 +42,27 @@ val backendModule =
 
         single { ProductService(get()) }
 
-    single { SaleService(get()) }
+        single { SaleService(get()) }
 
-    single { CategoryService(get()) }
+        single { PaymentService(get()) }
 
-    single { InventoryService(get()) }
+        single { CategoryService(get()) }
 
-    single { CustomerService(get()) }
+        single { InventoryService(get()) }
 
-    single { SupplierService(get()) }
+        single { CustomerService(get()) }
 
-    single { PurchaseOrderService(get(), get()) }
+        single { SupplierService(get()) }
 
-    single { ShiftService(get()) }
+        single { PurchaseOrderService(get(), get()) }
 
-    single { UserManagementService(get(), get()) }
+        single { ShiftService(get()) }
 
-    single { ReportService(get()) }
+        single { UserManagementService(get(), get()) }
 
-    single { SettingsService(get()) }
+        single { ReportService(get()) }
 
-    single { CurrencyService(get()) }
+        single { SettingsService(get()) }
+
+        single { CurrencyService(get()) }
     }
