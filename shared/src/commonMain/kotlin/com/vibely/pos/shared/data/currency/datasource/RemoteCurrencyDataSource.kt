@@ -11,11 +11,12 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.serialization.json.JsonObject
 
 class RemoteCurrencyDataSource(private val httpClient: HttpClient, private val baseUrl: String) {
-
     suspend fun getAllExchangeRates(): Result<List<CurrencyExchangeRateDTO>> = Result.runCatching {
         val response: HttpResponse = httpClient.get("$baseUrl/api/currencies/exchange-rates")
         if (!response.status.isSuccess()) {
@@ -33,9 +34,11 @@ class RemoteCurrencyDataSource(private val httpClient: HttpClient, private val b
     }
 
     suspend fun createExchangeRate(exchangeRate: JsonObject): Result<CurrencyExchangeRateDTO> = Result.runCatching {
-        val response: HttpResponse = httpClient.post("$baseUrl/api/currencies/exchange-rates") {
-            setBody(exchangeRate)
-        }
+        val response: HttpResponse =
+            httpClient.post("$baseUrl/api/currencies/exchange-rates") {
+                contentType(ContentType.Application.Json)
+                setBody(exchangeRate)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }
@@ -43,9 +46,11 @@ class RemoteCurrencyDataSource(private val httpClient: HttpClient, private val b
     }
 
     suspend fun updateExchangeRate(id: String, exchangeRate: JsonObject): Result<CurrencyExchangeRateDTO> = Result.runCatching {
-        val response: HttpResponse = httpClient.put("$baseUrl/api/currencies/exchange-rates/$id") {
-            setBody(exchangeRate)
-        }
+        val response: HttpResponse =
+            httpClient.put("$baseUrl/api/currencies/exchange-rates/$id") {
+                contentType(ContentType.Application.Json)
+                setBody(exchangeRate)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }

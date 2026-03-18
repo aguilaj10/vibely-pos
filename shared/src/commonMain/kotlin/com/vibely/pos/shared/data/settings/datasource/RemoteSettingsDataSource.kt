@@ -10,6 +10,8 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 /**
  * Remote data source for settings API calls.
@@ -20,7 +22,6 @@ import io.ktor.client.request.setBody
  * @param baseUrl The base URL of the backend API.
  */
 class RemoteSettingsDataSource(private val httpClient: HttpClient, private val baseUrl: String) {
-
     /**
      * Fetches store settings from the backend.
      *
@@ -43,9 +44,11 @@ class RemoteSettingsDataSource(private val httpClient: HttpClient, private val b
      *         [Result.Error] if request fails.
      */
     suspend fun updateStoreSettings(settings: StoreSettingsDTO): Result<StoreSettingsDTO> = Result.runCatching {
-        httpClient.put("$baseUrl/api/settings/store") {
-            setBody(settings)
-        }.body<StoreSettingsDTO>()
+        httpClient
+            .put("$baseUrl/api/settings/store") {
+                contentType(ContentType.Application.Json)
+                setBody(settings)
+            }.body<StoreSettingsDTO>()
     }
 
     /**
@@ -70,9 +73,11 @@ class RemoteSettingsDataSource(private val httpClient: HttpClient, private val b
      *         [Result.Error] if request fails.
      */
     suspend fun updateReceiptSettings(settings: ReceiptSettingsDTO): Result<ReceiptSettingsDTO> = Result.runCatching {
-        httpClient.put("$baseUrl/api/settings/receipt") {
-            setBody(settings)
-        }.body<ReceiptSettingsDTO>()
+        httpClient
+            .put("$baseUrl/api/settings/receipt") {
+                contentType(ContentType.Application.Json)
+                setBody(settings)
+            }.body<ReceiptSettingsDTO>()
     }
 
     /**
@@ -97,9 +102,11 @@ class RemoteSettingsDataSource(private val httpClient: HttpClient, private val b
      *         [Result.Error] if request fails.
      */
     suspend fun updateTaxSettings(settings: TaxSettingsDTO): Result<TaxSettingsDTO> = Result.runCatching {
-        httpClient.put("$baseUrl/api/settings/tax") {
-            setBody(settings)
-        }.body<TaxSettingsDTO>()
+        httpClient
+            .put("$baseUrl/api/settings/tax") {
+                contentType(ContentType.Application.Json)
+                setBody(settings)
+            }.body<TaxSettingsDTO>()
     }
 
     /**
@@ -124,8 +131,10 @@ class RemoteSettingsDataSource(private val httpClient: HttpClient, private val b
      *         [Result.Error] if request fails.
      */
     suspend fun updateUserPreferences(preferences: UserPreferencesDTO): Result<UserPreferencesDTO> = Result.runCatching {
-        httpClient.put("$baseUrl/api/settings/preferences") {
-            setBody(preferences)
-        }.body<UserPreferencesDTO>()
+        httpClient
+            .put("$baseUrl/api/settings/preferences") {
+                contentType(ContentType.Application.Json)
+                setBody(preferences)
+            }.body<UserPreferencesDTO>()
     }
 }

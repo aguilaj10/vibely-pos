@@ -12,6 +12,8 @@ import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.serialization.json.JsonObject
 
 class RemotePurchaseOrderDataSource(private val httpClient: HttpClient, private val baseUrl: String) {
@@ -21,12 +23,13 @@ class RemotePurchaseOrderDataSource(private val httpClient: HttpClient, private 
         page: Int = 1,
         pageSize: Int = 50,
     ): Result<List<PurchaseOrderDTO>> = Result.runCatching {
-        httpClient.get("$baseUrl/api/purchase-orders") {
-            supplierId?.let { parameter("supplier_id", it) }
-            status?.let { parameter("status", it) }
-            parameter("page", page)
-            parameter("page_size", pageSize)
-        }.body<List<PurchaseOrderDTO>>()
+        httpClient
+            .get("$baseUrl/api/purchase-orders") {
+                supplierId?.let { parameter("supplier_id", it) }
+                status?.let { parameter("status", it) }
+                parameter("page", page)
+                parameter("page_size", pageSize)
+            }.body<List<PurchaseOrderDTO>>()
     }
 
     suspend fun getPurchaseOrderById(id: String): Result<PurchaseOrderWithItemsDTO> = Result.runCatching {
@@ -34,21 +37,27 @@ class RemotePurchaseOrderDataSource(private val httpClient: HttpClient, private 
     }
 
     suspend fun createPurchaseOrder(purchaseOrder: JsonObject): Result<PurchaseOrderDTO> = Result.runCatching {
-        httpClient.post("$baseUrl/api/purchase-orders") {
-            setBody(purchaseOrder)
-        }.body<PurchaseOrderDTO>()
+        httpClient
+            .post("$baseUrl/api/purchase-orders") {
+                contentType(ContentType.Application.Json)
+                setBody(purchaseOrder)
+            }.body<PurchaseOrderDTO>()
     }
 
     suspend fun updatePurchaseOrder(id: String, purchaseOrder: JsonObject): Result<PurchaseOrderDTO> = Result.runCatching {
-        httpClient.put("$baseUrl/api/purchase-orders/$id") {
-            setBody(purchaseOrder)
-        }.body<PurchaseOrderDTO>()
+        httpClient
+            .put("$baseUrl/api/purchase-orders/$id") {
+                contentType(ContentType.Application.Json)
+                setBody(purchaseOrder)
+            }.body<PurchaseOrderDTO>()
     }
 
     suspend fun updatePurchaseOrderStatus(id: String, status: String): Result<PurchaseOrderDTO> = Result.runCatching {
-        httpClient.patch("$baseUrl/api/purchase-orders/$id/status") {
-            setBody(mapOf("status" to status))
-        }.body<PurchaseOrderDTO>()
+        httpClient
+            .patch("$baseUrl/api/purchase-orders/$id/status") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("status" to status))
+            }.body<PurchaseOrderDTO>()
     }
 
     suspend fun deletePurchaseOrder(id: String): Result<Unit> = Result.runCatching {

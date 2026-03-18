@@ -11,16 +11,18 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
 class RemoteCategoryDataSource(private val httpClient: HttpClient, private val baseUrl: String = "http://localhost:8080") {
-
     suspend fun getAll(isActive: Boolean? = null, page: Int = 1, pageSize: Int = 50): Result<List<CategoryDTO>> = Result.runCatching {
-        val response: HttpResponse = httpClient.get("$baseUrl/api/categories") {
-            isActive?.let { parameter("is_active", it) }
-            parameter("page", page)
-            parameter("page_size", pageSize)
-        }
+        val response: HttpResponse =
+            httpClient.get("$baseUrl/api/categories") {
+                isActive?.let { parameter("is_active", it) }
+                parameter("page", page)
+                parameter("page_size", pageSize)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }
@@ -36,9 +38,11 @@ class RemoteCategoryDataSource(private val httpClient: HttpClient, private val b
     }
 
     suspend fun create(dto: CategoryDTO): Result<CategoryDTO> = Result.runCatching {
-        val response: HttpResponse = httpClient.post("$baseUrl/api/categories") {
-            setBody(dto)
-        }
+        val response: HttpResponse =
+            httpClient.post("$baseUrl/api/categories") {
+                contentType(ContentType.Application.Json)
+                setBody(dto)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }
@@ -46,9 +50,11 @@ class RemoteCategoryDataSource(private val httpClient: HttpClient, private val b
     }
 
     suspend fun update(id: String, dto: CategoryDTO): Result<CategoryDTO> = Result.runCatching {
-        val response: HttpResponse = httpClient.put("$baseUrl/api/categories/$id") {
-            setBody(dto)
-        }
+        val response: HttpResponse =
+            httpClient.put("$baseUrl/api/categories/$id") {
+                contentType(ContentType.Application.Json)
+                setBody(dto)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }
@@ -64,9 +70,10 @@ class RemoteCategoryDataSource(private val httpClient: HttpClient, private val b
     }
 
     suspend fun search(query: String): Result<List<CategoryDTO>> = Result.runCatching {
-        val response: HttpResponse = httpClient.get("$baseUrl/api/categories/search") {
-            parameter("q", query)
-        }
+        val response: HttpResponse =
+            httpClient.get("$baseUrl/api/categories/search") {
+                parameter("q", query)
+            }
         if (!response.status.isSuccess()) {
             throw Exception("HTTP ${response.status.value}: ${response.status.description}")
         }
