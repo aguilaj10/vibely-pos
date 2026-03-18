@@ -11,7 +11,9 @@ import com.vibely.pos.shared.domain.sales.usecase.AddToCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.RemoveFromCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
 import com.vibely.pos.shared.domain.sales.usecase.UpdateCartUseCase
+import com.vibely.pos.shared.domain.sales.valueobject.PaymentStatus
 import com.vibely.pos.shared.domain.sales.valueobject.PaymentType
+import com.vibely.pos.shared.domain.sales.valueobject.SaleStatus
 import com.vibely.pos.ui.util.randomUuidString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -190,6 +192,11 @@ class CheckoutViewModel(
                     is Result.Error -> "unknown"
                 }
 
+            val totalAmount = currentState.cart.totalAmount
+            val totalPaid = currentState.paymentTenders.sumOf { it.amount }
+            val saleStatus = calculateSaleStatus(totalAmount, totalPaid)
+            val paymentStatus = calculatePaymentStatus(totalAmount, totalPaid)
+
             val saleResult =
                 saleRepository.create(
                     com.vibely.pos.shared.domain.sales.entity.Sale.create(
@@ -198,6 +205,8 @@ class CheckoutViewModel(
                         cashierId = cashierId,
                         subtotal = currentState.cart.totalAmount,
                         totalAmount = currentState.cart.totalAmount,
+                        status = saleStatus,
+                        paymentStatus = paymentStatus,
                     ),
                     emptyList(),
                 )
@@ -272,5 +281,17 @@ class CheckoutViewModel(
 
     fun onClearCart() {
         _state.update { it.copy(cart = it.cart.clear()) }
+    }
+
+    private fun calculateSaleStatus(totalAmount: Double, totalPaid: Double): SaleStatus = if (totalPaid >= totalAmount) {
+        SaleStatus.COMPLETED
+    } else {
+        SaleStatus.DRAFT
+    }
+
+    private fun calculatePaymentStatus(totalAmount: Double, totalPaid: Double): PaymentStatus = if (totalPaid >= totalAmount) {
+        PaymentStatus.COMPLETED
+    } else {
+        PaymentStatus.PENDING
     }
 }

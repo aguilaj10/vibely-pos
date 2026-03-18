@@ -14,7 +14,14 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class CompleteSaleUseCase(private val saleRepository: SaleRepository, private val productRepository: ProductRepository) {
-    suspend operator fun invoke(cart: Cart, cashierId: String, customerId: String? = null, notes: String? = null): Result<Sale> {
+    suspend operator fun invoke(
+        cart: Cart,
+        cashierId: String,
+        customerId: String? = null,
+        notes: String? = null,
+        status: SaleStatus = SaleStatus.COMPLETED,
+        paymentStatus: PaymentStatus = PaymentStatus.COMPLETED,
+    ): Result<Sale> {
         if (cart.isEmpty) {
             return Result.Error("Cart cannot be empty")
         }
@@ -41,31 +48,33 @@ class CompleteSaleUseCase(private val saleRepository: SaleRepository, private va
             val invoiceNumber = generateInvoiceNumber()
             val saleId = generateSaleId()
 
-            val sale = Sale.create(
-                id = saleId,
-                invoiceNumber = invoiceNumber,
-                cashierId = cashierId,
-                customerId = customerId,
-                subtotal = cart.subtotal,
-                totalAmount = cart.totalAmount,
-                status = SaleStatus.COMPLETED,
-                paymentStatus = PaymentStatus.COMPLETED,
-                notes = notes,
-                saleDate = now,
-                createdAt = now,
-                updatedAt = now,
-            )
-
-            val saleItems = cart.items.map { cartItem ->
-                SaleItem.create(
-                    id = "$saleId-${cartItem.productId}",
-                    saleId = saleId,
-                    productId = cartItem.productId,
-                    quantity = cartItem.quantity,
-                    unitPrice = cartItem.unitPrice,
+            val sale =
+                Sale.create(
+                    id = saleId,
+                    invoiceNumber = invoiceNumber,
+                    cashierId = cashierId,
+                    customerId = customerId,
+                    subtotal = cart.subtotal,
+                    totalAmount = cart.totalAmount,
+                    status = status,
+                    paymentStatus = paymentStatus,
+                    notes = notes,
+                    saleDate = now,
                     createdAt = now,
+                    updatedAt = now,
                 )
-            }
+
+            val saleItems =
+                cart.items.map { cartItem ->
+                    SaleItem.create(
+                        id = "$saleId-${cartItem.productId}",
+                        saleId = saleId,
+                        productId = cartItem.productId,
+                        quantity = cartItem.quantity,
+                        unitPrice = cartItem.unitPrice,
+                        createdAt = now,
+                    )
+                }
 
             saleRepository.create(sale, saleItems)
         }

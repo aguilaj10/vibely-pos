@@ -17,6 +17,10 @@ data class CreateSaleRequest(
     val discountAmount: Double = 0.0,
     @SerialName("total_amount")
     val totalAmount: Double,
+    @SerialName("status")
+    val status: String,
+    @SerialName("payment_status")
+    val paymentStatus: String,
     @SerialName("notes")
     val notes: String? = null,
     @SerialName("items")

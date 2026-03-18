@@ -23,7 +23,6 @@ data class Sale(
 ) {
     init {
         require(id.isNotBlank()) { "Sale ID cannot be blank" }
-        require(invoiceNumber.isNotBlank()) { "Invoice number cannot be blank" }
         require(cashierId.isNotBlank()) { "Cashier ID cannot be blank" }
         require(subtotal >= 0) { "Subtotal cannot be negative" }
         require(taxAmount >= 0) { "Tax amount cannot be negative" }

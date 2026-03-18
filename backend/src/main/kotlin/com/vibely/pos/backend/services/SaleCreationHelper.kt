@@ -16,8 +16,6 @@ import kotlinx.serialization.json.put
 import java.math.BigDecimal
 import kotlin.time.Clock
 
-private const val STATUS_COMPLETED = "completed"
-private const val PAYMENT_STATUS_PENDING = "pending"
 private const val TRANSACTION_TYPE_SALE = "sale"
 private const val REFERENCE_TYPE_SALE = "sale"
 private const val INVOICE_NUMBER_PADDING = 5
@@ -39,8 +37,8 @@ private fun buildSaleData(
         put("tax_amount", 0.0)
         put("discount_amount", 0.0)
         put("total_amount", subtotal.toDouble())
-        put(DatabaseColumns.STATUS, STATUS_COMPLETED)
-        put("payment_status", PAYMENT_STATUS_PENDING)
+        put(DatabaseColumns.STATUS, request.status)
+        put("payment_status", request.paymentStatus)
         put(DatabaseColumns.NOTES, request.notes)
         put("sale_date", now)
     }

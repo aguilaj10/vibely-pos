@@ -16,25 +16,28 @@ import kotlin.time.Instant
 class SaleRepositoryImpl(private val remoteDataSource: RemoteSaleDataSource) :
     BaseRepository(),
     SaleRepository {
-
     override suspend fun create(sale: Sale, items: List<SaleItem>): Result<Sale> {
-        val request = CreateSaleRequest(
-            cashierId = sale.cashierId,
-            customerId = sale.customerId,
-            subtotal = sale.subtotal,
-            taxAmount = sale.taxAmount,
-            discountAmount = sale.discountAmount,
-            totalAmount = sale.totalAmount,
-            notes = sale.notes,
-            items = items.map { item ->
-                CreateSaleItemRequest(
-                    productId = item.productId,
-                    quantity = item.quantity,
-                    unitPrice = item.unitPrice,
-                    discountAmount = item.discountAmount,
-                )
-            },
-        )
+        val request =
+            CreateSaleRequest(
+                cashierId = sale.cashierId,
+                customerId = sale.customerId,
+                subtotal = sale.subtotal,
+                taxAmount = sale.taxAmount,
+                discountAmount = sale.discountAmount,
+                totalAmount = sale.totalAmount,
+                status = sale.status.name.lowercase(),
+                paymentStatus = sale.paymentStatus.name.lowercase(),
+                notes = sale.notes,
+                items =
+                items.map { item ->
+                    CreateSaleItemRequest(
+                        productId = item.productId,
+                        quantity = item.quantity,
+                        unitPrice = item.unitPrice,
+                        discountAmount = item.discountAmount,
+                    )
+                },
+            )
 
         return mapSingle(remoteDataSource.createSale(request), SaleMapper::toDomain)
     }
