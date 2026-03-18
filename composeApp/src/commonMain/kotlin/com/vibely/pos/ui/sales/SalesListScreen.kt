@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.vibely.pos.shared.domain.sales.entity.Sale
 import com.vibely.pos.shared.domain.sales.valueobject.PaymentStatus
 import com.vibely.pos.shared.domain.sales.valueobject.SaleStatus
+import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
@@ -54,7 +55,6 @@ import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Sync
 import compose.icons.fontawesomeicons.solid.TimesCircle
 import org.koin.compose.koinInject
-import kotlin.time.Instant
 
 @Composable
 fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel = koinInject()) {
@@ -276,14 +276,14 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit)
             )
 
             Text(
-                text = formatDate(sale.saleDate),
+                text = FormatUtils.formatDate(sale.saleDate),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
             )
 
             Text(
-                text = formatPrice(sale.totalAmount),
+                text = FormatUtils.formatCurrency(sale.totalAmount),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -404,26 +404,4 @@ private fun ErrorState(message: String, onRetry: () -> Unit) {
         },
         modifier = Modifier.fillMaxSize(),
     )
-}
-
-private fun formatDate(instant: Instant): String {
-    val epochMillis = instant.toEpochMilliseconds()
-    val seconds = epochMillis / 1000
-    val minutes = seconds / 60
-    val hours = minutes / 60
-    val days = hours / 24
-
-    val year = 1970 + (days / 365).toInt()
-    val dayOfYear = (days % 365).toInt()
-    val month = (dayOfYear / 30).coerceIn(1, 12)
-    val day = (dayOfYear % 30).coerceIn(1, 31)
-
-    val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-    return "${monthNames[month - 1]} $day, $year"
-}
-
-private fun formatPrice(price: Double): String {
-    val wholePart = price.toInt()
-    val decimalPart = ((price - wholePart) * 100).toInt()
-    return "$$wholePart.${decimalPart.toString().padStart(2, '0')}"
 }
