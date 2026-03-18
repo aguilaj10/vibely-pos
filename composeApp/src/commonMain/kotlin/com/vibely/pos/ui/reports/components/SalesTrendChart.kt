@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.reports.entity.SalesTrend
+import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.theme.AppColors
-import com.vibely.pos.ui.utils.formatCurrency
 
 @Composable
 fun SalesTrendChart(data: List<SalesTrend>, modifier: Modifier = Modifier) {
@@ -39,7 +39,8 @@ fun SalesTrendChart(data: List<SalesTrend>, modifier: Modifier = Modifier) {
 
     Column(modifier = modifier) {
         Box(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .weight(1f),
         ) {
@@ -69,12 +70,13 @@ fun SalesTrendChart(data: List<SalesTrend>, modifier: Modifier = Modifier) {
 
                 // Draw line chart
                 val path = Path()
-                val points = data.mapIndexed { index, trend ->
-                    val x = padding + (chartWidth / (data.size - 1).coerceAtLeast(1)) * index
-                    val normalizedY = ((trend.revenue - minRevenue).toFloat() / revenueRange)
-                    val y = padding + chartHeight * (1 - normalizedY)
-                    Offset(x, y)
-                }
+                val points =
+                    data.mapIndexed { index, trend ->
+                        val x = padding + (chartWidth / (data.size - 1).coerceAtLeast(1)) * index
+                        val normalizedY = ((trend.revenue - minRevenue).toFloat() / revenueRange)
+                        val y = padding + chartHeight * (1 - normalizedY)
+                        Offset(x, y)
+                    }
 
                 points.forEachIndexed { index, point ->
                     if (index == 0) {
@@ -108,13 +110,14 @@ fun SalesTrendChart(data: List<SalesTrend>, modifier: Modifier = Modifier) {
 
         // Y-axis labels
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 40.dp),
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = maxRevenue.formatCurrency(),
+                text = FormatUtils.formatCurrency(maxRevenue.toDouble()),
                 style = MaterialTheme.typography.labelSmall,
                 color = textColor,
             )
@@ -124,14 +127,15 @@ fun SalesTrendChart(data: List<SalesTrend>, modifier: Modifier = Modifier) {
 
         // X-axis labels (time)
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 40.dp),
         ) {
             data.take(5).forEachIndexed { index, trend ->
                 if (index > 0) Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = formatDate(trend.timestamp),
+                    text = FormatUtils.formatShortDate(trend.timestamp),
                     style = MaterialTheme.typography.labelSmall,
                     color = textColor,
                 )
@@ -139,13 +143,4 @@ fun SalesTrendChart(data: List<SalesTrend>, modifier: Modifier = Modifier) {
             }
         }
     }
-}
-
-private fun formatDate(timestamp: kotlin.time.Instant): String {
-    val daysSinceEpoch = (timestamp.toEpochMilliseconds() / (24 * 60 * 60 * 1000)).toInt()
-    val year = 1970 + (daysSinceEpoch / 365)
-    val dayOfYear = daysSinceEpoch % 365
-    val month = (dayOfYear / 30) + 1
-    val day = (dayOfYear % 30) + 1
-    return "${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}"
 }

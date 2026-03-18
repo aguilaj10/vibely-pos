@@ -141,9 +141,20 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                             }
                         }
 
+                        is Screen.CheckoutEdit -> {
+                            NavEntry(key) {
+                                CheckoutScreen(
+                                    onNavigate = { navScreen -> backStack.add(navScreen) },
+                                    saleId = key.saleId,
+                                )
+                            }
+                        }
+
                         is Screen.Sales -> {
                             NavEntry(key) {
-                                SalesListScreen()
+                                SalesListScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
                             }
                         }
 

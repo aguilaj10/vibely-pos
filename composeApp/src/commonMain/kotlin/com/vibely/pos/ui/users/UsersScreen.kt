@@ -26,7 +26,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.auth.entity.User
 import com.vibely.pos.shared.domain.auth.valueobject.UserRole
 import com.vibely.pos.shared.domain.auth.valueobject.UserStatus
+import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -66,7 +66,6 @@ import compose.icons.fontawesomeicons.solid.UserCheck
 import compose.icons.fontawesomeicons.solid.UserPlus
 import compose.icons.fontawesomeicons.solid.Users
 import org.koin.compose.koinInject
-import kotlin.time.Instant
 
 @Composable
 fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: UsersViewModel = koinInject()) {
@@ -112,7 +111,8 @@ fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vie
 
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -126,7 +126,8 @@ fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vie
                     viewModel = viewModel,
                     onEditUser = viewModel::onEditUser,
                     onDeleteUser = viewModel::onDeleteUser,
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
@@ -142,7 +143,8 @@ fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vie
             val editingUser = state.editingUser
             UserFormDialog(
                 isEdit = editingUser != null,
-                initialData = editingUser?.let {
+                initialData =
+                editingUser?.let {
                     UserFormData(
                         id = it.id,
                         email = it.email.value,
@@ -182,7 +184,8 @@ private fun UsersHeader(
     onClearFilters: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(16.dp),
     ) {
@@ -250,20 +253,18 @@ private fun UsersHeader(
             )
 
             if (selectedRole != null || selectedStatus != null) {
-                TextButton(onClick = onClearFilters) {
-                    Icon(
-                        imageVector = FontAwesomeIcons.Solid.Times,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Clear Filters",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                AppButton(
+                    text = "Clear Filters",
+                    onClick = onClearFilters,
+                    style = AppButtonStyle.Text,
+                    icon = {
+                        Icon(
+                            imageVector = FontAwesomeIcons.Solid.Times,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                        )
+                    },
+                )
             }
         }
     }
@@ -378,7 +379,8 @@ private fun StatusFilterDropdown(selectedStatus: UserStatus?, onStatusChange: (U
 @Composable
 private fun KpiCardsRow(totalUsers: Int, activeUsers: Int) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -468,7 +470,8 @@ private fun UsersTable(
 
             if (users.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -514,7 +517,8 @@ private fun UsersTable(
 @Composable
 private fun TableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -543,7 +547,8 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun TableRow(user: User, onEdit: () -> Unit, onDelete: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -555,7 +560,7 @@ private fun TableRow(user: User, onEdit: () -> Unit, onDelete: () -> Unit) {
         StatusChip(status = user.status, modifier = Modifier.width(100.dp))
 
         TableCell(
-            text = user.lastLoginAt?.let { formatDateTime(it) } ?: "Never",
+            text = user.lastLoginAt?.let { FormatUtils.formatDateTime(it) } ?: "Never",
             modifier = Modifier.width(120.dp),
         )
 
@@ -602,13 +607,14 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun RoleChip(role: UserRole, modifier: Modifier = Modifier) {
-    val (backgroundColor, textColor) = when (role) {
-        UserRole.ADMIN -> Color(0xFF7C3AED) to Color.White
-        UserRole.MANAGER -> Color(0xFF3B82F6) to Color.White
-        UserRole.CASHIER -> Color(0xFF14B8A6) to Color.White
-        UserRole.WAREHOUSE -> Color(0xFFF97316) to Color.White
-        UserRole.VIEWER -> Color(0xFF6B7280) to Color.White
-    }
+    val (backgroundColor, textColor) =
+        when (role) {
+            UserRole.ADMIN -> Color(0xFF7C3AED) to Color.White
+            UserRole.MANAGER -> Color(0xFF3B82F6) to Color.White
+            UserRole.CASHIER -> Color(0xFF14B8A6) to Color.White
+            UserRole.WAREHOUSE -> Color(0xFFF97316) to Color.White
+            UserRole.VIEWER -> Color(0xFF6B7280) to Color.White
+        }
 
     Surface(
         modifier = modifier,
@@ -627,11 +633,12 @@ private fun RoleChip(role: UserRole, modifier: Modifier = Modifier) {
 
 @Composable
 private fun StatusChip(status: UserStatus, modifier: Modifier = Modifier) {
-    val (backgroundColor, textColor) = when (status) {
-        UserStatus.ACTIVE -> AppColors.Success to Color.White
-        UserStatus.INACTIVE -> Color(0xFF6B7280) to Color.White
-        UserStatus.SUSPENDED -> AppColors.ErrorDark to Color.White
-    }
+    val (backgroundColor, textColor) =
+        when (status) {
+            UserStatus.ACTIVE -> AppColors.Success to Color.White
+            UserStatus.INACTIVE -> Color(0xFF6B7280) to Color.White
+            UserStatus.SUSPENDED -> AppColors.ErrorDark to Color.White
+        }
 
     Surface(
         modifier = modifier,
@@ -646,22 +653,4 @@ private fun StatusChip(status: UserStatus, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
         )
     }
-}
-
-private fun formatDateTime(instant: Instant): String {
-    val epochMillis = instant.toEpochMilliseconds()
-    val totalSeconds = epochMillis / 1000
-    val totalMinutes = totalSeconds / 60
-    val totalHours = totalMinutes / 60
-    val days = totalHours / 24
-    val hours = (totalHours % 24).toInt()
-    val minutes = (totalMinutes % 60).toInt()
-
-    val year = 1970 + (days / 365).toInt()
-    val dayOfYear = (days % 365).toInt()
-    val month = (dayOfYear / 30).coerceIn(1, 12)
-    val day = (dayOfYear % 30).coerceIn(1, 31)
-
-    val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-    return "${monthNames[month - 1]} $day, $year ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}"
 }

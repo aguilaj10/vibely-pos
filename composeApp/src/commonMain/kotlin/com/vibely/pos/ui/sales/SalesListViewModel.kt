@@ -21,9 +21,14 @@ class SalesListViewModel(
     private val saleRepository: SaleRepository,
     private val adjustStockUseCase: AdjustStockUseCase,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(SalesListState())
     val state: StateFlow<SalesListState> = _state.asStateFlow()
+
+    private var onEditSaleCallback: ((Sale) -> Unit)? = null
+
+    fun setOnEditSaleCallback(callback: (Sale) -> Unit) {
+        onEditSaleCallback = callback
+    }
 
     init {
         loadSales()
@@ -35,13 +40,14 @@ class SalesListViewModel(
 
             val currentPagination = _state.value.pagination
             when (
-                val result = getSalesUseCase(
-                    startDate = _state.value.startDate,
-                    endDate = _state.value.endDate,
-                    status = _state.value.statusFilter,
-                    page = currentPagination.currentPage,
-                    pageSize = currentPagination.pageSize,
-                )
+                val result =
+                    getSalesUseCase(
+                        startDate = _state.value.startDate,
+                        endDate = _state.value.endDate,
+                        status = _state.value.statusFilter,
+                        page = currentPagination.currentPage,
+                        pageSize = currentPagination.pageSize,
+                    )
             ) {
                 is Result.Success -> {
                     val sales = result.data
@@ -56,6 +62,7 @@ class SalesListViewModel(
                         )
                     }
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
@@ -74,13 +81,14 @@ class SalesListViewModel(
 
             val currentPagination = _state.value.pagination
             when (
-                val result = getSalesUseCase(
-                    startDate = _state.value.startDate,
-                    endDate = _state.value.endDate,
-                    status = _state.value.statusFilter,
-                    page = currentPagination.currentPage,
-                    pageSize = currentPagination.pageSize,
-                )
+                val result =
+                    getSalesUseCase(
+                        startDate = _state.value.startDate,
+                        endDate = _state.value.endDate,
+                        status = _state.value.statusFilter,
+                        page = currentPagination.currentPage,
+                        pageSize = currentPagination.pageSize,
+                    )
             ) {
                 is Result.Success -> {
                     val sales = result.data
@@ -95,6 +103,7 @@ class SalesListViewModel(
                         )
                     }
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
@@ -145,7 +154,6 @@ class SalesListViewModel(
 
     fun onRefundSale(sale: Sale) {
         viewModelScope.launch {
-            // Get items count for the sale
             when (val itemsResult = saleRepository.getItems(sale.id)) {
                 is Result.Success -> {
                     _state.update {
@@ -155,6 +163,7 @@ class SalesListViewModel(
                         )
                     }
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
@@ -167,13 +176,16 @@ class SalesListViewModel(
         }
     }
 
+    fun onEditSale(sale: Sale) {
+        onEditSaleCallback?.invoke(sale)
+    }
+
     fun onConfirmRefund(reason: String) {
         val saleId = _state.value.confirmRefundSaleId ?: return
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, confirmRefundSaleId = null) }
 
-            // First get the sale items to restock
             when (val itemsResult = saleRepository.getItems(saleId)) {
                 is Result.Error -> {
                     _state.update {
@@ -184,23 +196,22 @@ class SalesListViewModel(
                     }
                     return@launch
                 }
+
                 is Result.Success -> {
                     val items = itemsResult.data
 
-                    // Restock each product
                     for (item in items) {
                         adjustStockUseCase(
                             productId = item.productId,
                             quantity = item.quantity,
                             reason = "Refund: $reason",
-                            performedBy = "system", // Would normally be current user
+                            performedBy = "system",
                             notes = "Refund for sale $saleId",
                         )
                     }
                 }
             }
 
-            // Then update the sale status
             when (val statusResult = saleRepository.updateStatus(saleId, SaleStatus.REFUNDED)) {
                 is Result.Success -> {
                     _state.update {
@@ -211,6 +222,7 @@ class SalesListViewModel(
                     }
                     loadSales()
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
@@ -253,10 +265,11 @@ class SalesListViewModel(
         }
 
         val currentSales = _state.value.sales
-        val filtered = currentSales.filter { sale ->
-            sale.invoiceNumber.lowercase().contains(query) ||
-                sale.id.lowercase().contains(query)
-        }
+        val filtered =
+            currentSales.filter { sale ->
+                sale.invoiceNumber.lowercase().contains(query) ||
+                    sale.id.lowercase().contains(query)
+            }
         _state.update { it.copy(sales = filtered) }
     }
 }

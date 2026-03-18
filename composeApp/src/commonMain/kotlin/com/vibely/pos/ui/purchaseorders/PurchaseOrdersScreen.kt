@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.purchaseorder.entity.PurchaseOrder
 import com.vibely.pos.shared.domain.purchaseorder.valueobject.PurchaseOrderStatus
-import com.vibely.pos.shared.util.FormatUtils.formatCurrency
+import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -47,6 +47,7 @@ import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
+import com.vibely.pos.ui.dialogs.LineItemFormData
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormData
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormDialog
 import com.vibely.pos.ui.theme.AppColors
@@ -60,7 +61,6 @@ import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.Truck
 import compose.icons.fontawesomeicons.solid.TruckLoading
 import org.koin.compose.koinInject
-import kotlin.time.Instant
 
 @Composable
 fun PurchaseOrdersScreen(
@@ -106,7 +106,8 @@ fun PurchaseOrdersScreen(
 
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -121,7 +122,8 @@ fun PurchaseOrdersScreen(
                     onViewPurchaseOrder = viewModel::onViewPurchaseOrder,
                     onEditPurchaseOrder = viewModel::onEditPurchaseOrder,
                     onDeletePurchaseOrder = viewModel::onDeletePurchaseOrder,
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
@@ -137,13 +139,15 @@ fun PurchaseOrdersScreen(
             val editingPO = state.editingPO
             PurchaseOrderFormDialog(
                 isEdit = editingPO != null,
-                initialData = editingPO?.let {
+                initialData =
+                editingPO?.let {
                     PurchaseOrderFormData(
                         id = it.id,
                         supplierId = it.supplierId,
                         notes = it.notes ?: "",
-                        lineItems = it.items.map { item ->
-                            com.vibely.pos.ui.dialogs.LineItemFormData(
+                        lineItems =
+                        it.items.map { item ->
+                            LineItemFormData(
                                 id = item.id,
                                 productId = item.productId,
                                 quantity = item.quantity.toString(),
@@ -181,7 +185,8 @@ private fun PurchaseOrdersHeader(
     onCreatePurchaseOrder: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -233,7 +238,8 @@ private fun PurchaseOrdersHeader(
 @Composable
 private fun KpiCardsRow(totalOrders: Int, pendingOrders: Int, totalAmount: Double) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -257,7 +263,7 @@ private fun KpiCardsRow(totalOrders: Int, pendingOrders: Int, totalAmount: Doubl
         KpiCard(
             icon = FontAwesomeIcons.Solid.Calculator,
             label = "Total Amount",
-            value = formatCurrency(totalAmount),
+            value = FormatUtils.formatCurrency(totalAmount),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
@@ -329,7 +335,8 @@ private fun PurchaseOrdersTable(
 
             if (purchaseOrders.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -376,7 +383,8 @@ private fun PurchaseOrdersTable(
 @Composable
 private fun TableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -406,7 +414,8 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun TableRow(purchaseOrder: PurchaseOrder, onView: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -417,17 +426,17 @@ private fun TableRow(purchaseOrder: PurchaseOrder, onView: () -> Unit, onEdit: (
         StatusChip(status = purchaseOrder.status, modifier = Modifier.width(100.dp))
 
         TableCell(
-            formatDate(purchaseOrder.orderDate),
+            FormatUtils.formatDate(purchaseOrder.orderDate),
             modifier = Modifier.width(120.dp),
         )
 
         TableCell(
-            purchaseOrder.expectedDeliveryDate?.let { formatDate(it) } ?: "-",
+            purchaseOrder.expectedDeliveryDate?.let { FormatUtils.formatDate(it) } ?: "-",
             modifier = Modifier.width(140.dp),
         )
 
         TableCell(
-            formatCurrency(purchaseOrder.totalAmount),
+            FormatUtils.formatCurrency(purchaseOrder.totalAmount),
             modifier = Modifier.width(120.dp),
         )
 
@@ -486,13 +495,14 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun StatusChip(status: PurchaseOrderStatus, modifier: Modifier = Modifier) {
-    val (backgroundColor, textColor, label) = when (status) {
-        PurchaseOrderStatus.DRAFT -> Triple(AppColors.NeutralLight400, AppColors.TextPrimaryLight, "Draft")
-        PurchaseOrderStatus.PENDING -> Triple(AppColors.Warning, Color.White, "Pending")
-        PurchaseOrderStatus.APPROVED -> Triple(AppColors.Primary, Color.White, "Approved")
-        PurchaseOrderStatus.RECEIVED -> Triple(AppColors.Success, Color.White, "Received")
-        PurchaseOrderStatus.CANCELLED -> Triple(AppColors.ErrorDark, Color.White, "Cancelled")
-    }
+    val (backgroundColor, textColor, label) =
+        when (status) {
+            PurchaseOrderStatus.DRAFT -> Triple(AppColors.NeutralLight400, AppColors.TextPrimaryLight, "Draft")
+            PurchaseOrderStatus.PENDING -> Triple(AppColors.Warning, Color.White, "Pending")
+            PurchaseOrderStatus.APPROVED -> Triple(AppColors.Primary, Color.White, "Approved")
+            PurchaseOrderStatus.RECEIVED -> Triple(AppColors.Success, Color.White, "Received")
+            PurchaseOrderStatus.CANCELLED -> Triple(AppColors.ErrorDark, Color.White, "Cancelled")
+        }
 
     Surface(
         modifier = modifier,
@@ -507,20 +517,4 @@ private fun StatusChip(status: PurchaseOrderStatus, modifier: Modifier = Modifie
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
         )
     }
-}
-
-private fun formatDate(instant: Instant): String {
-    val epochMillis = instant.toEpochMilliseconds()
-    val seconds = epochMillis / 1000
-    val minutes = seconds / 60
-    val hours = minutes / 60
-    val days = hours / 24
-
-    val year = 1970 + (days / 365).toInt()
-    val dayOfYear = (days % 365).toInt()
-    val month = (dayOfYear / 30).coerceIn(1, 12)
-    val day = (dayOfYear % 30).coerceIn(1, 31)
-
-    val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-    return "${monthNames[month - 1]} $day, $year"
 }

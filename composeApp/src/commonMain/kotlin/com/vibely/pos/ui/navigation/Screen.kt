@@ -49,6 +49,11 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     data object Checkout : Screen("checkout", "New Sale", FontAwesomeIcons.Solid.ShoppingCart)
 
     /**
+     * Checkout edit screen - edit existing draft sale
+     */
+    data class CheckoutEdit(val saleId: String) : Screen("checkout/$saleId", "Edit Sale", FontAwesomeIcons.Solid.ShoppingCart)
+
+    /**
      * Sales history screen - view past transactions.
      */
     data object Sales : Screen("sales", "Sales", FontAwesomeIcons.Solid.Receipt)

@@ -14,7 +14,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,16 +51,19 @@ fun RefundDialog(sale: Sale, itemsCount: Int, onConfirm: (String) -> Unit, onDis
 
     Dialog(onDismissRequest = { if (!isProcessing) onDismiss() }) {
         Card(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = CardDefaults.cardColors(
+            colors =
+            CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,12 +113,12 @@ fun RefundDialog(sale: Sale, itemsCount: Int, onConfirm: (String) -> Unit, onDis
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(
+                    AppButton(
+                        text = "Cancel",
                         onClick = onDismiss,
+                        style = AppButtonStyle.Text,
                         enabled = !isProcessing,
-                    ) {
-                        Text("Cancel")
-                    }
+                    )
 
                     Spacer(modifier = Modifier.width(12.dp))
 
@@ -139,12 +141,14 @@ fun RefundDialog(sale: Sale, itemsCount: Int, onConfirm: (String) -> Unit, onDis
 private fun SaleInfoCard(sale: Sale, itemsCount: Int) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
+        colors =
+        CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
     ) {
         Column(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
         ) {

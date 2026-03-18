@@ -11,3 +11,13 @@ enum class PaymentType(val dbValue: String) {
         fun fromDbValue(value: String): PaymentType = entries.find { it.dbValue == value.lowercase() } ?: CASH
     }
 }
+
+/**
+ * Returns human-readable display name for the payment type
+ */
+fun PaymentType.toDisplayString(): String = when (this) {
+    PaymentType.CASH -> "Cash"
+    PaymentType.CREDIT_CARD -> "Card"
+    PaymentType.DEBIT_CARD -> "Debit Card"
+    PaymentType.BANK_TRANSFER -> "Transfer"
+}

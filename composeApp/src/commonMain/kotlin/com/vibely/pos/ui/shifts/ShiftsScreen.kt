@@ -39,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.shift.entity.Shift
-import com.vibely.pos.shared.util.FormatUtils.formatCurrency
+import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -59,7 +59,6 @@ import compose.icons.fontawesomeicons.solid.Play
 import compose.icons.fontawesomeicons.solid.Stop
 import org.koin.compose.koinInject
 import kotlin.math.abs
-import kotlin.time.Instant
 
 @Composable
 fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: ShiftsViewModel = koinInject()) {
@@ -105,7 +104,8 @@ fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vi
 
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -118,7 +118,8 @@ fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vi
                     state = state,
                     viewModel = viewModel,
                     onViewShift = viewModel::onViewShiftDetails,
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
@@ -152,7 +153,8 @@ fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vi
 @Composable
 private fun ShiftsHeader(hasOpenShift: Boolean, onOpenShift: () -> Unit, onCloseShift: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -197,7 +199,8 @@ private fun ShiftsHeader(hasOpenShift: Boolean, onOpenShift: () -> Unit, onClose
 @Composable
 private fun CurrentShiftCard(shift: Shift) {
     AppCard(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         style = AppCardStyle.Elevated,
@@ -223,11 +226,11 @@ private fun CurrentShiftCard(shift: Shift) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
-                ShiftInfoItem(label = "Opened", value = formatDateTime(shift.openedAt))
-                ShiftInfoItem(label = "Opening Balance", value = formatCurrency(shift.openingBalance))
-                ShiftInfoItem(label = "Cash Sales", value = formatCurrency(shift.totalCash))
-                ShiftInfoItem(label = "Card Sales", value = formatCurrency(shift.totalCard))
-                ShiftInfoItem(label = "Total Sales", value = formatCurrency(shift.totalSales))
+                ShiftInfoItem(label = "Opened", value = FormatUtils.formatDateTime(shift.openedAt))
+                ShiftInfoItem(label = "Opening Balance", value = FormatUtils.formatCurrency(shift.openingBalance))
+                ShiftInfoItem(label = "Cash Sales", value = FormatUtils.formatCurrency(shift.totalCash))
+                ShiftInfoItem(label = "Card Sales", value = FormatUtils.formatCurrency(shift.totalCard))
+                ShiftInfoItem(label = "Total Sales", value = FormatUtils.formatCurrency(shift.totalSales))
             }
         }
     }
@@ -252,7 +255,8 @@ private fun ShiftInfoItem(label: String, value: String) {
 @Composable
 private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepancy: Double) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -268,7 +272,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
         KpiCard(
             icon = FontAwesomeIcons.Solid.DollarSign,
             label = "Today's Sales",
-            value = formatCurrency(todaysSales),
+            value = FormatUtils.formatCurrency(todaysSales),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
@@ -276,7 +280,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
         KpiCard(
             icon = FontAwesomeIcons.Solid.ExclamationTriangle,
             label = "Total Discrepancy",
-            value = formatCurrency(totalDiscrepancy),
+            value = FormatUtils.formatCurrency(totalDiscrepancy),
             valueColor = getDiscrepancyColor(totalDiscrepancy),
             modifier = Modifier.weight(1f),
         )
@@ -343,7 +347,8 @@ private fun ShiftsTable(
 
             if (shifts.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -388,7 +393,8 @@ private fun ShiftsTable(
 @Composable
 private fun TableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -420,17 +426,21 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun TableRow(shift: Shift, onView: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TableCell(shift.shiftNumber, modifier = Modifier.width(100.dp))
         TableCell(shift.cashierName ?: "-", modifier = Modifier.weight(1f))
-        TableCell(formatDateTime(shift.openedAt), modifier = Modifier.width(120.dp))
-        TableCell(shift.closedAt?.let { formatDateTime(it) } ?: "-", modifier = Modifier.width(120.dp))
-        TableCell(formatCurrency(shift.openingBalance), modifier = Modifier.width(100.dp))
-        TableCell(shift.closingBalance?.let { formatCurrency(it) } ?: "-", modifier = Modifier.width(100.dp))
+        TableCell(FormatUtils.formatDateTime(shift.openedAt), modifier = Modifier.width(120.dp))
+        TableCell(shift.closedAt?.let { FormatUtils.formatDateTime(it) } ?: "-", modifier = Modifier.width(120.dp))
+        TableCell(FormatUtils.formatCurrency(shift.openingBalance), modifier = Modifier.width(100.dp))
+        TableCell(
+            shift.closingBalance?.let { FormatUtils.formatCurrency(it) } ?: "-",
+            modifier = Modifier.width(100.dp),
+        )
 
         DiscrepancyCell(discrepancy = shift.discrepancy, modifier = Modifier.width(100.dp))
 
@@ -467,7 +477,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun DiscrepancyCell(discrepancy: Double?, modifier: Modifier = Modifier) {
-    val displayValue = discrepancy?.let { formatCurrency(it) } ?: "-"
+    val displayValue = discrepancy?.let { FormatUtils.formatCurrency(it) } ?: "-"
     val color = discrepancy?.let { getDiscrepancyColor(it) } ?: MaterialTheme.colorScheme.onSurfaceVariant
 
     Text(
@@ -480,11 +490,12 @@ private fun DiscrepancyCell(discrepancy: Double?, modifier: Modifier = Modifier)
 
 @Composable
 private fun StatusChip(isOpen: Boolean, modifier: Modifier = Modifier) {
-    val (backgroundColor, textColor, label) = if (isOpen) {
-        Triple(AppColors.Success, Color.White, "Open")
-    } else {
-        Triple(AppColors.NeutralLight400, AppColors.TextPrimaryLight, "Closed")
-    }
+    val (backgroundColor, textColor, label) =
+        if (isOpen) {
+            Triple(AppColors.Success, Color.White, "Open")
+        } else {
+            Triple(AppColors.NeutralLight400, AppColors.TextPrimaryLight, "Closed")
+        }
 
     Surface(
         modifier = modifier,
@@ -499,24 +510,6 @@ private fun StatusChip(isOpen: Boolean, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
         )
     }
-}
-
-private fun formatDateTime(instant: Instant): String {
-    val epochMillis = instant.toEpochMilliseconds()
-    val totalSeconds = epochMillis / 1000
-    val totalMinutes = totalSeconds / 60
-    val totalHours = totalMinutes / 60
-    val days = totalHours / 24
-    val hours = (totalHours % 24).toInt()
-    val minutes = (totalMinutes % 60).toInt()
-
-    val year = 1970 + (days / 365).toInt()
-    val dayOfYear = (days % 365).toInt()
-    val month = (dayOfYear / 30).coerceIn(1, 12)
-    val day = (dayOfYear % 30).coerceIn(1, 31)
-
-    val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-    return "${monthNames[month - 1]} $day, $year ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}"
 }
 
 @Composable

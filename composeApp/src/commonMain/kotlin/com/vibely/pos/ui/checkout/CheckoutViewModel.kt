@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.vibely.pos.shared.domain.auth.usecase.GetCurrentUserUseCase
 import com.vibely.pos.shared.domain.result.Result
 import com.vibely.pos.shared.domain.sales.entity.Product
+import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.sales.usecase.AddToCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.CompleteSaleUseCase
 import com.vibely.pos.shared.domain.sales.usecase.RecordPaymentsUseCase
@@ -31,11 +32,52 @@ class CheckoutViewModel(
     private val updateCartUseCase: UpdateCartUseCase,
     private val completeSaleUseCase: CompleteSaleUseCase,
     private val recordPaymentsUseCase: RecordPaymentsUseCase,
+    private val saleRepository: SaleRepository? = null,
 ) : ViewModel() {
     private val _state = MutableStateFlow(CheckoutState())
     val state: StateFlow<CheckoutState> = _state.asStateFlow()
 
     private var searchJob: Job? = null
+
+    fun loadSale(saleId: String) {
+        val repo = saleRepository ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            when (val result = repo.getById(saleId)) {
+                is Result.Success -> {
+                    val sale = result.data
+                    when (val itemsResult = repo.getItems(saleId)) {
+                        is Result.Success -> {
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    saleId = saleId,
+                                )
+                            }
+                        }
+
+                        is Result.Error -> {
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = itemsResult.message,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message,
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     fun onSearchQueryChange(query: String) {
         _state.update { it.copy(searchQuery = query) }

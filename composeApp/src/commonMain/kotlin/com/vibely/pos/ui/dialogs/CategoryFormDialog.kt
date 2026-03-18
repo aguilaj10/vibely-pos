@@ -14,7 +14,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,16 +49,19 @@ fun CategoryFormDialog(isEdit: Boolean, initialCategory: CategoryFormData? = nul
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = CardDefaults.cardColors(
+            colors =
+            CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
                     .verticalScroll(rememberScrollState()),
@@ -120,9 +122,11 @@ fun CategoryFormDialog(isEdit: Boolean, initialCategory: CategoryFormData? = nul
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
+                    AppButton(
+                        text = "Cancel",
+                        onClick = onDismiss,
+                        style = AppButtonStyle.Text,
+                    )
 
                     Spacer(modifier = Modifier.width(12.dp))
 
@@ -148,9 +152,10 @@ private fun validateCategoryForm(data: CategoryFormData): Map<String, Validation
     }
 
     if (data.color.isNotBlank()) {
-        val isValidHex = data.color.startsWith("#") &&
-            (data.color.length == 7 || data.color.length == 9) &&
-            data.color.drop(1).all { char -> char.isDigit() || char in 'a'..'f' || char in 'A'..'F' }
+        val isValidHex =
+            data.color.startsWith("#") &&
+                (data.color.length == 7 || data.color.length == 9) &&
+                data.color.drop(1).all { char -> char.isDigit() || char in 'a'..'f' || char in 'A'..'F' }
 
         if (!isValidHex) {
             errors["color"] = ValidationState.Error("Invalid hex color format")

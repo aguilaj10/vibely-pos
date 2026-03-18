@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.dashboard.entity.RecentTransaction
 import com.vibely.pos.shared.domain.dashboard.entity.TransactionStatus
+import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.DataTable
 import com.vibely.pos.ui.components.DataTableCell
 import com.vibely.pos.ui.components.StatusChip
@@ -28,7 +29,8 @@ fun RecentTransactionsTable(
     onTransactionClick: (RecentTransaction) -> Unit = {},
 ) {
     DataTable(
-        columns = listOf(
+        columns =
+        listOf(
             TableColumn(key = "invoice", label = "Invoice", width = 120.dp),
             TableColumn(key = "time", label = "Time", width = 100.dp),
             TableColumn(key = "amount", label = "Amount", width = 100.dp),
@@ -39,8 +41,8 @@ fun RecentTransactionsTable(
         cellContent = { column, transaction ->
             when (column.key) {
                 "invoice" -> DataTableCell(transaction.invoiceNumber)
-                "time" -> DataTableCell(formatTransactionTime(transaction.saleDate))
-                "amount" -> DataTableCell(transaction.totalAmount.toString())
+                "time" -> DataTableCell(FormatUtils.formatDateTime(transaction.saleDate).substringAfterLast(' '))
+                "amount" -> DataTableCell(transaction.totalAmount.amount.let { FormatUtils.formatCurrency(it) })
                 "status" -> TransactionStatusChip(transaction.status)
                 else -> DataTableCell("")
             }
@@ -52,23 +54,15 @@ fun RecentTransactionsTable(
 
 @Composable
 private fun TransactionStatusChip(status: TransactionStatus) {
-    val (label, variant) = when (status) {
-        TransactionStatus.COMPLETED -> "Completed" to StatusChipVariant.Success
-        TransactionStatus.CANCELLED -> "Cancelled" to StatusChipVariant.Info
-        TransactionStatus.REFUNDED -> "Refunded" to StatusChipVariant.Error
-    }
+    val (label, variant) =
+        when (status) {
+            TransactionStatus.COMPLETED -> "Completed" to StatusChipVariant.Success
+            TransactionStatus.CANCELLED -> "Cancelled" to StatusChipVariant.Info
+            TransactionStatus.REFUNDED -> "Refunded" to StatusChipVariant.Error
+        }
 
     StatusChip(
         label = label,
         variant = variant,
     )
-}
-
-/**
- * Formats transaction timestamp for display.
- * Returns a placeholder for now until full datetime support is added.
- */
-private fun formatTransactionTime(instant: kotlin.time.Instant): String {
-    // Placeholder - will be properly implemented with kotlinx-datetime
-    return "00:00"
 }

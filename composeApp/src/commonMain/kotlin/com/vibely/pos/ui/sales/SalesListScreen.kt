@@ -46,9 +46,11 @@ import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
 import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.RefundDialog
+import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.ExclamationCircle
 import compose.icons.fontawesomeicons.solid.Receipt
 import compose.icons.fontawesomeicons.solid.Search
@@ -57,7 +59,7 @@ import compose.icons.fontawesomeicons.solid.TimesCircle
 import org.koin.compose.koinInject
 
 @Composable
-fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel = koinInject()) {
+fun SalesListScreen(onNavigate: (Screen) -> Unit = {}, modifier: Modifier = Modifier, viewModel: SalesListViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -65,6 +67,12 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
         state.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.onErrorDismiss()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.setOnEditSaleCallback { sale ->
+            onNavigate(Screen.CheckoutEdit(sale.id))
         }
     }
 
@@ -77,7 +85,8 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxSize()
                 .padding(24.dp),
         ) {
@@ -155,11 +164,13 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
             } else {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
+                    colors =
+                    CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                     ),
                     shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(
+                    elevation =
+                    CardDefaults.cardElevation(
                         defaultElevation = 2.dp,
                     ),
                 ) {
@@ -174,6 +185,7 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
                                     sale = sale,
                                     onClick = { viewModel.onSaleSelected(sale) },
                                     onRefund = { viewModel.onRefundSale(sale) },
+                                    onEdit = { viewModel.onEditSale(sale) },
                                 )
                             }
                         }
@@ -209,9 +221,99 @@ fun SalesListScreen(modifier: Modifier = Modifier, viewModel: SalesListViewModel
 }
 
 @Composable
+private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit, onEdit: () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = sale.invoiceNumber,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+            )
+
+            Text(
+                text = FormatUtils.formatDate(sale.saleDate),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+
+            Text(
+                text = FormatUtils.formatCurrency(sale.totalAmount),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(0.8f),
+            )
+
+            PaymentStatusBadge(
+                status = sale.paymentStatus,
+                modifier = Modifier.weight(0.8f),
+            )
+
+            SaleStatusBadge(
+                status = sale.status,
+                modifier = Modifier.weight(0.8f),
+            )
+
+            Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
+                when {
+                    sale.status == SaleStatus.DRAFT -> {
+                        IconButton(
+                            onClick = onEdit,
+                            modifier = Modifier.size(32.dp),
+                        ) {
+                            Icon(
+                                imageVector = FontAwesomeIcons.Solid.Edit,
+                                contentDescription = "Edit sale",
+                                tint = AppColors.Primary,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }
+                    }
+
+                    sale.status == SaleStatus.COMPLETED && sale.paymentStatus == PaymentStatus.COMPLETED -> {
+                        IconButton(
+                            onClick = onRefund,
+                            modifier = Modifier.size(32.dp),
+                        ) {
+                            Icon(
+                                imageVector = FontAwesomeIcons.Solid.TimesCircle,
+                                contentDescription = "Refund",
+                                tint = AppColors.Error,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }
+                    }
+
+                    else -> {
+                        Spacer(modifier = Modifier.size(32.dp))
+                    }
+                }
+            }
+        }
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outline,
+            thickness = 1.dp,
+        )
+    }
+}
+
+@Composable
 private fun SalesTableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -257,88 +359,23 @@ private fun SalesTableHeader() {
 }
 
 @Composable
-private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = sale.invoiceNumber,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(1f),
-            )
-
-            Text(
-                text = FormatUtils.formatDate(sale.saleDate),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f),
-            )
-
-            Text(
-                text = FormatUtils.formatCurrency(sale.totalAmount),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(0.8f),
-            )
-
-            PaymentStatusBadge(
-                status = sale.paymentStatus,
-                modifier = Modifier.weight(0.8f),
-            )
-
-            SaleStatusBadge(
-                status = sale.status,
-                modifier = Modifier.weight(0.8f),
-            )
-
-            if (sale.status == SaleStatus.COMPLETED && sale.paymentStatus == PaymentStatus.COMPLETED) {
-                IconButton(
-                    onClick = onRefund,
-                    modifier = Modifier.size(32.dp),
-                ) {
-                    Icon(
-                        imageVector = FontAwesomeIcons.Solid.TimesCircle,
-                        contentDescription = "Refund",
-                        modifier = Modifier.size(16.dp),
-                        tint = AppColors.Warning,
-                    )
-                }
-            }
+private fun PaymentStatusBadge(status: PaymentStatus, modifier: Modifier = Modifier) {
+    val (text, color) =
+        when (status) {
+            PaymentStatus.PENDING -> "Pending" to AppColors.Warning
+            PaymentStatus.COMPLETED -> "Completed" to AppColors.Success
+            PaymentStatus.FAILED -> "Failed" to AppColors.Error
+            PaymentStatus.REFUNDED -> "Refunded" to AppColors.TextSecondaryLight
+            PaymentStatus.CANCELLED -> "Cancelled" to AppColors.Error
         }
 
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.outline,
-            thickness = 1.dp,
-        )
-    }
-}
-
-@Composable
-private fun PaymentStatusBadge(status: PaymentStatus, modifier: Modifier = Modifier) {
-    val (text, color) = when (status) {
-        PaymentStatus.PENDING -> "Pending" to AppColors.Warning
-        PaymentStatus.COMPLETED -> "Completed" to AppColors.Success
-        PaymentStatus.FAILED -> "Failed" to AppColors.Error
-        PaymentStatus.REFUNDED -> "Refunded" to AppColors.TextSecondaryLight
-        PaymentStatus.CANCELLED -> "Cancelled" to AppColors.Error
-    }
-
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .background(
                 color = color.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(6.dp),
-            )
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            ).padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
         Text(
             text = text,
@@ -352,21 +389,22 @@ private fun PaymentStatusBadge(status: PaymentStatus, modifier: Modifier = Modif
 
 @Composable
 private fun SaleStatusBadge(status: SaleStatus, modifier: Modifier = Modifier) {
-    val (text, color) = when (status) {
-        SaleStatus.DRAFT -> "Draft" to AppColors.TextSecondaryLight
-        SaleStatus.COMPLETED -> "Completed" to AppColors.Success
-        SaleStatus.CANCELLED -> "Cancelled" to AppColors.Error
-        SaleStatus.REFUNDED -> "Refunded" to AppColors.Warning
-        SaleStatus.PARTIALLY_REFUNDED -> "Partially Refunded" to AppColors.Info
-    }
+    val (text, color) =
+        when (status) {
+            SaleStatus.DRAFT -> "Draft" to AppColors.TextSecondaryLight
+            SaleStatus.COMPLETED -> "Completed" to AppColors.Success
+            SaleStatus.CANCELLED -> "Cancelled" to AppColors.Error
+            SaleStatus.REFUNDED -> "Refunded" to AppColors.Warning
+            SaleStatus.PARTIALLY_REFUNDED -> "Partially Refunded" to AppColors.Info
+        }
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .background(
                 color = color.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(6.dp),
-            )
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            ).padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
         Text(
             text = text,

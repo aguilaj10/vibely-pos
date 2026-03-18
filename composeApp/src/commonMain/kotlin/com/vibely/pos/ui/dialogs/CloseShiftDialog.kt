@@ -16,7 +16,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -78,16 +77,19 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = CardDefaults.cardColors(
+            colors =
+            CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
                     .verticalScroll(rememberScrollState()),
@@ -195,9 +197,11 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
+                    AppButton(
+                        text = "Cancel",
+                        onClick = onDismiss,
+                        style = AppButtonStyle.Text,
+                    )
 
                     Spacer(modifier = Modifier.width(12.dp))
 
@@ -217,7 +221,8 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
 private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCard: Double, expectedCash: Double) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
+        colors =
+        CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
     ) {
@@ -298,20 +303,23 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
 
 @Composable
 private fun VarianceDisplay(expected: Double, actual: Double, variance: Double) {
-    val varianceColor = when {
-        abs(variance) < 0.01 -> MaterialTheme.colorScheme.onSurfaceVariant
-        variance > 0 -> AppColors.Success
-        else -> AppColors.ErrorDark
-    }
+    val varianceColor =
+        when {
+            abs(variance) < 0.01 -> MaterialTheme.colorScheme.onSurfaceVariant
+            variance > 0 -> AppColors.Success
+            else -> AppColors.ErrorDark
+        }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
+        colors =
+        CardDefaults.cardColors(
             containerColor = varianceColor.copy(alpha = 0.1f),
         ),
     ) {
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -335,7 +343,8 @@ private fun VarianceDisplay(expected: Double, actual: Double, variance: Double) 
 @Composable
 private fun BillCoinRow(label: String, value: String, onValueChange: (String) -> Unit, denomination: Double) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,

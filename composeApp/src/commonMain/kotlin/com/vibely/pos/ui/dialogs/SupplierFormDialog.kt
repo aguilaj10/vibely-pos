@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,16 +42,19 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = CardDefaults.cardColors(
+            colors =
+            CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
                     .verticalScroll(rememberScrollState()),
@@ -132,7 +134,8 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                     Switch(
                         checked = formData.isActive,
                         onCheckedChange = { formData = formData.copy(isActive = it) },
-                        colors = SwitchDefaults.colors(
+                        colors =
+                        SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
                             checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
                         ),
@@ -145,9 +148,11 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
+                    AppButton(
+                        text = "Cancel",
+                        onClick = onDismiss,
+                        style = AppButtonStyle.Text,
+                    )
 
                     Spacer(modifier = Modifier.width(12.dp))
 

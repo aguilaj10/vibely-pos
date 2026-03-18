@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.reports.ReportPeriod
+import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -43,7 +44,8 @@ fun DateRangePicker(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -70,8 +72,11 @@ fun DateRangePicker(
         )
 
         PeriodChip(
-            label = if (selectedPeriod == ReportPeriod.CUSTOM && customStartDate != null && customEndDate != null) {
-                "Custom: ${formatShortDate(customStartDate)} - ${formatShortDate(customEndDate)}"
+            label =
+            if (selectedPeriod == ReportPeriod.CUSTOM && customStartDate != null && customEndDate != null) {
+                "Custom: ${FormatUtils.formatShortDate(
+                    customStartDate,
+                )} - ${FormatUtils.formatShortDate(customEndDate)}"
             } else {
                 "Custom"
             },
@@ -88,26 +93,30 @@ fun DateRangePicker(
 
 @Composable
 private fun PeriodChip(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, isSelected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (isSelected) {
-        AppColors.Primary
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
+    val backgroundColor =
+        if (isSelected) {
+            AppColors.Primary
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
 
-    val contentColor = if (isSelected) {
-        Color.White
-    } else {
-        AppColors.TextPrimaryLight
-    }
+    val contentColor =
+        if (isSelected) {
+            Color.White
+        } else {
+            AppColors.TextPrimaryLight
+        }
 
-    val borderColor = if (isSelected) {
-        AppColors.Primary
-    } else {
-        AppColors.NeutralLight300
-    }
+    val borderColor =
+        if (isSelected) {
+            AppColors.Primary
+        } else {
+            AppColors.NeutralLight300
+        }
 
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .border(1.dp, borderColor, RoundedCornerShape(8.dp))
@@ -130,10 +139,4 @@ private fun PeriodChip(label: String, icon: androidx.compose.ui.graphics.vector.
             color = contentColor,
         )
     }
-}
-
-private fun formatShortDate(timestamp: Instant): String {
-    val epochMillis = timestamp.toEpochMilliseconds()
-    val day = (epochMillis / (24 * 60 * 60 * 1000)) % 30 + 1
-    return "Day $day"
 }

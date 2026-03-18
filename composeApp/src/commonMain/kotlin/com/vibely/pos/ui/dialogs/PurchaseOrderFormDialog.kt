@@ -27,7 +27,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,16 +73,19 @@ fun PurchaseOrderFormDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = CardDefaults.cardColors(
+            colors =
+            CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
                     .verticalScroll(rememberScrollState()),
@@ -109,7 +111,8 @@ fun PurchaseOrderFormDialog(
                             readOnly = true,
                             label = { Text("Supplier *") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierExpanded) },
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                                 .fillMaxWidth(),
                             isError = validationErrors["supplierId"] != null,
@@ -155,21 +158,23 @@ fun PurchaseOrderFormDialog(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    TextButton(
+                    AppButton(
+                        text = "Add Product",
                         onClick = {
-                            formData = formData.copy(
-                                lineItems = formData.lineItems + LineItemFormData(),
+                            formData =
+                                formData.copy(
+                                    lineItems = formData.lineItems + LineItemFormData(),
+                                )
+                        },
+                        style = AppButtonStyle.Text,
+                        icon = {
+                            Icon(
+                                imageVector = FontAwesomeIcons.Solid.Plus,
+                                contentDescription = "Add Item",
+                                modifier = Modifier.size(16.dp),
                             )
                         },
-                    ) {
-                        Icon(
-                            imageVector = FontAwesomeIcons.Solid.Plus,
-                            contentDescription = "Add Item",
-                            modifier = Modifier.size(16.dp),
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Add Product")
-                    }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -183,7 +188,8 @@ fun PurchaseOrderFormDialog(
                     )
                 } else {
                     LazyColumn(
-                        modifier = Modifier
+                        modifier =
+                        Modifier
                             .fillMaxWidth()
                             .height(200.dp),
                     ) {
@@ -249,9 +255,11 @@ fun PurchaseOrderFormDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
+                    AppButton(
+                        text = "Cancel",
+                        onClick = onDismiss,
+                        style = AppButtonStyle.Text,
+                    )
 
                     Spacer(modifier = Modifier.width(12.dp))
 
@@ -282,7 +290,8 @@ private fun LineItemRow(
     var currencyExpanded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
     ) {
@@ -302,7 +311,8 @@ private fun LineItemRow(
                     readOnly = true,
                     label = { Text("Product") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = productExpanded) },
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth(),
                 )
@@ -357,7 +367,8 @@ private fun LineItemRow(
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
-                        modifier = Modifier
+                        modifier =
+                        Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth(),
                     )
@@ -411,7 +422,12 @@ private fun validatePurchaseOrderForm(data: PurchaseOrderFormData): Map<String, 
         errors["lineItems"] = ValidationState.Error("At least one line item is required")
     }
 
-    val invalidItems = data.lineItems.filter { it.productId.isBlank() || it.quantity.toIntOrNull() == null || it.quantity.toInt() <= 0 }
+    val invalidItems =
+        data.lineItems.filter {
+            it.productId.isBlank() ||
+                it.quantity.toIntOrNull() == null ||
+                it.quantity.toInt() <= 0
+        }
     if (invalidItems.isNotEmpty()) {
         errors["lineItems"] = ValidationState.Error("All line items must have a product and valid quantity")
     }

@@ -30,7 +30,6 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +46,8 @@ import androidx.compose.ui.window.Dialog
 import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.sales.valueobject.CartItem
 import com.vibely.pos.shared.domain.sales.valueobject.PaymentType
+import com.vibely.pos.shared.domain.sales.valueobject.toDisplayString
+import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
@@ -64,9 +65,18 @@ import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: CheckoutViewModel = koinInject()) {
+fun CheckoutScreen(
+    onNavigate: (Screen) -> Unit,
+    modifier: Modifier = Modifier,
+    saleId: String? = null,
+    viewModel: CheckoutViewModel = koinInject(),
+) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(saleId) {
+        saleId?.let { viewModel.loadSale(it) }
+    }
 
     LaunchedEffect(state.errorMessage) {
         state.errorMessage?.let { message ->
@@ -251,7 +261,7 @@ fun CheckoutScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, 
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
-                            text = formatPrice(state.totalAmount),
+                            text = FormatUtils.formatCurrency(state.totalAmount),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -380,7 +390,7 @@ private fun ProductSearchItem(product: Product, onClick: () -> Unit, modifier: M
             }
 
             Text(
-                text = formatPrice(product.sellingPrice),
+                text = FormatUtils.formatCurrency(product.sellingPrice),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -470,7 +480,7 @@ private fun CartItemCard(item: CartItem, onQuantityChange: (Int) -> Unit, onRemo
                 }
 
                 Text(
-                    text = formatPrice(item.subtotal),
+                    text = FormatUtils.formatCurrency(item.subtotal),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -478,7 +488,7 @@ private fun CartItemCard(item: CartItem, onQuantityChange: (Int) -> Unit, onRemo
             }
 
             Text(
-                text = "${formatPrice(item.unitPrice)} each",
+                text = "${FormatUtils.formatCurrency(item.unitPrice)} each",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -534,7 +544,7 @@ private fun PaymentDialog(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = formatPrice(totalAmount),
+                            text = FormatUtils.formatCurrency(totalAmount),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )
@@ -546,7 +556,7 @@ private fun PaymentDialog(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = formatPrice(remainingAmount),
+                            text = FormatUtils.formatCurrency(remainingAmount),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = if (remainingAmount > 0) AppColors.Warning else AppColors.Success,
@@ -669,15 +679,12 @@ private fun PaymentDialog(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
-                                    text =
-                                    tender.type.name
-                                        .lowercase()
-                                        .replaceFirstChar { it.uppercase() },
+                                    text = tender.type.toDisplayString(),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium,
                                 )
                                 Text(
-                                    text = formatPrice(tender.amount),
+                                    text = FormatUtils.formatCurrency(tender.amount),
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
@@ -718,12 +725,12 @@ private fun PaymentDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        TextButton(
+                        AppButton(
+                            text = "Cancel",
                             onClick = onDismiss,
+                            style = AppButtonStyle.Text,
                             modifier = Modifier.weight(1f),
-                        ) {
-                            Text("Cancel")
-                        }
+                        )
                         AppButton(
                             text = "Complete Sale",
                             onClick = onComplete,
@@ -736,10 +743,4 @@ private fun PaymentDialog(
             }
         }
     }
-}
-
-private fun formatPrice(price: Double): String {
-    val wholePart = price.toInt()
-    val decimalPart = ((price - wholePart) * 100).toInt()
-    return "$$wholePart.${decimalPart.toString().padStart(2, '0')}"
 }

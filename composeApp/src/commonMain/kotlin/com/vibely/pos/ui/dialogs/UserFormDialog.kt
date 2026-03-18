@@ -23,7 +23,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,16 +55,19 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = CardDefaults.cardColors(
+            colors =
+            CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
                     .verticalScroll(rememberScrollState()),
@@ -112,7 +114,8 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                         readOnly = true,
                         label = { Text("Role *") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = roleExpanded) },
-                        modifier = Modifier
+                        modifier =
+                        Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth(),
                         isError = validationErrors["role"] != null,
@@ -177,11 +180,13 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                     Switch(
                         checked = formData.status == UserStatus.ACTIVE,
                         onCheckedChange = {
-                            formData = formData.copy(
-                                status = if (it) UserStatus.ACTIVE else UserStatus.INACTIVE,
-                            )
+                            formData =
+                                formData.copy(
+                                    status = if (it) UserStatus.ACTIVE else UserStatus.INACTIVE,
+                                )
                         },
-                        colors = SwitchDefaults.colors(
+                        colors =
+                        SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
                             checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
                         ),
@@ -207,9 +212,11 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
+                    AppButton(
+                        text = "Cancel",
+                        onClick = onDismiss,
+                        style = AppButtonStyle.Text,
+                    )
 
                     Spacer(modifier = Modifier.width(12.dp))
 

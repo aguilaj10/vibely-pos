@@ -18,7 +18,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,16 +53,19 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = CardDefaults.cardColors(
+            colors =
+            CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
                     .verticalScroll(rememberScrollState()),
@@ -141,7 +143,8 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                     Switch(
                         checked = formData.isActive,
                         onCheckedChange = { formData = formData.copy(isActive = it) },
-                        colors = SwitchDefaults.colors(
+                        colors =
+                        SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
                             checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
                         ),
@@ -154,9 +157,11 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
+                    AppButton(
+                        text = "Cancel",
+                        onClick = onDismiss,
+                        style = AppButtonStyle.Text,
+                    )
 
                     Spacer(modifier = Modifier.width(12.dp))
 
@@ -174,13 +179,32 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
 
 @Composable
 private fun LoyaltyTierDisplay(tier: String?) {
-    val (backgroundColor, textColor, label) = when (tier) {
-        "Platinum" -> Triple(Color(0xFF7C3AED), Color.White, "Platinum")
-        "Gold" -> Triple(Color(0xFFFFD700), Color.Black, "Gold")
-        "Silver" -> Triple(Color(0xFF9CA3AF), Color.White, "Silver")
-        "Bronze" -> Triple(Color(0xFFCD7F32), Color.White, "Bronze")
-        else -> Triple(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant, "Bronze")
-    }
+    val (backgroundColor, textColor, label) =
+        when (tier) {
+            "Platinum" -> {
+                Triple(Color(0xFF7C3AED), Color.White, "Platinum")
+            }
+
+            "Gold" -> {
+                Triple(Color(0xFFFFD700), Color.Black, "Gold")
+            }
+
+            "Silver" -> {
+                Triple(Color(0xFF9CA3AF), Color.White, "Silver")
+            }
+
+            "Bronze" -> {
+                Triple(Color(0xFFCD7F32), Color.White, "Bronze")
+            }
+
+            else -> {
+                Triple(
+                    MaterialTheme.colorScheme.surfaceVariant,
+                    MaterialTheme.colorScheme.onSurfaceVariant,
+                    "Bronze",
+                )
+            }
+        }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
