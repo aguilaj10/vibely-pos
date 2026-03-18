@@ -28,6 +28,13 @@ dependencyResolutionManagement {
     }
 }
 
+buildCache {
+    local {
+        isEnabled = true
+        isPush = true
+    }
+}
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }

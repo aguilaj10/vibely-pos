@@ -7,6 +7,42 @@
 
 ## 🚨 Critical Rules (Never Violate)
 
+### 0. Annotation Processing - KSP Only (No KAPT)
+
+**✅ ALWAYS use KSP for annotation processing** - This project is KAPT-free and must remain so.
+
+**Why:**
+- KSP is up to 2x faster than KAPT ([source](https://github.com/google/ksp))
+- Better Kotlin compiler integration
+- Future-proof (KAPT is being phased out)
+
+**Current Status:** ✅ Zero KAPT dependencies (verified)
+
+```kotlin
+// ❌ NEVER add KAPT
+plugins {
+    id("kotlin-kapt")  // FORBIDDEN
+}
+
+dependencies {
+    kapt("...")  // FORBIDDEN
+}
+
+// ✅ ALWAYS use KSP instead
+plugins {
+    id("com.google.devtools.ksp") version "2.3.20-1.0.29"
+}
+
+dependencies {
+    ksp("...")  // CORRECT
+}
+```
+
+**Before adding any annotation processor:**
+1. Verify it supports KSP (check library documentation)
+2. If only KAPT is supported, search for KSP alternative or file an issue with the library maintainers
+3. Never compromise on this rule
+
 ### 1. DRY Principle - Don't Repeat Yourself
 
 **✅ ALWAYS extract duplicated code** into shared utilities, extension functions, or common modules.
