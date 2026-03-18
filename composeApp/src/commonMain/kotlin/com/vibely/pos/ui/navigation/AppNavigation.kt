@@ -18,6 +18,7 @@ import com.vibely.pos.ui.auth.LoginScreen
 import com.vibely.pos.ui.checkout.CheckoutScreen
 import com.vibely.pos.ui.customers.CustomersScreen
 import com.vibely.pos.ui.dashboard.DashboardScreen
+import com.vibely.pos.ui.exchangerates.ExchangeRatesScreen
 import com.vibely.pos.ui.inventory.InventoryScreen
 import com.vibely.pos.ui.navigation.components.LeftSidebarNavigation
 import com.vibely.pos.ui.purchaseorders.PurchaseOrdersScreen
@@ -123,80 +124,114 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                 onBack = { if (backStack.size > 1) backStack.removeLast() },
                 entryProvider = { key ->
                     when (key) {
-                        is Screen.Dashboard -> NavEntry(key) {
-                            DashboardScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                                onLogout = onLogout,
-                            )
+                        is Screen.Dashboard -> {
+                            NavEntry(key) {
+                                DashboardScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                    onLogout = onLogout,
+                                )
+                            }
                         }
 
-                        is Screen.Checkout -> NavEntry(key) {
-                            CheckoutScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                            )
+                        is Screen.Checkout -> {
+                            NavEntry(key) {
+                                CheckoutScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
                         }
 
-                        is Screen.Sales -> NavEntry(key) {
-                            SalesListScreen()
+                        is Screen.Sales -> {
+                            NavEntry(key) {
+                                SalesListScreen()
+                            }
                         }
 
-                        is Screen.Inventory -> NavEntry(key) {
-                            InventoryScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                            )
+                        is Screen.Inventory -> {
+                            NavEntry(key) {
+                                InventoryScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
                         }
 
-                        is Screen.Categories -> NavEntry(key) {
-                            CategoriesScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                            )
+                        is Screen.Categories -> {
+                            NavEntry(key) {
+                                CategoriesScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
                         }
 
-                        is Screen.Suppliers -> NavEntry(key) {
-                            SuppliersScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                            )
+                        is Screen.Suppliers -> {
+                            NavEntry(key) {
+                                SuppliersScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
                         }
 
-                        is Screen.PurchaseOrders -> NavEntry(key) {
-                            PurchaseOrdersScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                            )
+                        is Screen.PurchaseOrders -> {
+                            NavEntry(key) {
+                                PurchaseOrdersScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
                         }
 
-                        is Screen.Customers -> NavEntry(key) {
-                            CustomersScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                            )
+                        is Screen.Customers -> {
+                            NavEntry(key) {
+                                CustomersScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
                         }
 
-                        is Screen.Users -> NavEntry(key) {
-                            UsersScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                            )
+                        is Screen.Users -> {
+                            NavEntry(key) {
+                                UsersScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
                         }
 
-                        is Screen.Shifts -> NavEntry(key) {
-                            ShiftsScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                            )
+                        is Screen.Shifts -> {
+                            NavEntry(key) {
+                                ShiftsScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
                         }
 
-                        is Screen.Reports -> NavEntry(key) {
-                            ReportsScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                                onLogout = onLogout,
-                            )
+                        is Screen.Reports -> {
+                            NavEntry(key) {
+                                ReportsScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                    onLogout = onLogout,
+                                )
+                            }
                         }
 
-                        is Screen.Settings -> NavEntry(key) {
-                            SettingsScreen(
-                                onNavigate = { screen -> backStack.add(screen) },
-                                onLogout = onLogout,
-                            )
+                        is Screen.Settings -> {
+                            NavEntry(key) {
+                                SettingsScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                    onLogout = onLogout,
+                                )
+                            }
                         }
 
-                        else -> error("Unknown route: $key")
+                        is Screen.ExchangeRates -> {
+                            NavEntry(key) {
+                                ExchangeRatesScreen(
+                                    onNavigate = { screen -> backStack.add(screen) },
+                                )
+                            }
+                        }
+
+                        else -> {
+                            error("Unknown route: $key")
+                        }
                     }
                 },
             )

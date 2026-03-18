@@ -12,9 +12,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -27,7 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.vibely.pos.shared.domain.settings.entity.ReceiptSettings
+import com.vibely.pos.shared.domain.settings.entity.StoreSettings
+import com.vibely.pos.shared.domain.settings.entity.TaxSettings
+import com.vibely.pos.shared.domain.settings.entity.UserPreferences
+import com.vibely.pos.shared.util.TimeUtil
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.EmptyState
@@ -37,6 +43,7 @@ import com.vibely.pos.ui.settings.components.StoreInfoTab
 import com.vibely.pos.ui.settings.components.TaxCurrencyTab
 import com.vibely.pos.ui.settings.components.UserPreferencesTab
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.theme.AppTheme
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Cog
@@ -45,6 +52,7 @@ import compose.icons.fontawesomeicons.solid.Receipt
 import compose.icons.fontawesomeicons.solid.Store
 import compose.icons.fontawesomeicons.solid.UserCog
 import org.koin.compose.koinInject
+import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +64,34 @@ fun SettingsScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(state) {
+        if (state is SettingsUiState.Success && (state as SettingsUiState.Success).saveSuccess) {
+            viewModel.clearSaveStatus()
+        }
+    }
+
+    SettingsScreenContent(
+        state = state,
+        onUpdateStoreInfo = viewModel::updateStoreInfo,
+        onUpdateReceiptSettings = viewModel::updateReceiptSettings,
+        onUpdateTaxSettings = viewModel::updateTaxSettings,
+        onUpdateUserPreferences = viewModel::updateUserPreferences,
+        onLoadSettings = viewModel::loadSettings,
+        modifier = modifier,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SettingsScreenContent(
+    state: SettingsUiState,
+    onUpdateStoreInfo: (String, String, String, String) -> Unit,
+    onUpdateReceiptSettings: (String, String, String?, Boolean) -> Unit,
+    onUpdateTaxSettings: (Double, String) -> Unit,
+    onUpdateUserPreferences: (String, String, Boolean, kotlin.time.Duration) -> Unit,
+    onLoadSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     val tabs = listOf(
@@ -64,12 +100,6 @@ fun SettingsScreen(
         TabItem("Tax & Currency", FontAwesomeIcons.Solid.Cog),
         TabItem("Preferences", FontAwesomeIcons.Solid.UserCog),
     )
-
-    LaunchedEffect(state) {
-        if (state is SettingsUiState.Success && (state as SettingsUiState.Success).saveSuccess) {
-            viewModel.clearSaveStatus()
-        }
-    }
 
     Scaffold(
         modifier = modifier,
@@ -99,39 +129,39 @@ fun SettingsScreen(
                                 when (selectedTabIndex) {
                                     0 -> {
                                         successState?.storeSettings?.let { store ->
-                                            viewModel.updateStoreInfo(
-                                                storeName = store.storeName,
-                                                address = store.address,
-                                                phone = store.phone,
-                                                email = store.email,
+                                            onUpdateStoreInfo(
+                                                store.storeName,
+                                                store.address,
+                                                store.phone,
+                                                store.email,
                                             )
                                         }
                                     }
                                     1 -> {
                                         successState?.receiptSettings?.let { receipt ->
-                                            viewModel.updateReceiptSettings(
-                                                header = receipt.header,
-                                                footer = receipt.footer,
-                                                logoUrl = receipt.logoUrl,
-                                                showTax = receipt.showTax,
+                                            onUpdateReceiptSettings(
+                                                receipt.header,
+                                                receipt.footer,
+                                                receipt.logoUrl,
+                                                receipt.showTax,
                                             )
                                         }
                                     }
                                     2 -> {
                                         successState?.taxSettings?.let { tax ->
-                                            viewModel.updateTaxSettings(
-                                                taxRate = tax.taxRate,
-                                                currency = tax.currency,
+                                            onUpdateTaxSettings(
+                                                tax.taxRate,
+                                                tax.currency,
                                             )
                                         }
                                     }
                                     3 -> {
                                         successState?.userPreferences?.let { prefs ->
-                                            viewModel.updateUserPreferences(
-                                                language = prefs.language,
-                                                theme = prefs.theme,
-                                                enableNotifications = prefs.enableNotifications,
-                                                autoLogoutTimeout = prefs.autoLogoutTimeout,
+                                            onUpdateUserPreferences(
+                                                prefs.language,
+                                                prefs.theme,
+                                                prefs.enableNotifications,
+                                                prefs.autoLogoutTimeout,
                                             )
                                         }
                                     }
@@ -155,7 +185,7 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            TabRow(
+            PrimaryTabRow(
                 selectedTabIndex = selectedTabIndex,
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -194,7 +224,7 @@ fun SettingsScreen(
                     is SettingsUiState.Error -> {
                         ErrorState(
                             message = currentState.message,
-                            onRetry = { viewModel.loadSettings() },
+                            onRetry = onLoadSettings,
                         )
                     }
                     is SettingsUiState.Success -> {
@@ -209,7 +239,7 @@ fun SettingsScreen(
                                 action = {
                                     AppButton(
                                         text = "Retry",
-                                        onClick = { viewModel.loadSettings() },
+                                        onClick = onLoadSettings,
                                         style = AppButtonStyle.Primary,
                                     )
                                 },
@@ -219,30 +249,22 @@ fun SettingsScreen(
                             when (selectedTabIndex) {
                                 0 -> StoreInfoTab(
                                     storeSettings = currentState.storeSettings,
-                                    onStoreInfoChange = { name, address, phone, email ->
-                                        viewModel.updateStoreInfo(name, address, phone, email)
-                                    },
+                                    onStoreInfoChange = onUpdateStoreInfo,
                                     isSaving = currentState.isSaving,
                                 )
                                 1 -> ReceiptConfigTab(
                                     receiptSettings = currentState.receiptSettings,
-                                    onReceiptSettingsChange = { header, footer, logoUrl, showTax ->
-                                        viewModel.updateReceiptSettings(header, footer, logoUrl, showTax)
-                                    },
+                                    onReceiptSettingsChange = onUpdateReceiptSettings,
                                     isSaving = currentState.isSaving,
                                 )
                                 2 -> TaxCurrencyTab(
                                     taxSettings = currentState.taxSettings,
-                                    onTaxSettingsChange = { taxRate, currency ->
-                                        viewModel.updateTaxSettings(taxRate, currency)
-                                    },
+                                    onTaxSettingsChange = onUpdateTaxSettings,
                                     isSaving = currentState.isSaving,
                                 )
                                 3 -> UserPreferencesTab(
                                     userPreferences = currentState.userPreferences,
-                                    onPreferencesChange = { language, theme, notifications, timeout ->
-                                        viewModel.updateUserPreferences(language, theme, notifications, timeout)
-                                    },
+                                    onPreferencesChange = onUpdateUserPreferences,
                                     isSaving = currentState.isSaving,
                                 )
                             }
@@ -293,3 +315,60 @@ private fun ErrorState(message: String, onRetry: () -> Unit) {
 }
 
 private data class TabItem(val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
+
+@Preview
+@Composable
+private fun SettingsScreenPreview() {
+    val mockStore = StoreSettings(
+        id = "1",
+        storeName = "Vibely Coffee",
+        address = "123 Main St, City",
+        phone = "123-456-7890",
+        email = "contact@vibely.coffee",
+        createdAt = TimeUtil.now(),
+        updatedAt = TimeUtil.now(),
+    )
+    val mockReceipt = ReceiptSettings(
+        id = "1",
+        header = "Thanks for visiting!",
+        footer = "See you soon!",
+        logoUrl = null,
+        showTax = true,
+        createdAt = TimeUtil.now(),
+        updatedAt = TimeUtil.now(),
+    )
+    val mockTax = TaxSettings(
+        id = "1",
+        taxRate = 16.0,
+        currency = "USD",
+        createdAt = TimeUtil.now(),
+        updatedAt = TimeUtil.now(),
+    )
+    val mockPrefs = UserPreferences(
+        id = "1",
+        language = "en",
+        theme = "system",
+        enableNotifications = true,
+        autoLogoutTimeout = 30.minutes,
+        createdAt = TimeUtil.now(),
+        updatedAt = TimeUtil.now(),
+    )
+
+    val state = SettingsUiState.Success(
+        storeSettings = mockStore,
+        receiptSettings = mockReceipt,
+        taxSettings = mockTax,
+        userPreferences = mockPrefs,
+    )
+
+    AppTheme {
+        SettingsScreenContent(
+            state = state,
+            onUpdateStoreInfo = { _, _, _, _ -> },
+            onUpdateReceiptSettings = { _, _, _, _ -> },
+            onUpdateTaxSettings = { _, _ -> },
+            onUpdateUserPreferences = { _, _, _, _ -> },
+            onLoadSettings = {},
+        )
+    }
+}

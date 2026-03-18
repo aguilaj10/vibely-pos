@@ -40,6 +40,7 @@ import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.ExchangeRateFormData
 import com.vibely.pos.ui.dialogs.ExchangeRateFormDialog
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatDecimal
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Edit
@@ -81,7 +82,8 @@ fun ExchangeRatesScreen(
 
             if (state.isLoading && state.exchangeRates.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -93,7 +95,8 @@ fun ExchangeRatesScreen(
                     exchangeRates = state.exchangeRates,
                     onEditExchangeRate = viewModel::onEditExchangeRate,
                     onDeleteExchangeRate = viewModel::onDeleteExchangeRate,
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
@@ -110,7 +113,8 @@ fun ExchangeRatesScreen(
             ExchangeRateFormDialog(
                 isEdit = editingExchangeRate != null,
                 currencies = state.currencies,
-                initialData = editingExchangeRate?.let {
+                initialData =
+                editingExchangeRate?.let {
                     ExchangeRateFormData(
                         id = it.id,
                         currencyFrom = it.currencyCodeFrom,
@@ -140,7 +144,8 @@ fun ExchangeRatesScreen(
 @Composable
 private fun ExchangeRatesHeader(onAddExchangeRate: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -187,7 +192,8 @@ private fun ExchangeRatesTable(
 
             if (exchangeRates.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -226,7 +232,8 @@ private fun ExchangeRatesTable(
 @Composable
 private fun TableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -253,15 +260,22 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun TableRow(exchangeRate: CurrencyExchangeRate, onEdit: () -> Unit, onDelete: () -> Unit) {
+    val formattedRate =
+        remember(exchangeRate.rate) {
+            // Format with 4 decimal places for exchange rates
+            exchangeRate.rate.formatDecimal(4)
+        }
+
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TableCell(exchangeRate.currencyCodeFrom, modifier = Modifier.weight(1f))
         TableCell(exchangeRate.currencyCodeTo, modifier = Modifier.weight(1f))
-        TableCell(String.format("%.4f", exchangeRate.rate), modifier = Modifier.weight(1f))
+        TableCell(formattedRate, modifier = Modifier.weight(1f))
         TableCell(exchangeRate.effectiveDate, modifier = Modifier.weight(1f))
 
         Row(

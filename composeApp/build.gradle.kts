@@ -84,6 +84,10 @@ kotlin {
             implementation(libs.connectivity.http)
             implementation(libs.connectivity.compose)
             implementation(libs.connectivity.compose.http)
+
+            // Currency Formatting - Kotlin Multiplatform
+            implementation(libs.kurrency.core)
+            implementation(libs.kurrency.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

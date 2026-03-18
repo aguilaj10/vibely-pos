@@ -27,11 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.vibely.pos.shared.util.FormatUtils.formatCurrency
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.theme.AppColors
 import com.vibely.pos.ui.theme.PosShapes
-import com.vibely.pos.ui.utils.formatDecimal
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.DollarSign
@@ -51,14 +51,16 @@ fun TaxCurrencyTab(
     var taxRateError by remember { mutableStateOf<String?>(null) }
 
     val currencies = listOf("USD", "MXN", "EUR")
-    val currencyLabels = mapOf(
-        "USD" to "USD - US Dollar",
-        "MXN" to "MXN - Mexican Peso",
-        "EUR" to "EUR - Euro",
-    )
+    val currencyLabels =
+        mapOf(
+            "USD" to "USD - US Dollar",
+            "MXN" to "MXN - Mexican Peso",
+            "EUR" to "EUR - Euro",
+        )
 
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
     ) {
@@ -67,7 +69,8 @@ fun TaxCurrencyTab(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -83,12 +86,13 @@ fun TaxCurrencyTab(
                     onValueChange = { newValue ->
                         taxRate = newValue
                         val rate = newValue.toDoubleOrNull()
-                        taxRateError = when {
-                            newValue.isBlank() -> "Tax rate is required"
-                            rate == null -> "Invalid number"
-                            rate < 0 || rate > 100 -> "Tax rate must be between 0 and 100"
-                            else -> null
-                        }
+                        taxRateError =
+                            when {
+                                newValue.isBlank() -> "Tax rate is required"
+                                rate == null -> "Invalid number"
+                                rate < 0 || rate > 100 -> "Tax rate must be between 0 and 100"
+                                else -> null
+                            }
                     },
                     label = { Text("Tax Rate (%)") },
                     placeholder = { Text("e.g., 16.0") },
@@ -132,7 +136,8 @@ fun TaxCurrencyTab(
                         enabled = !isSaving,
                         singleLine = true,
                         shape = PosShapes.InputField,
-                        modifier = Modifier
+                        modifier =
+                        Modifier
                             .fillMaxWidth()
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                     )
@@ -171,7 +176,8 @@ fun TaxCurrencyTab(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -193,7 +199,7 @@ fun TaxCurrencyTab(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = formatCurrency(100.0, currency),
+                        text = formatCurrency(100.0),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -211,7 +217,7 @@ fun TaxCurrencyTab(
                     )
                     val taxAmount = (taxRate.toDoubleOrNull() ?: 0.0) / 100 * 100
                     Text(
-                        text = formatCurrency(taxAmount, currency),
+                        text = formatCurrency(taxAmount),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -228,22 +234,12 @@ fun TaxCurrencyTab(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = formatCurrency(100 + ((taxRate.toDoubleOrNull() ?: 0.0) / 100 * 100), currency),
+                        text = formatCurrency((100 + ((taxRate.toDoubleOrNull() ?: 0.0) / 100 * 100))),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
         }
-    }
-}
-
-private fun formatCurrency(amount: Double, currencyCode: String): String {
-    val formatted = amount.formatDecimal(2)
-    return when (currencyCode) {
-        "USD" -> "$$formatted"
-        "MXN" -> "$$formatted MXN"
-        "EUR" -> "€$formatted"
-        else -> "$currencyCode $formatted"
     }
 }

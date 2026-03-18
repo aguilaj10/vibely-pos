@@ -75,17 +75,22 @@ import org.koin.compose.koinInject
  */
 @Composable
 fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen, modifier: Modifier = Modifier) {
-    val sidebarScreens = listOf(
-        Screen.Dashboard,
-        Screen.Checkout,
-        Screen.Inventory,
-        Screen.Categories,
-        Screen.Suppliers,
-        Screen.PurchaseOrders,
-        Screen.Sales,
-        Screen.Reports,
-        Screen.Customers,
-    )
+    val sidebarScreens =
+        listOf(
+            Screen.Dashboard,
+            Screen.Checkout,
+            Screen.Inventory,
+            Screen.Categories,
+            Screen.Suppliers,
+            Screen.PurchaseOrders,
+            Screen.Sales,
+            Screen.Reports,
+            Screen.Customers,
+            Screen.Users,
+            Screen.Shifts,
+            Screen.Settings,
+            Screen.ExchangeRates,
+        )
 
     // Collapsible state with persistence across navigation
     var isExpanded by remember { mutableStateOf(true) }
@@ -97,7 +102,8 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
     )
 
     Surface(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxHeight()
             .width(sidebarWidth),
         color = MaterialTheme.colorScheme.surface,
@@ -107,7 +113,8 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
         ) {
             // Header
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(horizontal = if (isExpanded) 16.dp else 8.dp, vertical = 24.dp),
             ) {
@@ -173,7 +180,8 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
 
             // Navigation Items - Scrollable
             LazyColumn(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(vertical = 8.dp),
@@ -206,7 +214,8 @@ private fun SidebarNavItem(screen: Screen, isSelected: Boolean, onClick: () -> U
     val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
 
     Box(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = if (isExpanded) 12.dp else 8.dp)
             .clip(RoundedCornerShape(8.dp))
@@ -315,7 +324,8 @@ fun BottomNavigationBar(currentScreen: Screen, onNavigate: (Screen) -> Unit, mod
 @Composable
 fun NavigationDrawer(currentScreen: Screen, onNavigate: (Screen) -> Unit, onLogout: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .padding(16.dp),
     ) {
@@ -417,28 +427,32 @@ private fun NavigationSection(title: String, screens: List<Screen>, currentScree
  */
 @Composable
 private fun NavigationItem(screen: Screen, isSelected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
+    val backgroundColor =
+        if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
 
-    val contentColor = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val contentColor =
+        if (isSelected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
 
     androidx.compose.material3.Surface(
         onClick = onClick,
         color = backgroundColor,
         shape = MaterialTheme.shapes.small,
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp),
     ) {
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.Start,
@@ -470,14 +484,15 @@ private fun SidebarUserInfo(isExpanded: Boolean) {
     val getCurrentUserUseCase: GetCurrentUserUseCase = koinInject()
 
     LaunchedEffect(Unit) {
-        currentUser = if (DebugConfig.isDebugMode) {
-            DebugUser.createMockUser()
-        } else {
-            when (val result = getCurrentUserUseCase()) {
-                is Result.Success -> result.data
-                is Result.Error -> null
+        currentUser =
+            if (DebugConfig.isDebugMode) {
+                DebugUser.createMockUser()
+            } else {
+                when (val result = getCurrentUserUseCase()) {
+                    is Result.Success -> result.data
+                    is Result.Error -> null
+                }
             }
-        }
     }
 
     val user = currentUser
@@ -489,14 +504,16 @@ private fun SidebarUserInfo(isExpanded: Boolean) {
     val displayUser = user ?: DebugUser.createMockUser()
 
     Surface(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = if (isExpanded) 12.dp else 8.dp, vertical = 8.dp),
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
     ) {
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(if (isExpanded) 12.dp else 8.dp),
             horizontalArrangement = if (isExpanded) Arrangement.Start else Arrangement.Center,
@@ -515,7 +532,8 @@ private fun SidebarUserInfo(isExpanded: Boolean) {
                 exit = fadeOut() + shrinkVertically(),
             ) {
                 Row(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .padding(start = 12.dp)
                         .weight(1f),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -541,16 +559,19 @@ private fun SidebarUserInfo(isExpanded: Boolean) {
 
 @Composable
 private fun UserAvatar(fullName: String, role: UserRole, size: Dp) {
-    val initials = fullName.split(" ")
-        .take(2)
-        .mapNotNull { it.firstOrNull()?.uppercase() }
-        .joinToString("")
-        .ifEmpty { "?" }
+    val initials =
+        fullName
+            .split(" ")
+            .take(2)
+            .mapNotNull { it.firstOrNull()?.uppercase() }
+            .joinToString("")
+            .ifEmpty { "?" }
 
     val backgroundColor = getRoleColor(role)
 
     Box(
-        modifier = Modifier
+        modifier =
+        Modifier
             .size(size)
             .clip(CircleShape)
             .background(backgroundColor),

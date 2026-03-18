@@ -9,6 +9,7 @@ import compose.icons.fontawesomeicons.solid.ChartLine
 import compose.icons.fontawesomeicons.solid.ClipboardList
 import compose.icons.fontawesomeicons.solid.Clock
 import compose.icons.fontawesomeicons.solid.Cog
+import compose.icons.fontawesomeicons.solid.ExchangeAlt
 import compose.icons.fontawesomeicons.solid.Palette
 import compose.icons.fontawesomeicons.solid.Receipt
 import compose.icons.fontawesomeicons.solid.ShoppingCart
@@ -98,6 +99,11 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     data object Settings : Screen("settings", "Settings", FontAwesomeIcons.Solid.Cog)
 
     /**
+     * Exchange rates screen - manage currency exchange rates.
+     */
+    data object ExchangeRates : Screen("exchange-rates", "Exchange Rates", FontAwesomeIcons.Solid.ExchangeAlt)
+
+    /**
      * Theme demo screen - for testing UI components (dev only).
      */
     data object ThemeDemo : Screen("theme_demo", "Theme Demo", FontAwesomeIcons.Solid.Palette)
@@ -119,6 +125,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
             Shifts,
             Reports,
             Settings,
+            ExchangeRates,
         )
 
         /**
