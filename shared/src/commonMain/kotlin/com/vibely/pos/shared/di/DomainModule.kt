@@ -42,6 +42,7 @@ import com.vibely.pos.shared.domain.reports.usecase.GetTopProductsUseCase
 import com.vibely.pos.shared.domain.sales.usecase.AddToCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.CompleteSaleUseCase
 import com.vibely.pos.shared.domain.sales.usecase.GetSalesUseCase
+import com.vibely.pos.shared.domain.sales.usecase.RecordPaymentsUseCase
 import com.vibely.pos.shared.domain.sales.usecase.RemoveFromCartUseCase
 import com.vibely.pos.shared.domain.sales.usecase.SearchProductsUseCase
 import com.vibely.pos.shared.domain.sales.usecase.UpdateCartUseCase
@@ -100,6 +101,7 @@ val domainModule =
         singleOf(::AddToCartUseCase)
         singleOf(::RemoveFromCartUseCase)
         singleOf(::CompleteSaleUseCase)
+        singleOf(::RecordPaymentsUseCase)
         singleOf(::GetSalesUseCase)
         singleOf(::UpdateCartUseCase)
 
