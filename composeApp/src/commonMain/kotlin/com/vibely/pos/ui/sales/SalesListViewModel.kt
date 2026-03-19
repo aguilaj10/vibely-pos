@@ -5,9 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.vibely.pos.shared.domain.inventory.usecase.AdjustStockUseCase
 import com.vibely.pos.shared.domain.result.Result
 import com.vibely.pos.shared.domain.sales.entity.Sale
+import com.vibely.pos.shared.domain.sales.repository.PaymentRepository
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
 import com.vibely.pos.shared.domain.sales.usecase.GetSalesUseCase
+import com.vibely.pos.shared.domain.sales.usecase.RecordPaymentsUseCase
+import com.vibely.pos.shared.domain.sales.valueobject.PaymentInfo
+import com.vibely.pos.shared.domain.sales.valueobject.PaymentType
 import com.vibely.pos.shared.domain.sales.valueobject.SaleStatus
+import com.vibely.pos.ui.checkout.PaymentTender
 import com.vibely.pos.ui.common.PaginatedResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +25,8 @@ class SalesListViewModel(
     private val getSalesUseCase: GetSalesUseCase,
     private val saleRepository: SaleRepository,
     private val adjustStockUseCase: AdjustStockUseCase,
+    private val paymentRepository: PaymentRepository,
+    private val recordPaymentsUseCase: RecordPaymentsUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SalesListState())
     val state: StateFlow<SalesListState> = _state.asStateFlow()
@@ -255,6 +262,129 @@ class SalesListViewModel(
     fun onPreviousPage() {
         _state.update { it.copy(pagination = it.pagination.previousPage()) }
         loadSales()
+    }
+
+    fun onAddPayment(sale: Sale) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            when (val result = paymentRepository.getPaymentsBySale(sale.id)) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            showPaymentDialog = true,
+                            selectedSaleForPayment = sale,
+                            existingPayments = result.data,
+                            paymentTenders = emptyList(),
+                            isLoading = false,
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = "Failed to load existing payments: ${result.message}",
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun addPaymentTender(type: PaymentType, amount: Double) {
+        val newTender = PaymentTender(type = type, amount = amount)
+        _state.update {
+            it.copy(paymentTenders = it.paymentTenders + newTender)
+        }
+    }
+
+    fun removePaymentTender(index: Int) {
+        _state.update {
+            it.copy(paymentTenders = it.paymentTenders.filterIndexed { i, _ -> i != index })
+        }
+    }
+
+    fun recordPayments() {
+        val saleId = _state.value.selectedSaleForPayment?.id ?: return
+        val tenders = _state.value.paymentTenders
+        if (tenders.isEmpty()) return
+
+        viewModelScope.launch {
+            _state.update { it.copy(isProcessingPayment = true) }
+
+            val paymentInfos =
+                tenders.map { tender ->
+                    PaymentInfo(type = tender.type, amount = tender.amount, reference = "")
+                }
+
+            when (val result = recordPaymentsUseCase(saleId, paymentInfos)) {
+                is Result.Success -> {
+                    val totalAmount = _state.value.selectedSaleForPayment?.totalAmount ?: 0.0
+                    val totalPaid = _state.value.alreadyPaid + tenders.sumOf { it.amount }
+
+                    if (totalPaid >= totalAmount) {
+                        when (val statusResult = saleRepository.updateStatus(saleId, SaleStatus.COMPLETED)) {
+                            is Result.Success -> {
+                                _state.update {
+                                    it.copy(
+                                        isProcessingPayment = false,
+                                        showPaymentDialog = false,
+                                        selectedSaleForPayment = null,
+                                        paymentTenders = emptyList(),
+                                        existingPayments = emptyList(),
+                                        successMessage = "Payment recorded and sale completed successfully",
+                                    )
+                                }
+                                loadSales()
+                            }
+
+                            is Result.Error -> {
+                                _state.update {
+                                    it.copy(
+                                        isProcessingPayment = false,
+                                        errorMessage = "Payment recorded but failed to update sale status: ${statusResult.message}",
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                isProcessingPayment = false,
+                                showPaymentDialog = false,
+                                selectedSaleForPayment = null,
+                                paymentTenders = emptyList(),
+                                existingPayments = emptyList(),
+                                successMessage = "Payment recorded successfully",
+                            )
+                        }
+                        loadSales()
+                    }
+                }
+
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isProcessingPayment = false,
+                            errorMessage = "Failed to record payment: ${result.message}",
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun onPaymentDialogDismiss() {
+        _state.update {
+            it.copy(
+                showPaymentDialog = false,
+                selectedSaleForPayment = null,
+                paymentTenders = emptyList(),
+                existingPayments = emptyList(),
+            )
+        }
     }
 
     private fun filterSales() {

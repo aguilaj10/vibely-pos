@@ -45,11 +45,13 @@ import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
 import com.vibely.pos.ui.components.PaginationControls
+import com.vibely.pos.ui.dialogs.PaymentDialog
 import com.vibely.pos.ui.dialogs.RefundDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.DollarSign
 import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.ExclamationCircle
 import compose.icons.fontawesomeicons.solid.Receipt
@@ -186,6 +188,7 @@ fun SalesListScreen(onNavigate: (Screen) -> Unit = {}, modifier: Modifier = Modi
                                     onClick = { viewModel.onSaleSelected(sale) },
                                     onRefund = { viewModel.onRefundSale(sale) },
                                     onEdit = { viewModel.onEditSale(sale) },
+                                    onAddPayment = { viewModel.onAddPayment(sale) },
                                 )
                             }
                         }
@@ -217,11 +220,25 @@ fun SalesListScreen(onNavigate: (Screen) -> Unit = {}, modifier: Modifier = Modi
                 )
             }
         }
+
+        if (state.showPaymentDialog && state.selectedSaleForPayment != null) {
+            PaymentDialog(
+                totalAmount = state.selectedSaleForPayment?.totalAmount ?: 0.0,
+                paymentTenders = state.paymentTenders,
+                remainingAmount = state.remainingAmount,
+                canComplete = state.canCompletePayment,
+                isProcessing = state.isProcessingPayment,
+                onAddTender = { type, amount -> viewModel.addPaymentTender(type, amount) },
+                onRemoveTender = { index -> viewModel.removePaymentTender(index) },
+                onComplete = { viewModel.recordPayments() },
+                onDismiss = { viewModel.onPaymentDialogDismiss() },
+            )
+        }
     }
 }
 
 @Composable
-private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit, onEdit: () -> Unit) {
+private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit, onEdit: () -> Unit, onAddPayment: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier =
@@ -265,9 +282,23 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit,
                 modifier = Modifier.weight(0.8f),
             )
 
-            Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
+            Row(
+                modifier = Modifier.size(width = 72.dp, height = 32.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 when (sale.status) {
                     SaleStatus.DRAFT -> {
+                        IconButton(
+                            onClick = onAddPayment,
+                            modifier = Modifier.size(32.dp),
+                        ) {
+                            Icon(
+                                imageVector = FontAwesomeIcons.Solid.DollarSign,
+                                contentDescription = "Add payment",
+                                tint = AppColors.Success,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }
                         IconButton(
                             onClick = onEdit,
                             modifier = Modifier.size(32.dp),
@@ -280,7 +311,9 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit,
                             )
                         }
                     }
+
                     SaleStatus.COMPLETED if sale.paymentStatus == PaymentStatus.COMPLETED -> {
+                        Spacer(modifier = Modifier.size(32.dp))
                         IconButton(
                             onClick = onRefund,
                             modifier = Modifier.size(32.dp),
@@ -293,8 +326,9 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit,
                             )
                         }
                     }
+
                     else -> {
-                        Spacer(modifier = Modifier.size(32.dp))
+                        Spacer(modifier = Modifier.size(72.dp))
                     }
                 }
             }
