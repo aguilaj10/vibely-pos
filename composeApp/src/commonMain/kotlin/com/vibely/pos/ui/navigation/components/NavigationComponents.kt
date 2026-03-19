@@ -42,6 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -55,9 +57,43 @@ import com.vibely.pos.shared.domain.result.Result
 import com.vibely.pos.ui.navigation.Screen
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.ChevronDown
 import compose.icons.fontawesomeicons.solid.ChevronLeft
 import compose.icons.fontawesomeicons.solid.ChevronRight
+import compose.icons.fontawesomeicons.solid.ChevronUp
 import org.koin.compose.koinInject
+
+/**
+ * Navigation group data structure for collapsible sidebar sections.
+ *
+ * @param title The group title (e.g., "Sales", "Inventory").
+ * @param icon Optional icon for the group header.
+ * @param screens List of screens in this group.
+ */
+private data class NavigationGroup(val title: String, val icon: ImageVector?, val screens: List<Screen>)
+
+/**
+ * Constants for navigation group titles.
+ */
+private object NavigationGroupTitles {
+    const val SALES = "Sales"
+    const val INVENTORY = "Inventory"
+    const val PEOPLE = "People"
+    const val OPERATIONS = "Operations"
+    const val SETTINGS = "Settings"
+}
+
+private object RoleColors {
+    val ADMIN = Color(0xFF6366F1)
+    val MANAGER = Color(0xFF10B981)
+    val CASHIER = Color(0xFFF59E0B)
+    val WAREHOUSE = Color(0xFF8B5CF6)
+    val VIEWER = Color(0xFF6B7280)
+}
+
+private object AvatarConstants {
+    const val LARGE_THRESHOLD_DP = 40
+}
 
 /**
  * Left sidebar navigation for desktop/tablet layouts.
@@ -75,25 +111,37 @@ import org.koin.compose.koinInject
  */
 @Composable
 fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen, modifier: Modifier = Modifier) {
-    val sidebarScreens =
+    val navigationGroups =
         listOf(
-            Screen.Dashboard,
-            Screen.Checkout,
-            Screen.Inventory,
-            Screen.Categories,
-            Screen.Suppliers,
-            Screen.PurchaseOrders,
-            Screen.Sales,
-            Screen.Reports,
-            Screen.Customers,
-            Screen.Users,
-            Screen.Shifts,
-            Screen.Settings,
-            Screen.ExchangeRates,
+            NavigationGroup(
+                title = NavigationGroupTitles.SALES,
+                icon = null,
+                screens = listOf(Screen.Checkout, Screen.Sales, Screen.Reports),
+            ),
+            NavigationGroup(
+                title = NavigationGroupTitles.INVENTORY,
+                icon = null,
+                screens = listOf(Screen.Inventory, Screen.Categories, Screen.PurchaseOrders),
+            ),
+            NavigationGroup(
+                title = NavigationGroupTitles.PEOPLE,
+                icon = null,
+                screens = listOf(Screen.Customers, Screen.Users),
+            ),
+            NavigationGroup(
+                title = NavigationGroupTitles.OPERATIONS,
+                icon = null,
+                screens = listOf(Screen.Shifts, Screen.Suppliers),
+            ),
+            NavigationGroup(
+                title = NavigationGroupTitles.SETTINGS,
+                icon = null,
+                screens = listOf(Screen.Settings, Screen.ExchangeRates),
+            ),
         )
 
-    // Collapsible state with persistence across navigation
     var isExpanded by remember { mutableStateOf(true) }
+    var expandedGroup by remember { mutableStateOf<String?>(NavigationGroupTitles.SALES) }
 
     // Animated width transition
     val sidebarWidth by animateDpAsState(
@@ -178,7 +226,6 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            // Navigation Items - Scrollable
             LazyColumn(
                 modifier =
                 Modifier
@@ -187,12 +234,26 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                items(sidebarScreens) { screen ->
+                item {
                     SidebarNavItem(
-                        screen = screen,
-                        isSelected = currentScreen.route == screen.route,
-                        onClick = { backStack.add(screen) },
+                        screen = Screen.Dashboard,
+                        isSelected = currentScreen.route == Screen.Dashboard.route,
+                        onClick = { backStack.add(Screen.Dashboard) },
                         isExpanded = isExpanded,
+                        indent = 0.dp,
+                    )
+                }
+
+                items(navigationGroups) { group ->
+                    SidebarNavGroup(
+                        group = group,
+                        currentScreen = currentScreen,
+                        onNavigate = { screen -> backStack.add(screen) },
+                        isExpanded = isExpanded,
+                        isGroupExpanded = expandedGroup == group.title,
+                        onToggleGroup = {
+                            expandedGroup = if (expandedGroup == group.title) null else group.title
+                        },
                     )
                 }
             }
@@ -200,16 +261,85 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
     }
 }
 
-/**
- * Individual navigation item within the sidebar.
- *
- * @param screen The screen this item represents.
- * @param isSelected Whether this item is currently selected.
- * @param onClick Callback when the item is clicked.
- * @param isExpanded Whether the sidebar is in expanded state.
- */
 @Composable
-private fun SidebarNavItem(screen: Screen, isSelected: Boolean, onClick: () -> Unit, isExpanded: Boolean) {
+private fun SidebarNavGroup(
+    group: NavigationGroup,
+    currentScreen: Screen,
+    onNavigate: (Screen) -> Unit,
+    isExpanded: Boolean,
+    isGroupExpanded: Boolean,
+    onToggleGroup: () -> Unit,
+) {
+    Column {
+        val chevronIcon = if (isGroupExpanded) FontAwesomeIcons.Solid.ChevronUp else FontAwesomeIcons.Solid.ChevronDown
+
+        Box(
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = if (isExpanded) 12.dp else 8.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable(
+                    onClick = onToggleGroup,
+                    role = Role.Button,
+                ).padding(
+                    horizontal = if (isExpanded) 12.dp else 8.dp,
+                    vertical = 10.dp,
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = if (isExpanded) Arrangement.SpaceBetween else Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (isExpanded) {
+                    Text(
+                        text = group.title,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+
+                    Icon(
+                        imageVector = chevronIcon,
+                        contentDescription = if (isGroupExpanded) "Collapse ${group.title}" else "Expand ${group.title}",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    Icon(
+                        imageVector = chevronIcon,
+                        contentDescription = if (isGroupExpanded) "Collapse group" else "Expand group",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = isGroupExpanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            Column {
+                group.screens.forEach { screen ->
+                    SidebarNavItem(
+                        screen = screen,
+                        isSelected = currentScreen.route == screen.route,
+                        onClick = { onNavigate(screen) },
+                        isExpanded = isExpanded,
+                        indent = if (isExpanded) 4.dp else 0.dp,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SidebarNavItem(screen: Screen, isSelected: Boolean, onClick: () -> Unit, isExpanded: Boolean, indent: Dp = 0.dp) {
     val backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
     val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
 
@@ -218,6 +348,7 @@ private fun SidebarNavItem(screen: Screen, isSelected: Boolean, onClick: () -> U
         Modifier
             .fillMaxWidth()
             .padding(horizontal = if (isExpanded) 12.dp else 8.dp)
+            .padding(start = indent)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .clickable(onClick = onClick)
@@ -245,8 +376,8 @@ private fun SidebarNavItem(screen: Screen, isSelected: Boolean, onClick: () -> U
             // Label - Animated visibility
             AnimatedVisibility(
                 visible = isExpanded,
-                enter = expandVertically() + androidx.compose.animation.fadeIn(),
-                exit = shrinkVertically() + androidx.compose.animation.fadeOut(),
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut(),
             ) {
                 Row {
                     if (screen.icon != null) {
@@ -441,7 +572,7 @@ private fun NavigationItem(screen: Screen, isSelected: Boolean, onClick: () -> U
             MaterialTheme.colorScheme.onSurface
         }
 
-    androidx.compose.material3.Surface(
+    Surface(
         onClick = onClick,
         color = backgroundColor,
         shape = MaterialTheme.shapes.small,
@@ -579,7 +710,14 @@ private fun UserAvatar(fullName: String, role: UserRole, size: Dp) {
     ) {
         Text(
             text = initials,
-            style = if (size.value >= 40) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodySmall,
+            style =
+            if (size.value >=
+                AvatarConstants.LARGE_THRESHOLD_DP
+            ) {
+                MaterialTheme.typography.bodyLarge
+            } else {
+                MaterialTheme.typography.bodySmall
+            },
             fontWeight = FontWeight.Bold,
             color = Color.White,
         )
@@ -606,9 +744,9 @@ private fun RoleBadge(role: UserRole) {
 }
 
 private fun getRoleColor(role: UserRole): Color = when (role) {
-    UserRole.ADMIN -> Color(0xFF6366F1)
-    UserRole.MANAGER -> Color(0xFF10B981)
-    UserRole.CASHIER -> Color(0xFFF59E0B)
-    UserRole.WAREHOUSE -> Color(0xFF8B5CF6)
-    UserRole.VIEWER -> Color(0xFF6B7280)
+    UserRole.ADMIN -> RoleColors.ADMIN
+    UserRole.MANAGER -> RoleColors.MANAGER
+    UserRole.CASHIER -> RoleColors.CASHIER
+    UserRole.WAREHOUSE -> RoleColors.WAREHOUSE
+    UserRole.VIEWER -> RoleColors.VIEWER
 }
