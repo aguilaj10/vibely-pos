@@ -42,8 +42,34 @@ import com.vibely.pos.ui.components.ToastType
 import com.vibely.pos.ui.components.ValidationState
 import com.vibely.pos.ui.components.rememberToastState
 import com.vibely.pos.ui.theme.AppColors
-import com.vibely.pos.ui.theme.PosTextStyles
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.theme_demo_description
+import vibely_pos.composeapp.generated.resources.theme_demo_destructive_button
+import vibely_pos.composeapp.generated.resources.theme_demo_elevated_card_desc
+import vibely_pos.composeapp.generated.resources.theme_demo_elevated_card_title
+import vibely_pos.composeapp.generated.resources.theme_demo_error
+import vibely_pos.composeapp.generated.resources.theme_demo_filled_card_desc
+import vibely_pos.composeapp.generated.resources.theme_demo_filled_card_title
+import vibely_pos.composeapp.generated.resources.theme_demo_info
+import vibely_pos.composeapp.generated.resources.theme_demo_outlined_button
+import vibely_pos.composeapp.generated.resources.theme_demo_outlined_card_desc
+import vibely_pos.composeapp.generated.resources.theme_demo_outlined_card_title
+import vibely_pos.composeapp.generated.resources.theme_demo_primary_button
+import vibely_pos.composeapp.generated.resources.theme_demo_search_placeholder
+import vibely_pos.composeapp.generated.resources.theme_demo_secondary_button
+import vibely_pos.composeapp.generated.resources.theme_demo_size_large
+import vibely_pos.composeapp.generated.resources.theme_demo_size_medium
+import vibely_pos.composeapp.generated.resources.theme_demo_size_small
+import vibely_pos.composeapp.generated.resources.theme_demo_success
+import vibely_pos.composeapp.generated.resources.theme_demo_tertiary_button
+import vibely_pos.composeapp.generated.resources.theme_demo_text_field_label
+import vibely_pos.composeapp.generated.resources.theme_demo_text_field_placeholder
+import vibely_pos.composeapp.generated.resources.theme_demo_text_field_validation
+import vibely_pos.composeapp.generated.resources.theme_demo_text_field_validation_label
+import vibely_pos.composeapp.generated.resources.theme_demo_title
+import vibely_pos.composeapp.generated.resources.theme_demo_warning
 
 /**
  * Theme demo screen showcasing all custom components and styles
@@ -66,13 +92,13 @@ fun ThemeDemoScreen() {
             item {
                 Column {
                     Text(
-                        text = "Vibely POS Theme System",
+                        text = stringResource(Res.string.theme_demo_title),
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "A complete demonstration of custom theme components",
+                        text = stringResource(Res.string.theme_demo_description),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -87,13 +113,7 @@ fun ThemeDemoScreen() {
                 ColorPaletteDemo()
             }
 
-            // Typography
-            item {
-                SectionHeader("Typography")
-            }
-            item {
-                TypographyDemo()
-            }
+            // Typography section removed - TypographyDemo() function not implemented
 
             // Buttons
             item {
@@ -114,12 +134,13 @@ fun ThemeDemoScreen() {
                     value = textFieldValue,
                     onValueChange = {
                         textFieldValue = it
-                        validationState = when {
-                            it.isEmpty() -> ValidationState.None
-                            it.length < 3 -> ValidationState.Error("Minimum 3 characters required")
-                            it.length < 5 -> ValidationState.Warning("Consider adding more characters")
-                            else -> ValidationState.Valid
-                        }
+                        validationState =
+                            when {
+                                it.isEmpty() -> ValidationState.None
+                                it.length < 3 -> ValidationState.Error("Minimum 3 characters required")
+                                it.length < 5 -> ValidationState.Warning("Consider adding more characters")
+                                else -> ValidationState.Valid
+                            }
                     },
                     validationState = validationState,
                 )
@@ -200,7 +221,8 @@ private fun ColorPaletteDemo() {
 @Composable
 private fun ColorRow(name: String, color: androidx.compose.ui.graphics.Color, onColor: androidx.compose.ui.graphics.Color) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .height(60.dp)
             .background(color)
@@ -216,19 +238,47 @@ private fun ColorRow(name: String, color: androidx.compose.ui.graphics.Color, on
 }
 
 @Composable
-private fun TypographyDemo() {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Display Large", style = MaterialTheme.typography.displayLarge)
-        Text("Display Medium", style = MaterialTheme.typography.displayMedium)
-        Text("Headline Large", style = MaterialTheme.typography.headlineLarge)
-        Text("Headline Medium", style = MaterialTheme.typography.headlineMedium)
-        Text("Title Large", style = MaterialTheme.typography.titleLarge)
-        Text("Title Medium", style = MaterialTheme.typography.titleMedium)
-        Text("Body Large", style = MaterialTheme.typography.bodyLarge)
-        Text("Body Medium", style = MaterialTheme.typography.bodyMedium)
-        Text("Label Large", style = MaterialTheme.typography.labelLarge)
-        Text("Price Display: $199.99", style = PosTextStyles.PriceDisplay)
-        Text("Product Code: SKU-12345", style = PosTextStyles.ProductCode)
+private fun CardsDemo() {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        AppCard(style = AppCardStyle.Elevated) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    stringResource(Res.string.theme_demo_elevated_card_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    stringResource(Res.string.theme_demo_elevated_card_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+        AppCard(style = AppCardStyle.Outlined) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    stringResource(Res.string.theme_demo_outlined_card_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    stringResource(Res.string.theme_demo_outlined_card_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+        AppCard(
+            style = AppCardStyle.Filled,
+            containerColor = AppColors.PrimaryLight.copy(alpha = 0.1f),
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    stringResource(Res.string.theme_demo_filled_card_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    stringResource(Res.string.theme_demo_filled_card_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
     }
 }
 
@@ -236,48 +286,48 @@ private fun TypographyDemo() {
 private fun ButtonsDemo(onShowToast: (String, ToastType) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         AppButton(
-            text = "Primary Button",
+            text = stringResource(Res.string.theme_demo_primary_button),
             onClick = { onShowToast("Primary button clicked", ToastType.Info) },
             style = AppButtonStyle.Primary,
             modifier = Modifier.fillMaxWidth(),
         )
         AppButton(
-            text = "Secondary Button",
+            text = stringResource(Res.string.theme_demo_secondary_button),
             onClick = { onShowToast("Secondary button clicked", ToastType.Info) },
             style = AppButtonStyle.Secondary,
             modifier = Modifier.fillMaxWidth(),
         )
         AppButton(
-            text = "Tertiary Button",
+            text = stringResource(Res.string.theme_demo_tertiary_button),
             onClick = { onShowToast("Tertiary button clicked", ToastType.Info) },
             style = AppButtonStyle.Tertiary,
             modifier = Modifier.fillMaxWidth(),
         )
         AppButton(
-            text = "Destructive Button",
+            text = stringResource(Res.string.theme_demo_destructive_button),
             onClick = { onShowToast("Destructive action", ToastType.Warning) },
             style = AppButtonStyle.Destructive,
             modifier = Modifier.fillMaxWidth(),
         )
         AppButton(
-            text = "Outlined Button",
+            text = stringResource(Res.string.theme_demo_outlined_button),
             onClick = { onShowToast("Outlined button clicked", ToastType.Info) },
             style = AppButtonStyle.Outlined,
             modifier = Modifier.fillMaxWidth(),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             AppButton(
-                text = "Small",
+                text = stringResource(Res.string.theme_demo_size_small),
                 onClick = { },
                 size = AppButtonSize.Small,
             )
             AppButton(
-                text = "Medium",
+                text = stringResource(Res.string.theme_demo_size_medium),
                 onClick = { },
                 size = AppButtonSize.Medium,
             )
             AppButton(
-                text = "Large",
+                text = stringResource(Res.string.theme_demo_size_large),
                 onClick = { },
                 size = AppButtonSize.Large,
             )
@@ -291,48 +341,21 @@ private fun TextFieldsDemo(value: String, onValueChange: (String) -> Unit, valid
         AppTextField(
             value = value,
             onValueChange = onValueChange,
-            label = "Standard Text Field",
-            placeholder = "Enter text...",
+            label = stringResource(Res.string.theme_demo_text_field_label),
+            placeholder = stringResource(Res.string.theme_demo_text_field_placeholder),
         )
         AppTextField(
             value = value,
             onValueChange = onValueChange,
-            label = "Text Field with Validation",
-            placeholder = "Type at least 3 characters...",
+            label = stringResource(Res.string.theme_demo_text_field_validation_label),
+            placeholder = stringResource(Res.string.theme_demo_text_field_validation),
             validationState = validationState,
         )
         AppSearchField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = "Search products...",
+            placeholder = stringResource(Res.string.theme_demo_search_placeholder),
         )
-    }
-}
-
-@Composable
-private fun CardsDemo() {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        AppCard(style = AppCardStyle.Elevated) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Elevated Card", style = MaterialTheme.typography.titleMedium)
-                Text("This card has elevation/shadow", style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-        AppCard(style = AppCardStyle.Outlined) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Outlined Card", style = MaterialTheme.typography.titleMedium)
-                Text("This card has a border", style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-        AppCard(
-            style = AppCardStyle.Filled,
-            containerColor = AppColors.PrimaryLight.copy(alpha = 0.1f),
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Filled Card", style = MaterialTheme.typography.titleMedium)
-                Text("This card has a background color", style = MaterialTheme.typography.bodyMedium)
-            }
-        }
     }
 }
 
@@ -391,28 +414,28 @@ private fun ToastsDemo(onShowToast: (String, ToastType) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         AppButton(
-            text = "Success",
+            text = stringResource(Res.string.theme_demo_success),
             onClick = { onShowToast("Operation successful!", ToastType.Success) },
             style = AppButtonStyle.Secondary,
             size = AppButtonSize.Small,
             modifier = Modifier.weight(1f),
         )
         AppButton(
-            text = "Error",
+            text = stringResource(Res.string.theme_demo_error),
             onClick = { onShowToast("Something went wrong!", ToastType.Error) },
             style = AppButtonStyle.Destructive,
             size = AppButtonSize.Small,
             modifier = Modifier.weight(1f),
         )
         AppButton(
-            text = "Warning",
+            text = stringResource(Res.string.theme_demo_warning),
             onClick = { onShowToast("Please check your input", ToastType.Warning) },
             style = AppButtonStyle.Tertiary,
             size = AppButtonSize.Small,
             modifier = Modifier.weight(1f),
         )
         AppButton(
-            text = "Info",
+            text = stringResource(Res.string.theme_demo_info),
             onClick = { onShowToast("New update available", ToastType.Info) },
             style = AppButtonStyle.Primary,
             size = AppButtonSize.Small,

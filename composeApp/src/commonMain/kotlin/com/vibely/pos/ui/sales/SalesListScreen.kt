@@ -63,10 +63,14 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.common_date
+import vibely_pos.composeapp.generated.resources.common_refresh
+import vibely_pos.composeapp.generated.resources.common_refreshing
+import vibely_pos.composeapp.generated.resources.common_retry
 import vibely_pos.composeapp.generated.resources.common_status
 import vibely_pos.composeapp.generated.resources.common_total
 import vibely_pos.composeapp.generated.resources.sales_invoice_number
 import vibely_pos.composeapp.generated.resources.sales_payment
+import vibely_pos.composeapp.generated.resources.sales_search_placeholder
 import vibely_pos.composeapp.generated.resources.sales_title
 
 @Composable
@@ -124,7 +128,14 @@ fun SalesListScreen(onNavigate: (Screen) -> Unit = {}, modifier: Modifier = Modi
                 }
 
                 AppButton(
-                    text = if (state.isRefreshing) "Refreshing..." else "Refresh",
+                    text =
+                    if (state.isRefreshing) {
+                        stringResource(
+                            Res.string.common_refreshing,
+                        )
+                    } else {
+                        stringResource(Res.string.common_refresh)
+                    },
                     onClick = { viewModel.onRefresh() },
                     style = AppButtonStyle.Outlined,
                     enabled = !state.isRefreshing,
@@ -143,7 +154,7 @@ fun SalesListScreen(onNavigate: (Screen) -> Unit = {}, modifier: Modifier = Modi
             AppTextField(
                 value = state.searchQuery,
                 onValueChange = { viewModel.onSearchQueryChange(it) },
-                placeholder = "Search by invoice number or ID...",
+                placeholder = stringResource(Res.string.sales_search_placeholder),
                 leadingIcon = {
                     Icon(
                         imageVector = FontAwesomeIcons.Solid.Search,
@@ -476,7 +487,7 @@ private fun ErrorState(message: String, onRetry: () -> Unit) {
         size = EmptyStateSize.Large,
         action = {
             AppButton(
-                text = "Retry",
+                text = stringResource(Res.string.common_retry),
                 onClick = onRetry,
                 style = AppButtonStyle.Primary,
             )

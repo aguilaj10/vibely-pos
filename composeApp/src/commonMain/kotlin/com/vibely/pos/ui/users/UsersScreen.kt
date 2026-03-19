@@ -68,8 +68,14 @@ import compose.icons.fontawesomeicons.solid.Users
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.filter_all_roles
+import vibely_pos.composeapp.generated.resources.filter_all_statuses
+import vibely_pos.composeapp.generated.resources.filter_clear_filters
 import vibely_pos.composeapp.generated.resources.users_add
+import vibely_pos.composeapp.generated.resources.users_kpi_active_users
+import vibely_pos.composeapp.generated.resources.users_kpi_total_users
 import vibely_pos.composeapp.generated.resources.users_no_users_found
+import vibely_pos.composeapp.generated.resources.users_search_placeholder
 
 @Composable
 fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: UsersViewModel = koinInject()) {
@@ -203,7 +209,7 @@ private fun UsersHeader(
                 onValueChange = onSearchQueryChange,
                 modifier = Modifier.width(480.dp),
                 variant = AppTextFieldVariant.Outlined,
-                placeholder = "Search by name or email...",
+                placeholder = stringResource(Res.string.users_search_placeholder),
                 leadingIcon = {
                     Icon(
                         imageVector = FontAwesomeIcons.Solid.Search,
@@ -258,7 +264,7 @@ private fun UsersHeader(
 
             if (selectedRole != null || selectedStatus != null) {
                 AppButton(
-                    text = "Clear Filters",
+                    text = stringResource(Res.string.filter_clear_filters),
                     onClick = onClearFilters,
                     style = AppButtonStyle.Text,
                     icon = {
@@ -289,7 +295,7 @@ private fun RoleFilterDropdown(selectedRole: UserRole?, onRoleChange: (UserRole?
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = selectedRole?.displayName() ?: "All Roles",
+                    text = selectedRole?.displayName() ?: stringResource(Res.string.filter_all_roles),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -308,7 +314,7 @@ private fun RoleFilterDropdown(selectedRole: UserRole?, onRoleChange: (UserRole?
             onDismissRequest = { expanded = false },
         ) {
             DropdownMenuItem(
-                text = { Text("All Roles") },
+                text = { Text(stringResource(Res.string.filter_all_roles)) },
                 onClick = {
                     onRoleChange(null)
                     expanded = false
@@ -342,7 +348,9 @@ private fun StatusFilterDropdown(selectedStatus: UserStatus?, onStatusChange: (U
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = selectedStatus?.name?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "All Statuses",
+                    text =
+                    selectedStatus?.name?.lowercase()?.replaceFirstChar { it.uppercase() }
+                        ?: stringResource(Res.string.filter_all_statuses),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -361,7 +369,7 @@ private fun StatusFilterDropdown(selectedStatus: UserStatus?, onStatusChange: (U
             onDismissRequest = { expanded = false },
         ) {
             DropdownMenuItem(
-                text = { Text("All Statuses") },
+                text = { Text(stringResource(Res.string.filter_all_statuses)) },
                 onClick = {
                     onStatusChange(null)
                     expanded = false
@@ -391,7 +399,7 @@ private fun KpiCardsRow(totalUsers: Int, activeUsers: Int) {
     ) {
         KpiCard(
             icon = FontAwesomeIcons.Solid.Users,
-            label = "Total Users",
+            label = stringResource(Res.string.users_kpi_total_users),
             value = totalUsers.toString(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -399,7 +407,7 @@ private fun KpiCardsRow(totalUsers: Int, activeUsers: Int) {
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.UserCheck,
-            label = "Active Users",
+            label = stringResource(Res.string.users_kpi_active_users),
             value = activeUsers.toString(),
             valueColor = AppColors.Success,
             modifier = Modifier.weight(1f),

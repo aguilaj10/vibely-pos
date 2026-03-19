@@ -12,6 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.theme.AppColors
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_active
+import vibely_pos.composeapp.generated.resources.common_inactive
 
 enum class StatusChipVariant {
     Active,
@@ -35,19 +39,20 @@ fun StatusChip(label: String, variant: StatusChipVariant, modifier: Modifier = M
     val (backgroundColor, textColor) = getVariantColors(variant)
     val paddingHorizontal = if (size == StatusChipSize.Small) 8.dp else 12.dp
     val paddingVertical = if (size == StatusChipSize.Small) 2.dp else 4.dp
-    val textStyle = if (size == StatusChipSize.Small) {
-        MaterialTheme.typography.labelSmall
-    } else {
-        MaterialTheme.typography.labelMedium
-    }
+    val textStyle =
+        if (size == StatusChipSize.Small) {
+            MaterialTheme.typography.labelSmall
+        } else {
+            MaterialTheme.typography.labelMedium
+        }
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .background(
                 color = backgroundColor,
                 shape = RoundedCornerShape(100.dp),
-            )
-            .padding(horizontal = paddingHorizontal, vertical = paddingVertical),
+            ).padding(horizontal = paddingHorizontal, vertical = paddingVertical),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -73,21 +78,30 @@ private fun getVariantColors(variant: StatusChipVariant): Pair<Color, Color> = w
 
 @Composable
 fun ActiveStatusChip(modifier: Modifier = Modifier) {
-    StatusChip(label = "Active", variant = StatusChipVariant.Active, modifier = modifier)
+    StatusChip(
+        label = stringResource(Res.string.common_active),
+        variant = StatusChipVariant.Active,
+        modifier = modifier,
+    )
 }
 
 @Composable
 fun InactiveStatusChip(modifier: Modifier = Modifier) {
-    StatusChip(label = "Inactive", variant = StatusChipVariant.Inactive, modifier = modifier)
+    StatusChip(
+        label = stringResource(Res.string.common_inactive),
+        variant = StatusChipVariant.Inactive,
+        modifier = modifier,
+    )
 }
 
 @Composable
 fun StockStatusChip(stockLevel: StockLevel, modifier: Modifier = Modifier) {
-    val (label, variant) = when (stockLevel) {
-        StockLevel.Low -> "Low Stock" to StatusChipVariant.StockLow
-        StockLevel.Medium -> "Medium Stock" to StatusChipVariant.StockMedium
-        StockLevel.Good -> "In Stock" to StatusChipVariant.StockGood
-    }
+    val (label, variant) =
+        when (stockLevel) {
+            StockLevel.Low -> "Low Stock" to StatusChipVariant.StockLow
+            StockLevel.Medium -> "Medium Stock" to StatusChipVariant.StockMedium
+            StockLevel.Good -> "In Stock" to StatusChipVariant.StockGood
+        }
     StatusChip(label = label, variant = variant, modifier = modifier)
 }
 

@@ -18,6 +18,11 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.BoxOpen
 import compose.icons.fontawesomeicons.solid.ChartBar
 import compose.icons.fontawesomeicons.solid.ShoppingCart
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.quick_action_inventory
+import vibely_pos.composeapp.generated.resources.quick_action_new_sale
+import vibely_pos.composeapp.generated.resources.quick_action_reports
 
 /**
  * Quick action buttons component for dashboard.
@@ -33,14 +38,15 @@ import compose.icons.fontawesomeicons.solid.ShoppingCart
 @Composable
 fun QuickActionButtons(onActionClick: (QuickAction) -> Unit, modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         // New Sale button
         AppButton(
-            text = "New Sale",
+            text = stringResource(Res.string.quick_action_new_sale),
             icon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.ShoppingCart,
@@ -56,7 +62,7 @@ fun QuickActionButtons(onActionClick: (QuickAction) -> Unit, modifier: Modifier 
 
         // Inventory button
         AppButton(
-            text = "Inventory",
+            text = stringResource(Res.string.quick_action_inventory),
             icon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.BoxOpen,
@@ -72,7 +78,7 @@ fun QuickActionButtons(onActionClick: (QuickAction) -> Unit, modifier: Modifier 
 
         // Reports button
         AppButton(
-            text = "Reports",
+            text = stringResource(Res.string.quick_action_reports),
             icon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.ChartBar,

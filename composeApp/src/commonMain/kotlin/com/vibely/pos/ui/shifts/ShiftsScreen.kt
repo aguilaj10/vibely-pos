@@ -66,6 +66,11 @@ import vibely_pos.composeapp.generated.resources.shifts_card_sales
 import vibely_pos.composeapp.generated.resources.shifts_cash_sales
 import vibely_pos.composeapp.generated.resources.shifts_close
 import vibely_pos.composeapp.generated.resources.shifts_current
+import vibely_pos.composeapp.generated.resources.shifts_metric_open_shifts
+import vibely_pos.composeapp.generated.resources.shifts_metric_opened
+import vibely_pos.composeapp.generated.resources.shifts_metric_todays_sales
+import vibely_pos.composeapp.generated.resources.shifts_metric_total_discrepancy
+import vibely_pos.composeapp.generated.resources.shifts_metric_total_sales
 import vibely_pos.composeapp.generated.resources.shifts_no_shifts_found
 import vibely_pos.composeapp.generated.resources.shifts_open
 import vibely_pos.composeapp.generated.resources.shifts_opening_balance
@@ -238,7 +243,10 @@ private fun CurrentShiftCard(shift: Shift) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
-                ShiftInfoItem(label = "Opened", value = FormatUtils.formatDateTime(shift.openedAt))
+                ShiftInfoItem(
+                    label = stringResource(Res.string.shifts_metric_opened),
+                    value = FormatUtils.formatDateTime(shift.openedAt),
+                )
                 ShiftInfoItem(
                     label = stringResource(Res.string.shifts_opening_balance),
                     value = shift.openingBalance.formatCurrency(),
@@ -251,7 +259,10 @@ private fun CurrentShiftCard(shift: Shift) {
                     label = stringResource(Res.string.shifts_card_sales),
                     value = shift.totalCard.formatCurrency(),
                 )
-                ShiftInfoItem(label = "Total Sales", value = shift.totalSales.formatCurrency())
+                ShiftInfoItem(
+                    label = stringResource(Res.string.shifts_metric_total_sales),
+                    value = shift.totalSales.formatCurrency(),
+                )
             }
         }
     }
@@ -284,7 +295,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
     ) {
         KpiCard(
             icon = FontAwesomeIcons.Solid.Clock,
-            label = "Open Shifts",
+            label = stringResource(Res.string.shifts_metric_open_shifts),
             value = openShiftsCount.toString(),
             valueColor = if (openShiftsCount > 0) AppColors.Success else MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -292,7 +303,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.DollarSign,
-            label = "Today's Sales",
+            label = stringResource(Res.string.shifts_metric_todays_sales),
             value = todaysSales.formatCurrency(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -300,7 +311,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.ExclamationTriangle,
-            label = "Total Discrepancy",
+            label = stringResource(Res.string.shifts_metric_total_discrepancy),
             value = totalDiscrepancy.formatCurrency(),
             valueColor = getDiscrepancyColor(totalDiscrepancy),
             modifier = Modifier.weight(1f),

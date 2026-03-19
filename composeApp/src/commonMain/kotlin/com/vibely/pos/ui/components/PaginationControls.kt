@@ -23,13 +23,19 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.ChevronLeft
 import compose.icons.fontawesomeicons.solid.ChevronRight
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.pagination_page
 
 @Composable
 fun PaginationControls(paginationState: PaginationState, onPreviousPage: () -> Unit, onNextPage: () -> Unit, modifier: Modifier = Modifier) {
     if (!paginationState.hasPreviousPage && !paginationState.hasNextPage) return
 
+    val pageText = stringResource(Res.string.pagination_page, paginationState.currentPage)
+
     Row(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.Center,
@@ -38,7 +44,8 @@ fun PaginationControls(paginationState: PaginationState, onPreviousPage: () -> U
         IconButton(
             onClick = onPreviousPage,
             enabled = paginationState.hasPreviousPage,
-            modifier = Modifier.semantics {
+            modifier =
+            Modifier.semantics {
                 contentDescription = "Previous page"
             },
         ) {
@@ -53,11 +60,12 @@ fun PaginationControls(paginationState: PaginationState, onPreviousPage: () -> U
         Spacer(modifier = Modifier.width(16.dp))
 
         Text(
-            text = "Page ${paginationState.currentPage}",
+            text = pageText,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.semantics {
-                contentDescription = "Page ${paginationState.currentPage}"
+            modifier =
+            Modifier.semantics {
+                contentDescription = pageText
             },
         )
 
@@ -66,7 +74,8 @@ fun PaginationControls(paginationState: PaginationState, onPreviousPage: () -> U
         IconButton(
             onClick = onNextPage,
             enabled = paginationState.hasNextPage,
-            modifier = Modifier.semantics {
+            modifier =
+            Modifier.semantics {
                 contentDescription = "Next page"
             },
         ) {

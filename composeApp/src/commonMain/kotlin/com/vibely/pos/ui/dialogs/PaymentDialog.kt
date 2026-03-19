@@ -38,8 +38,10 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Times
 import org.jetbrains.compose.resources.stringResource
 import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.checkout_complete_sale
 import vibely_pos.composeapp.generated.resources.common_cancel
 import vibely_pos.composeapp.generated.resources.payment_add
+import vibely_pos.composeapp.generated.resources.payment_amount_placeholder
 import vibely_pos.composeapp.generated.resources.payment_dialog_title
 import vibely_pos.composeapp.generated.resources.payment_method_card
 import vibely_pos.composeapp.generated.resources.payment_method_cash
@@ -185,7 +187,7 @@ fun PaymentDialog(
                     AppTextField(
                         value = amountInput,
                         onValueChange = { amountInput = it },
-                        placeholder = "Amount",
+                        placeholder = stringResource(Res.string.payment_amount_placeholder),
                         modifier = Modifier.weight(1f),
                         enabled = !isProcessing,
                     )
@@ -285,7 +287,7 @@ fun PaymentDialog(
                             modifier = Modifier.weight(1f),
                         )
                         AppButton(
-                            text = "Complete Sale",
+                            text = stringResource(Res.string.checkout_complete_sale),
                             onClick = onComplete,
                             style = AppButtonStyle.Primary,
                             modifier = Modifier.weight(1f),

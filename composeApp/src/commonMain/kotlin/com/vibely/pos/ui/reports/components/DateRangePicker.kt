@@ -31,6 +31,12 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Calendar
 import compose.icons.fontawesomeicons.solid.CalendarAlt
 import compose.icons.fontawesomeicons.solid.Clock
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.reports_date_custom
+import vibely_pos.composeapp.generated.resources.reports_date_this_month
+import vibely_pos.composeapp.generated.resources.reports_date_this_week
+import vibely_pos.composeapp.generated.resources.reports_date_today
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
@@ -51,21 +57,21 @@ fun DateRangePicker(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         PeriodChip(
-            label = "Today",
+            label = stringResource(Res.string.reports_date_today),
             icon = FontAwesomeIcons.Solid.Clock,
             isSelected = selectedPeriod == ReportPeriod.TODAY,
             onClick = { onPeriodSelected(ReportPeriod.TODAY, null, null) },
         )
 
         PeriodChip(
-            label = "This Week",
+            label = stringResource(Res.string.reports_date_this_week),
             icon = FontAwesomeIcons.Solid.CalendarAlt,
             isSelected = selectedPeriod == ReportPeriod.THIS_WEEK,
             onClick = { onPeriodSelected(ReportPeriod.THIS_WEEK, null, null) },
         )
 
         PeriodChip(
-            label = "This Month",
+            label = stringResource(Res.string.reports_date_this_month),
             icon = FontAwesomeIcons.Solid.Calendar,
             isSelected = selectedPeriod == ReportPeriod.THIS_MONTH,
             onClick = { onPeriodSelected(ReportPeriod.THIS_MONTH, null, null) },
@@ -74,11 +80,11 @@ fun DateRangePicker(
         PeriodChip(
             label =
             if (selectedPeriod == ReportPeriod.CUSTOM && customStartDate != null && customEndDate != null) {
-                "Custom: ${FormatUtils.formatShortDate(
+                "${stringResource(Res.string.reports_date_custom)}: ${FormatUtils.formatShortDate(
                     customStartDate,
                 )} - ${FormatUtils.formatShortDate(customEndDate)}"
             } else {
-                "Custom"
+                stringResource(Res.string.reports_date_custom)
             },
             icon = FontAwesomeIcons.Solid.Calendar,
             isSelected = selectedPeriod == ReportPeriod.CUSTOM,

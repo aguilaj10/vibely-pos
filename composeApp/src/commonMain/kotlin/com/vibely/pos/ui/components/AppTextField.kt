@@ -34,11 +34,17 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Check
 import compose.icons.fontawesomeicons.solid.ExclamationTriangle
 import compose.icons.fontawesomeicons.solid.TimesCircle
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_close_icon
 
 sealed class ValidationState {
     object None : ValidationState()
+
     object Valid : ValidationState()
+
     data class Error(val message: String) : ValidationState()
+
     data class Warning(val message: String) : ValidationState()
 }
 
@@ -69,44 +75,49 @@ fun AppTextField(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     when (variant) {
-        AppTextFieldVariant.Outlined -> OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = modifier.fillMaxWidth(),
-            label = label?.let { { Text(it) } },
-            placeholder = placeholder?.let { { Text(it) } },
-            leadingIcon = leadingIcon,
-            trailingIcon = trailingIcon ?: getValidationIcon(validationState),
-            enabled = enabled,
-            readOnly = readOnly,
-            singleLine = singleLine,
-            maxLines = maxLines,
-            visualTransformation = visualTransformation,
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-            isError = validationState is ValidationState.Error,
-            colors = getOutlinedTextFieldColors(validationState),
-            shape = shape,
-            interactionSource = interactionSource,
-        )
-        AppTextFieldVariant.Filled -> FilledTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = modifier.fillMaxWidth(),
-            label = label,
-            placeholder = placeholder,
-            leadingIcon = leadingIcon,
-            trailingIcon = trailingIcon,
-            validationState = validationState,
-            enabled = enabled,
-            readOnly = readOnly,
-            singleLine = singleLine,
-            maxLines = maxLines,
-            visualTransformation = visualTransformation,
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-            shape = shape,
-        )
+        AppTextFieldVariant.Outlined -> {
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = modifier.fillMaxWidth(),
+                label = label?.let { { Text(it) } },
+                placeholder = placeholder?.let { { Text(it) } },
+                leadingIcon = leadingIcon,
+                trailingIcon = trailingIcon ?: getValidationIcon(validationState),
+                enabled = enabled,
+                readOnly = readOnly,
+                singleLine = singleLine,
+                maxLines = maxLines,
+                visualTransformation = visualTransformation,
+                keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
+                isError = validationState is ValidationState.Error,
+                colors = getOutlinedTextFieldColors(validationState),
+                shape = shape,
+                interactionSource = interactionSource,
+            )
+        }
+
+        AppTextFieldVariant.Filled -> {
+            FilledTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = modifier.fillMaxWidth(),
+                label = label,
+                placeholder = placeholder,
+                leadingIcon = leadingIcon,
+                trailingIcon = trailingIcon,
+                validationState = validationState,
+                enabled = enabled,
+                readOnly = readOnly,
+                singleLine = singleLine,
+                maxLines = maxLines,
+                visualTransformation = visualTransformation,
+                keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
+                shape = shape,
+            )
+        }
     }
 }
 
@@ -130,12 +141,13 @@ private fun FilledTextField(
     shape: Shape = PosShapes.InputField,
 ) {
     val isError = validationState is ValidationState.Error
-    val borderColor = when {
-        isError -> AppColors.Error
-        validationState is ValidationState.Warning -> AppColors.Warning
-        validationState is ValidationState.Valid -> AppColors.Success
-        else -> Color.Transparent
-    }
+    val borderColor =
+        when {
+            isError -> AppColors.Error
+            validationState is ValidationState.Warning -> AppColors.Warning
+            validationState is ValidationState.Valid -> AppColors.Success
+            else -> Color.Transparent
+        }
 
     Column(modifier = modifier) {
         TextField(
@@ -154,7 +166,8 @@ private fun FilledTextField(
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             isError = isError,
-            colors = TextFieldDefaults.colors(
+            colors =
+            TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
@@ -175,6 +188,7 @@ private fun FilledTextField(
                     modifier = Modifier.padding(start = 16.dp),
                 )
             }
+
             is ValidationState.Warning -> {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -184,6 +198,7 @@ private fun FilledTextField(
                     modifier = Modifier.padding(start = 16.dp),
                 )
             }
+
             ValidationState.Valid, ValidationState.None -> {}
         }
     }
@@ -201,6 +216,7 @@ private fun getValidationIcon(state: ValidationState): (@Composable () -> Unit)?
             )
         }
     }
+
     is ValidationState.Warning -> {
         {
             Icon(
@@ -211,6 +227,7 @@ private fun getValidationIcon(state: ValidationState): (@Composable () -> Unit)?
             )
         }
     }
+
     is ValidationState.Valid -> {
         {
             Icon(
@@ -221,24 +238,38 @@ private fun getValidationIcon(state: ValidationState): (@Composable () -> Unit)?
             )
         }
     }
-    is ValidationState.None -> null
+
+    is ValidationState.None -> {
+        null
+    }
 }
 
 @Composable
 private fun getOutlinedTextFieldColors(state: ValidationState): TextFieldColors = when (state) {
-    is ValidationState.Error -> OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = AppColors.Error,
-        unfocusedBorderColor = AppColors.Error.copy(alpha = 0.5f),
-    )
-    is ValidationState.Warning -> OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = AppColors.Warning,
-        unfocusedBorderColor = AppColors.Warning.copy(alpha = 0.5f),
-    )
-    ValidationState.Valid -> OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = AppColors.Success,
-        unfocusedBorderColor = AppColors.Success.copy(alpha = 0.5f),
-    )
-    ValidationState.None -> OutlinedTextFieldDefaults.colors()
+    is ValidationState.Error -> {
+        OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = AppColors.Error,
+            unfocusedBorderColor = AppColors.Error.copy(alpha = 0.5f),
+        )
+    }
+
+    is ValidationState.Warning -> {
+        OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = AppColors.Warning,
+            unfocusedBorderColor = AppColors.Warning.copy(alpha = 0.5f),
+        )
+    }
+
+    ValidationState.Valid -> {
+        OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = AppColors.Success,
+            unfocusedBorderColor = AppColors.Success.copy(alpha = 0.5f),
+        )
+    }
+
+    ValidationState.None -> {
+        OutlinedTextFieldDefaults.colors()
+    }
 }
 
 @Composable
@@ -258,15 +289,17 @@ fun AppSearchField(
         enabled = enabled,
         singleLine = true,
         variant = variant,
-        trailingIcon = if (value.isNotEmpty()) {
+        trailingIcon =
+        if (value.isNotEmpty()) {
             {
                 IconButton(
                     onClick = { onValueChange("") },
-                    modifier = Modifier.semantics {
+                    modifier =
+                    Modifier.semantics {
                         contentDescription = "Clear search"
                     },
                 ) {
-                    Text("✕")
+                    Text(stringResource(Res.string.common_close_icon))
                 }
             }
         } else {

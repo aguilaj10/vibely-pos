@@ -58,7 +58,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.customers_add
+import vibely_pos.composeapp.generated.resources.customers_kpi_active_customers
+import vibely_pos.composeapp.generated.resources.customers_kpi_total_customers
+import vibely_pos.composeapp.generated.resources.customers_kpi_total_loyalty_points
 import vibely_pos.composeapp.generated.resources.customers_no_customers_found
+import vibely_pos.composeapp.generated.resources.customers_search_placeholder
 
 @Composable
 fun CustomersScreen(
@@ -188,7 +192,7 @@ private fun CustomersHeader(searchQuery: String, onSearchQueryChange: (String) -
             onValueChange = onSearchQueryChange,
             modifier = Modifier.width(480.dp),
             variant = AppTextFieldVariant.Outlined,
-            placeholder = "Search by name, email, or phone...",
+            placeholder = stringResource(Res.string.customers_search_placeholder),
             leadingIcon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
@@ -237,7 +241,7 @@ private fun KpiCardsRow(totalCustomers: Int, activeCustomers: Int, totalLoyaltyP
     ) {
         KpiCard(
             icon = FontAwesomeIcons.Solid.User,
-            label = "Total Customers",
+            label = stringResource(Res.string.customers_kpi_total_customers),
             value = totalCustomers.toString(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -245,7 +249,7 @@ private fun KpiCardsRow(totalCustomers: Int, activeCustomers: Int, totalLoyaltyP
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.Store,
-            label = "Active Customers",
+            label = stringResource(Res.string.customers_kpi_active_customers),
             value = activeCustomers.toString(),
             valueColor = AppColors.Success,
             modifier = Modifier.weight(1f),
@@ -253,7 +257,7 @@ private fun KpiCardsRow(totalCustomers: Int, activeCustomers: Int, totalLoyaltyP
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.UserPlus,
-            label = "Total Loyalty Points",
+            label = stringResource(Res.string.customers_kpi_total_loyalty_points),
             value = formatNumber(totalLoyaltyPoints),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),

@@ -12,6 +12,12 @@ import com.vibely.pos.ui.components.StatusChip
 import com.vibely.pos.ui.components.StatusChipVariant
 import com.vibely.pos.ui.components.TableColumn
 import com.vibely.pos.ui.utils.formatCurrency
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.dashboard_transaction_column_amount
+import vibely_pos.composeapp.generated.resources.dashboard_transaction_column_invoice
+import vibely_pos.composeapp.generated.resources.dashboard_transaction_column_status
+import vibely_pos.composeapp.generated.resources.dashboard_transaction_column_time
 
 /**
  * Recent transactions table component for dashboard.
@@ -32,10 +38,26 @@ fun RecentTransactionsTable(
     DataTable(
         columns =
         listOf(
-            TableColumn(key = "invoice", label = "Invoice", width = 120.dp),
-            TableColumn(key = "time", label = "Time", width = 100.dp),
-            TableColumn(key = "amount", label = "Amount", width = 100.dp),
-            TableColumn(key = "status", label = "Status", width = 120.dp),
+            TableColumn(
+                key = "invoice",
+                label = stringResource(Res.string.dashboard_transaction_column_invoice),
+                width = 120.dp,
+            ),
+            TableColumn(
+                key = "time",
+                label = stringResource(Res.string.dashboard_transaction_column_time),
+                width = 100.dp,
+            ),
+            TableColumn(
+                key = "amount",
+                label = stringResource(Res.string.dashboard_transaction_column_amount),
+                width = 100.dp,
+            ),
+            TableColumn(
+                key = "status",
+                label = stringResource(Res.string.dashboard_transaction_column_status),
+                width = 120.dp,
+            ),
         ),
         data = transactions,
         rowKey = { it.invoiceNumber },

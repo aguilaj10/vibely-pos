@@ -62,7 +62,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.categories_add
+import vibely_pos.composeapp.generated.resources.categories_all_categories
+import vibely_pos.composeapp.generated.resources.categories_kpi_avg_per_category
+import vibely_pos.composeapp.generated.resources.categories_kpi_largest_category
+import vibely_pos.composeapp.generated.resources.categories_kpi_total_categories
+import vibely_pos.composeapp.generated.resources.categories_kpi_total_products
 import vibely_pos.composeapp.generated.resources.categories_search_placeholder
+import vibely_pos.composeapp.generated.resources.categories_top_categories
 import vibely_pos.composeapp.generated.resources.common_clear
 import vibely_pos.composeapp.generated.resources.common_search
 import vibely_pos.composeapp.generated.resources.inventory_no_categories_display
@@ -230,7 +236,7 @@ private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory
     ) {
         KpiCard(
             icon = FontAwesomeIcons.Solid.Tags,
-            label = "Total Categories",
+            label = stringResource(Res.string.categories_kpi_total_categories),
             value = totalCategories.toString(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -238,7 +244,7 @@ private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.Boxes,
-            label = "Total Products",
+            label = stringResource(Res.string.categories_kpi_total_products),
             value = totalProducts.toString(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -246,7 +252,7 @@ private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.Folder,
-            label = "Avg per Category",
+            label = stringResource(Res.string.categories_kpi_avg_per_category),
             value = avgPerCategory.toString(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -254,7 +260,7 @@ private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.Tags,
-            label = "Largest Category",
+            label = stringResource(Res.string.categories_kpi_largest_category),
             value = if (largestCategory.length > 12) largestCategory.take(12) + "..." else largestCategory,
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -321,7 +327,7 @@ private fun CategoriesContent(
         if (categories.isNotEmpty()) {
             item {
                 Text(
-                    text = "Top Categories",
+                    text = stringResource(Res.string.categories_top_categories),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -339,7 +345,7 @@ private fun CategoriesContent(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "All Categories",
+                    text = stringResource(Res.string.categories_all_categories),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,

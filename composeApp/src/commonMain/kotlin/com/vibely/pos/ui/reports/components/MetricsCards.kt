@@ -16,6 +16,12 @@ import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.theme.AppColors
 import com.vibely.pos.ui.utils.formatCurrency
 import com.vibely.pos.ui.utils.formatPercentage
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.reports_metric_profit_margin
+import vibely_pos.composeapp.generated.resources.reports_metric_total_profit
+import vibely_pos.composeapp.generated.resources.reports_metric_total_sales
+import vibely_pos.composeapp.generated.resources.reports_metric_transactions
 
 @Composable
 fun MetricsCards(totalSales: Long, totalProfit: Long, profitMargin: Float, transactionCount: Int, modifier: Modifier = Modifier) {
@@ -24,23 +30,24 @@ fun MetricsCards(totalSales: Long, totalProfit: Long, profitMargin: Float, trans
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         MetricCard(
-            label = "Total Sales",
+            label = stringResource(Res.string.reports_metric_total_sales),
             value = totalSales.formatCurrency(),
             color = AppColors.Primary,
             modifier = Modifier.weight(1f),
         )
 
         MetricCard(
-            label = "Total Profit",
+            label = stringResource(Res.string.reports_metric_total_profit),
             value = totalProfit.formatCurrency(),
             color = if (totalProfit >= 0) AppColors.Success else AppColors.Error,
             modifier = Modifier.weight(1f),
         )
 
         MetricCard(
-            label = "Profit Margin",
+            label = stringResource(Res.string.reports_metric_profit_margin),
             value = profitMargin.toDouble().formatPercentage(1),
-            color = when {
+            color =
+            when {
                 profitMargin >= 30 -> AppColors.Success
                 profitMargin >= 15 -> AppColors.Warning
                 else -> AppColors.Error
@@ -49,7 +56,7 @@ fun MetricsCards(totalSales: Long, totalProfit: Long, profitMargin: Float, trans
         )
 
         MetricCard(
-            label = "Transactions",
+            label = stringResource(Res.string.reports_metric_transactions),
             value = transactionCount.toString(),
             color = AppColors.Info,
             modifier = Modifier.weight(1f),

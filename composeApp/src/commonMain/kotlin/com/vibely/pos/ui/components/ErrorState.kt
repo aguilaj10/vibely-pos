@@ -21,6 +21,9 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.ExclamationCircle
 import compose.icons.fontawesomeicons.solid.Sync
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.error_something_went_wrong
 
 /**
  * Reusable error state component for Vibely POS.
@@ -43,7 +46,8 @@ fun ErrorState(
     retryButtonText: String = "Try Again",
 ) {
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -61,7 +65,7 @@ fun ErrorState(
 
         // Title
         Text(
-            text = title ?: "Oops! Something went wrong",
+            text = title ?: stringResource(Res.string.error_something_went_wrong),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,

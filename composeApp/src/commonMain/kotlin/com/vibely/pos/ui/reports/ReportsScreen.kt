@@ -45,6 +45,8 @@ import compose.icons.fontawesomeicons.solid.Users
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_refresh
+import vibely_pos.composeapp.generated.resources.common_refreshing
 import vibely_pos.composeapp.generated.resources.reports_category_breakdown
 import vibely_pos.composeapp.generated.resources.reports_loading
 import vibely_pos.composeapp.generated.resources.reports_sales_trend
@@ -106,7 +108,14 @@ fun ReportsScreen(
                     }
 
                     AppButton(
-                        text = if (state.isRefreshing) "Refreshing..." else "Refresh",
+                        text =
+                        if (state.isRefreshing) {
+                            stringResource(
+                                Res.string.common_refreshing,
+                            )
+                        } else {
+                            stringResource(Res.string.common_refresh)
+                        },
                         onClick = { viewModel.refreshReports() },
                         style = AppButtonStyle.Outlined,
                         enabled = !state.isRefreshing,

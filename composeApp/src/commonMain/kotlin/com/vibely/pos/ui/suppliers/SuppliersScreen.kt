@@ -58,7 +58,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.suppliers_add
+import vibely_pos.composeapp.generated.resources.suppliers_metric_active_suppliers
+import vibely_pos.composeapp.generated.resources.suppliers_metric_total_suppliers
 import vibely_pos.composeapp.generated.resources.suppliers_no_suppliers_found
+import vibely_pos.composeapp.generated.resources.suppliers_search_placeholder
 
 @Composable
 fun SuppliersScreen(
@@ -180,7 +183,7 @@ private fun SuppliersHeader(searchQuery: String, onSearchQueryChange: (String) -
             onValueChange = onSearchQueryChange,
             modifier = Modifier.width(480.dp),
             variant = AppTextFieldVariant.Outlined,
-            placeholder = "Search by name, email, or phone...",
+            placeholder = stringResource(Res.string.suppliers_search_placeholder),
             leadingIcon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
@@ -229,7 +232,7 @@ private fun KpiCardsRow(totalSuppliers: Int, activeSuppliers: Int) {
     ) {
         KpiCard(
             icon = FontAwesomeIcons.Solid.Truck,
-            label = "Total Suppliers",
+            label = stringResource(Res.string.suppliers_metric_total_suppliers),
             value = totalSuppliers.toString(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -237,7 +240,7 @@ private fun KpiCardsRow(totalSuppliers: Int, activeSuppliers: Int) {
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.Store,
-            label = "Active Suppliers",
+            label = stringResource(Res.string.suppliers_metric_active_suppliers),
             value = activeSuppliers.toString(),
             valueColor = AppColors.Success,
             modifier = Modifier.weight(1f),

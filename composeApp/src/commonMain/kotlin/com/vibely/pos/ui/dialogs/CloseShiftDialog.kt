@@ -38,6 +38,11 @@ import com.vibely.pos.ui.utils.formatCurrency
 import org.jetbrains.compose.resources.stringResource
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.form_display_denomination_total
+import vibely_pos.composeapp.generated.resources.form_display_total_cash
+import vibely_pos.composeapp.generated.resources.form_display_variance
+import vibely_pos.composeapp.generated.resources.form_label_actual_cash
+import vibely_pos.composeapp.generated.resources.form_label_notes_optional
 import vibely_pos.composeapp.generated.resources.shifts_bill_coin_breakdown
 import vibely_pos.composeapp.generated.resources.shifts_calculated_from_breakdown
 import vibely_pos.composeapp.generated.resources.shifts_card_sales
@@ -136,7 +141,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                 AppTextField(
                     value = actualCash,
                     onValueChange = { actualCash = it },
-                    label = "Actual Cash Counted *",
+                    label = stringResource(Res.string.form_label_actual_cash),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationError,
                     modifier = Modifier.fillMaxWidth(),
@@ -198,7 +203,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                 AppTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = "Notes (optional)",
+                    label = stringResource(Res.string.form_label_notes_optional),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
@@ -268,7 +273,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    text = "+ ${totalCash.formatCurrency()}",
+                    text = stringResource(Res.string.form_display_total_cash, totalCash.formatCurrency()),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                     color = AppColors.Success,
@@ -344,7 +349,18 @@ private fun VarianceDisplay(expected: Double, actual: Double, variance: Double) 
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = "${if (variance >= 0) "+" else ""}${variance.formatCurrency()}",
+                text =
+                stringResource(
+                    Res.string.form_display_variance,
+                    if (variance >=
+                        0
+                    ) {
+                        "+"
+                    } else {
+                        ""
+                    },
+                    variance.formatCurrency(),
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = varianceColor,
@@ -376,7 +392,14 @@ private fun BillCoinRow(label: String, value: String, onValueChange: (String) ->
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
         Text(
-            text = "= ${((value.toDoubleOrNull() ?: 0.0) * denomination).formatCurrency()}",
+            text =
+            stringResource(
+                Res.string.form_display_denomination_total,
+                (
+                    (value.toDoubleOrNull() ?: 0.0) *
+                        denomination
+                    ).formatCurrency(),
+            ),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.width(80.dp),
         )

@@ -16,6 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_coming_soon
 
 @Composable
 fun PlaceholderScreen(title: String, icon: ImageVector? = null, description: String? = null, modifier: Modifier = Modifier) {
@@ -46,7 +49,7 @@ fun PlaceholderScreen(title: String, icon: ImageVector? = null, description: Str
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Coming Soon",
+                text = stringResource(Res.string.common_coming_soon),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

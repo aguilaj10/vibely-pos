@@ -61,7 +61,12 @@ import compose.icons.fontawesomeicons.solid.ChevronDown
 import compose.icons.fontawesomeicons.solid.ChevronLeft
 import compose.icons.fontawesomeicons.solid.ChevronRight
 import compose.icons.fontawesomeicons.solid.ChevronUp
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.app_name
+import vibely_pos.composeapp.generated.resources.checkout_point_of_sale
+import vibely_pos.composeapp.generated.resources.checkout_pos_abbr
 
 /**
  * Navigation group data structure for collapsible sidebar sections.
@@ -174,14 +179,14 @@ fun LeftSidebarNavigation(backStack: MutableList<Screen>, currentScreen: Screen,
                     ) {
                         Column {
                             Text(
-                                text = "POS",
+                                text = stringResource(Res.string.checkout_pos_abbr),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "Point of Sale",
+                                text = stringResource(Res.string.checkout_point_of_sale),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -462,7 +467,7 @@ fun NavigationDrawer(currentScreen: Screen, onNavigate: (Screen) -> Unit, onLogo
     ) {
         // Header
         Text(
-            text = "Vibely POS",
+            text = stringResource(Res.string.app_name),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = 16.dp),
         )

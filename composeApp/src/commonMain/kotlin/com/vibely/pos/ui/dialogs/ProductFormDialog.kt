@@ -36,6 +36,24 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.form_currency_symbol_code
+import vibely_pos.composeapp.generated.resources.form_error_no_categories
+import vibely_pos.composeapp.generated.resources.form_error_no_currencies
+import vibely_pos.composeapp.generated.resources.form_label_barcode
+import vibely_pos.composeapp.generated.resources.form_label_category
+import vibely_pos.composeapp.generated.resources.form_label_cost_price
+import vibely_pos.composeapp.generated.resources.form_label_currency
+import vibely_pos.composeapp.generated.resources.form_label_description
+import vibely_pos.composeapp.generated.resources.form_label_min_stock
+import vibely_pos.composeapp.generated.resources.form_label_name_required
+import vibely_pos.composeapp.generated.resources.form_label_selling_price_mxn
+import vibely_pos.composeapp.generated.resources.form_label_sku
+import vibely_pos.composeapp.generated.resources.form_label_stock
+import vibely_pos.composeapp.generated.resources.form_label_unit
+import vibely_pos.composeapp.generated.resources.form_option_no_category
 
 /**
  * Product form dialog for adding or editing products.
@@ -97,7 +115,7 @@ fun ProductFormDialog(
                 AppTextField(
                     value = formData.sku,
                     onValueChange = { formData = formData.copy(sku = it) },
-                    label = "SKU *",
+                    label = stringResource(Res.string.form_label_sku),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["sku"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -108,7 +126,7 @@ fun ProductFormDialog(
                 AppTextField(
                     value = formData.name,
                     onValueChange = { formData = formData.copy(name = it) },
-                    label = "Name *",
+                    label = stringResource(Res.string.form_label_name_required),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["name"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -119,7 +137,7 @@ fun ProductFormDialog(
                 AppTextField(
                     value = formData.description,
                     onValueChange = { formData = formData.copy(description = it) },
-                    label = "Description",
+                    label = stringResource(Res.string.form_label_description),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
@@ -136,7 +154,7 @@ fun ProductFormDialog(
                         value = categories.find { it.id == formData.categoryId }?.name ?: "Select Category",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Category") },
+                        label = { Text(stringResource(Res.string.form_label_category)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                         modifier =
                         Modifier
@@ -149,7 +167,7 @@ fun ProductFormDialog(
                         onDismissRequest = { categoryExpanded = false },
                     ) {
                         DropdownMenuItem(
-                            text = { Text("No Category") },
+                            text = { Text(stringResource(Res.string.form_option_no_category)) },
                             onClick = {
                                 formData = formData.copy(categoryId = null)
                                 categoryExpanded = false
@@ -157,7 +175,7 @@ fun ProductFormDialog(
                         )
                         if (categories.isEmpty()) {
                             DropdownMenuItem(
-                                text = { Text("No categories available") },
+                                text = { Text(stringResource(Res.string.form_error_no_categories)) },
                                 onClick = { categoryExpanded = false },
                                 enabled = false,
                             )
@@ -185,7 +203,7 @@ fun ProductFormDialog(
                         AppTextField(
                             value = formData.costPrice,
                             onValueChange = { formData = formData.copy(costPrice = it) },
-                            label = "Cost Price",
+                            label = stringResource(Res.string.form_label_cost_price),
                             variant = AppTextFieldVariant.Outlined,
                             validationState = validationErrors["costPrice"] ?: ValidationState.None,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -203,7 +221,7 @@ fun ProductFormDialog(
                                 value = currencies.find { it.code == formData.costCurrencyCode }?.symbol ?: "USD",
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Currency") },
+                                label = { Text(stringResource(Res.string.form_label_currency)) },
                                 trailingIcon = {
                                     ExposedDropdownMenuDefaults.TrailingIcon(
                                         expanded = currencyExpanded,
@@ -221,14 +239,22 @@ fun ProductFormDialog(
                             ) {
                                 if (currencies.isEmpty()) {
                                     DropdownMenuItem(
-                                        text = { Text("No currencies available") },
+                                        text = { Text(stringResource(Res.string.form_error_no_currencies)) },
                                         onClick = { currencyExpanded = false },
                                         enabled = false,
                                     )
                                 } else {
                                     currencies.forEach { currency ->
                                         DropdownMenuItem(
-                                            text = { Text("${currency.symbol} ${currency.code}") },
+                                            text = {
+                                                Text(
+                                                    stringResource(
+                                                        Res.string.form_currency_symbol_code,
+                                                        currency.symbol,
+                                                        currency.code,
+                                                    ),
+                                                )
+                                            },
                                             onClick = {
                                                 formData = formData.copy(costCurrencyCode = currency.code)
                                                 currencyExpanded = false
@@ -246,7 +272,7 @@ fun ProductFormDialog(
                 AppTextField(
                     value = formData.sellingPrice,
                     onValueChange = { formData = formData.copy(sellingPrice = it) },
-                    label = "Selling Price (MXN) *",
+                    label = stringResource(Res.string.form_label_selling_price_mxn),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["sellingPrice"] ?: ValidationState.None,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -262,7 +288,7 @@ fun ProductFormDialog(
                     AppTextField(
                         value = formData.currentStock,
                         onValueChange = { formData = formData.copy(currentStock = it) },
-                        label = "Stock *",
+                        label = stringResource(Res.string.form_label_stock),
                         variant = AppTextFieldVariant.Outlined,
                         validationState = validationErrors["currentStock"] ?: ValidationState.None,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -272,7 +298,7 @@ fun ProductFormDialog(
                     AppTextField(
                         value = formData.minStockLevel,
                         onValueChange = { formData = formData.copy(minStockLevel = it) },
-                        label = "Min Stock Level",
+                        label = stringResource(Res.string.form_label_min_stock),
                         variant = AppTextFieldVariant.Outlined,
                         validationState = validationErrors["minStockLevel"] ?: ValidationState.None,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -289,7 +315,7 @@ fun ProductFormDialog(
                     AppTextField(
                         value = formData.unit,
                         onValueChange = { formData = formData.copy(unit = it) },
-                        label = "Unit",
+                        label = stringResource(Res.string.form_label_unit),
                         variant = AppTextFieldVariant.Outlined,
                         modifier = Modifier.weight(1f),
                     )
@@ -297,7 +323,7 @@ fun ProductFormDialog(
                     AppTextField(
                         value = formData.barcode,
                         onValueChange = { formData = formData.copy(barcode = it) },
-                        label = "Barcode",
+                        label = stringResource(Res.string.form_label_barcode),
                         variant = AppTextFieldVariant.Outlined,
                         modifier = Modifier.weight(1f),
                     )
@@ -310,7 +336,7 @@ fun ProductFormDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )

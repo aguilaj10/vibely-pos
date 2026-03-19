@@ -62,8 +62,13 @@ import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.checkout_cart_empty
 import vibely_pos.composeapp.generated.resources.checkout_cart_title
 import vibely_pos.composeapp.generated.resources.checkout_complete_sale
+import vibely_pos.composeapp.generated.resources.checkout_no_products_found
 import vibely_pos.composeapp.generated.resources.checkout_search_products
 import vibely_pos.composeapp.generated.resources.checkout_title
+import vibely_pos.composeapp.generated.resources.common_checkout
+import vibely_pos.composeapp.generated.resources.common_total
+import vibely_pos.composeapp.generated.resources.inventory_low_stock
+import vibely_pos.composeapp.generated.resources.inventory_out_of_stock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,7 +169,7 @@ fun CheckoutScreen(
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    text = "No products found",
+                                    text = stringResource(Res.string.checkout_no_products_found),
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -222,7 +227,7 @@ fun CheckoutScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Text(
-                                    text = "Search for products to add them to cart",
+                                    text = stringResource(Res.string.checkout_search_products),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -258,7 +263,7 @@ fun CheckoutScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "Total",
+                            text = stringResource(Res.string.common_total),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -274,7 +279,7 @@ fun CheckoutScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     AppButton(
-                        text = "Checkout",
+                        text = stringResource(Res.string.common_checkout),
                         onClick = viewModel::onCheckout,
                         style = AppButtonStyle.Primary,
                         enabled = state.canCheckout && state.cart.items.isNotEmpty(),
@@ -377,14 +382,14 @@ private fun ProductSearchItem(product: Product, onClick: () -> Unit, modifier: M
 
                 if (product.currentStock <= 0) {
                     Text(
-                        text = "Out of stock",
+                        text = stringResource(Res.string.inventory_out_of_stock),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.Medium,
                     )
                 } else if (product.currentStock < 10) {
                     Text(
-                        text = "Low stock: ${product.currentStock}",
+                        text = stringResource(Res.string.inventory_low_stock, product.currentStock),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Medium,

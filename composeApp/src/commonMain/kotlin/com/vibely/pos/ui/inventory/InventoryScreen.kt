@@ -63,7 +63,12 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.inventory_add_product
+import vibely_pos.composeapp.generated.resources.inventory_kpi_categories
+import vibely_pos.composeapp.generated.resources.inventory_kpi_low_stock
+import vibely_pos.composeapp.generated.resources.inventory_kpi_total_products
+import vibely_pos.composeapp.generated.resources.inventory_kpi_total_value
 import vibely_pos.composeapp.generated.resources.inventory_no_products_found
+import vibely_pos.composeapp.generated.resources.inventory_search_by_name_sku
 
 @Composable
 fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: InventoryViewModel = koinInject()) {
@@ -182,7 +187,7 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
             onValueChange = onSearchQueryChange,
             modifier = Modifier.width(480.dp),
             variant = AppTextFieldVariant.Outlined,
-            placeholder = "Search by name or SKU...",
+            placeholder = stringResource(Res.string.inventory_search_by_name_sku),
             leadingIcon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
@@ -243,7 +248,7 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
         ) {
             KpiCard(
                 icon = FontAwesomeIcons.Solid.Boxes,
-                label = "Total Products",
+                label = stringResource(Res.string.inventory_kpi_total_products),
                 value = totalProducts.toString(),
                 valueColor = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
@@ -251,7 +256,7 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
 
             KpiCard(
                 icon = FontAwesomeIcons.Solid.ExclamationTriangle,
-                label = "Low Stock",
+                label = stringResource(Res.string.inventory_kpi_low_stock),
                 value = lowStockCount.toString(),
                 valueColor = AppColors.ErrorDark,
                 modifier = Modifier.weight(1f),
@@ -259,7 +264,7 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
 
             KpiCard(
                 icon = FontAwesomeIcons.Solid.Wallet,
-                label = "Total Value",
+                label = stringResource(Res.string.inventory_kpi_total_value),
                 value = totalValue.formatCurrency(),
                 valueColor = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
@@ -267,7 +272,7 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
 
             KpiCard(
                 icon = FontAwesomeIcons.Solid.Tags,
-                label = "Categories",
+                label = stringResource(Res.string.inventory_kpi_categories),
                 value = categoriesCount.toString(),
                 valueColor = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),

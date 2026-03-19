@@ -30,6 +30,9 @@ import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.theme.AppColors
 import com.vibely.pos.ui.theme.PosShapes
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_close_icon
 
 /**
  * Toast/Snackbar type variants
@@ -91,17 +94,20 @@ fun rememberToastState(): ToastState = remember { ToastState() }
 fun AppToast(state: ToastState, modifier: Modifier = Modifier) {
     AnimatedVisibility(
         visible = state.isVisible,
-        enter = slideInVertically(
+        enter =
+        slideInVertically(
             initialOffsetY = { -it },
             animationSpec = tween(300),
         ) + fadeIn(animationSpec = tween(300)),
-        exit = slideOutVertically(
+        exit =
+        slideOutVertically(
             targetOffsetY = { -it },
             animationSpec = tween(300),
         ) + fadeOut(animationSpec = tween(300)),
     ) {
         Surface(
-            modifier = modifier
+            modifier =
+            modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             shape = PosShapes.Toast,
@@ -109,7 +115,8 @@ fun AppToast(state: ToastState, modifier: Modifier = Modifier) {
             shadowElevation = 4.dp,
         ) {
             Row(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -132,11 +139,12 @@ fun AppToast(state: ToastState, modifier: Modifier = Modifier) {
                 // Close button
                 TextButton(
                     onClick = { state.dismiss() },
-                    colors = ButtonDefaults.textButtonColors(
+                    colors =
+                    ButtonDefaults.textButtonColors(
                         contentColor = getToastTextColor(state.type),
                     ),
                 ) {
-                    Text("✕")
+                    Text(stringResource(Res.string.common_close_icon))
                 }
             }
         }
@@ -157,7 +165,8 @@ fun AppSnackbar(
 ) {
     Snackbar(
         modifier = modifier,
-        action = if (actionLabel != null && onActionClick != null) {
+        action =
+        if (actionLabel != null && onActionClick != null) {
             {
                 TextButton(onClick = onActionClick) {
                     Text(actionLabel)
@@ -168,7 +177,7 @@ fun AppSnackbar(
         },
         dismissAction = {
             TextButton(onClick = onDismiss) {
-                Text("✕")
+                Text(stringResource(Res.string.common_close_icon))
             }
         },
         containerColor = getToastColor(type),

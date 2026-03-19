@@ -54,6 +54,13 @@ import compose.icons.fontawesomeicons.solid.Trash
 import org.jetbrains.compose.resources.stringResource
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.form_currency_symbol_code
+import vibely_pos.composeapp.generated.resources.form_label_notes
+import vibely_pos.composeapp.generated.resources.form_label_product
+import vibely_pos.composeapp.generated.resources.form_label_qty
+import vibely_pos.composeapp.generated.resources.form_label_supplier
+import vibely_pos.composeapp.generated.resources.form_label_unit_cost
+import vibely_pos.composeapp.generated.resources.form_product_display
 import vibely_pos.composeapp.generated.resources.purchase_orders_add_product
 import vibely_pos.composeapp.generated.resources.purchase_orders_create
 import vibely_pos.composeapp.generated.resources.purchase_orders_edit
@@ -124,7 +131,7 @@ fun PurchaseOrderFormDialog(
                             value = suppliers.find { it.id == formData.supplierId }?.name ?: "Select Supplier",
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("Supplier *") },
+                            label = { Text(stringResource(Res.string.form_label_supplier)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierExpanded) },
                             modifier =
                             Modifier
@@ -155,7 +162,7 @@ fun PurchaseOrderFormDialog(
                 AppTextField(
                     value = formData.notes,
                     onValueChange = { formData = formData.copy(notes = it) },
-                    label = "Notes",
+                    label = stringResource(Res.string.form_label_notes),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 2,
@@ -324,7 +331,7 @@ private fun LineItemRow(
                     value = products.find { it.id == lineItem.productId }?.name ?: "Select Product",
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Product") },
+                    label = { Text(stringResource(Res.string.form_label_product)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = productExpanded) },
                     modifier =
                     Modifier
@@ -338,7 +345,7 @@ private fun LineItemRow(
                 ) {
                     products.forEach { product ->
                         DropdownMenuItem(
-                            text = { Text("${product.name} (${product.sku})") },
+                            text = { Text(stringResource(Res.string.form_product_display, product.name, product.sku)) },
                             onClick = {
                                 onUpdate(
                                     lineItem.copy(
@@ -356,7 +363,7 @@ private fun LineItemRow(
             AppTextField(
                 value = lineItem.quantity,
                 onValueChange = { onUpdate(lineItem.copy(quantity = it)) },
-                label = "Qty",
+                label = stringResource(Res.string.form_label_qty),
                 variant = AppTextFieldVariant.Outlined,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.width(70.dp),
@@ -365,7 +372,7 @@ private fun LineItemRow(
             AppTextField(
                 value = lineItem.unitCost,
                 onValueChange = { onUpdate(lineItem.copy(unitCost = it)) },
-                label = "Unit Cost",
+                label = stringResource(Res.string.form_label_unit_cost),
                 variant = AppTextFieldVariant.Outlined,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier.width(100.dp),
@@ -394,7 +401,15 @@ private fun LineItemRow(
                     ) {
                         currencies.forEach { currency ->
                             DropdownMenuItem(
-                                text = { Text("${currency.symbol} ${currency.code}") },
+                                text = {
+                                    Text(
+                                        stringResource(
+                                            Res.string.form_currency_symbol_code,
+                                            currency.symbol,
+                                            currency.code,
+                                        ),
+                                    )
+                                },
                                 onClick = {
                                     onUpdate(lineItem.copy(costCurrencyCode = currency.code))
                                     currencyExpanded = false

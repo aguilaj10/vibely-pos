@@ -61,7 +61,15 @@ import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.Truck
 import compose.icons.fontawesomeicons.solid.TruckLoading
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.purchase_orders_create
+import vibely_pos.composeapp.generated.resources.purchase_orders_kpi_pending_orders
+import vibely_pos.composeapp.generated.resources.purchase_orders_kpi_total_amount
+import vibely_pos.composeapp.generated.resources.purchase_orders_kpi_total_orders
+import vibely_pos.composeapp.generated.resources.purchase_orders_no_orders_found
+import vibely_pos.composeapp.generated.resources.purchase_orders_search_placeholder
 
 @Composable
 fun PurchaseOrdersScreen(
@@ -198,7 +206,7 @@ private fun PurchaseOrdersHeader(
             onValueChange = onSearchQueryChange,
             modifier = Modifier.width(480.dp),
             variant = AppTextFieldVariant.Outlined,
-            placeholder = "Search by PO number, supplier...",
+            placeholder = stringResource(Res.string.purchase_orders_search_placeholder),
             leadingIcon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
@@ -222,7 +230,7 @@ private fun PurchaseOrdersHeader(
         )
 
         AppButton(
-            text = "Create PO",
+            text = stringResource(Res.string.purchase_orders_create),
             onClick = onCreatePurchaseOrder,
             style = AppButtonStyle.Primary,
             icon = {
@@ -247,7 +255,7 @@ private fun KpiCardsRow(totalOrders: Int, pendingOrders: Int, totalAmount: Doubl
     ) {
         KpiCard(
             icon = FontAwesomeIcons.Solid.Truck,
-            label = "Total Orders",
+            label = stringResource(Res.string.purchase_orders_kpi_total_orders),
             value = totalOrders.toString(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -255,7 +263,7 @@ private fun KpiCardsRow(totalOrders: Int, pendingOrders: Int, totalAmount: Doubl
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.TruckLoading,
-            label = "Pending Orders",
+            label = stringResource(Res.string.purchase_orders_kpi_pending_orders),
             value = pendingOrders.toString(),
             valueColor = AppColors.Warning,
             modifier = Modifier.weight(1f),
@@ -263,7 +271,7 @@ private fun KpiCardsRow(totalOrders: Int, pendingOrders: Int, totalAmount: Doubl
 
         KpiCard(
             icon = FontAwesomeIcons.Solid.Calculator,
-            label = "Total Amount",
+            label = stringResource(Res.string.purchase_orders_kpi_total_amount),
             value = totalAmount.formatCurrency(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -351,7 +359,7 @@ private fun PurchaseOrdersTable(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No purchase orders found",
+                            text = stringResource(Res.string.purchase_orders_no_orders_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

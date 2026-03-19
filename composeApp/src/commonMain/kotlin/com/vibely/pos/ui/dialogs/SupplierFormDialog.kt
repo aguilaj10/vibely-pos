@@ -31,6 +31,15 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_active
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.form_label_address
+import vibely_pos.composeapp.generated.resources.form_label_contact_person
+import vibely_pos.composeapp.generated.resources.form_label_email
+import vibely_pos.composeapp.generated.resources.form_label_phone
+import vibely_pos.composeapp.generated.resources.form_label_supplier_name
 
 @Composable
 fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, onSave: (SupplierFormData) -> Unit, onDismiss: () -> Unit) {
@@ -71,7 +80,7 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                 AppTextField(
                     value = formData.name,
                     onValueChange = { formData = formData.copy(name = it) },
-                    label = "Supplier Name *",
+                    label = stringResource(Res.string.form_label_supplier_name),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["name"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -82,7 +91,7 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                 AppTextField(
                     value = formData.contactPerson,
                     onValueChange = { formData = formData.copy(contactPerson = it) },
-                    label = "Contact Person",
+                    label = stringResource(Res.string.form_label_contact_person),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -92,7 +101,7 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                 AppTextField(
                     value = formData.email,
                     onValueChange = { formData = formData.copy(email = it) },
-                    label = "Email",
+                    label = stringResource(Res.string.form_label_email),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["email"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -103,7 +112,7 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                 AppTextField(
                     value = formData.phone,
                     onValueChange = { formData = formData.copy(phone = it) },
-                    label = "Phone",
+                    label = stringResource(Res.string.form_label_phone),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -113,7 +122,7 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                 AppTextField(
                     value = formData.address,
                     onValueChange = { formData = formData.copy(address = it) },
-                    label = "Address",
+                    label = stringResource(Res.string.form_label_address),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
@@ -127,7 +136,7 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Active",
+                        text = stringResource(Res.string.common_active),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -149,7 +158,7 @@ fun SupplierFormDialog(isEdit: Boolean, initialData: SupplierFormData? = null, o
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )

@@ -28,6 +28,15 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_add
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.common_edit
+import vibely_pos.composeapp.generated.resources.form_label_color_hex
+import vibely_pos.composeapp.generated.resources.form_label_description
+import vibely_pos.composeapp.generated.resources.form_label_icon
+import vibely_pos.composeapp.generated.resources.form_label_name_required
 
 /**
  * Category form dialog for adding or editing categories.
@@ -78,7 +87,7 @@ fun CategoryFormDialog(isEdit: Boolean, initialCategory: CategoryFormData? = nul
                 AppTextField(
                     value = formData.name,
                     onValueChange = { formData = formData.copy(name = it) },
-                    label = "Name *",
+                    label = stringResource(Res.string.form_label_name_required),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["name"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -89,7 +98,7 @@ fun CategoryFormDialog(isEdit: Boolean, initialCategory: CategoryFormData? = nul
                 AppTextField(
                     value = formData.description,
                     onValueChange = { formData = formData.copy(description = it) },
-                    label = "Description",
+                    label = stringResource(Res.string.form_label_description),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
@@ -100,7 +109,7 @@ fun CategoryFormDialog(isEdit: Boolean, initialCategory: CategoryFormData? = nul
                 AppTextField(
                     value = formData.color,
                     onValueChange = { formData = formData.copy(color = it) },
-                    label = "Color (hex, e.g., #FF5733)",
+                    label = stringResource(Res.string.form_label_color_hex),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["color"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -111,7 +120,7 @@ fun CategoryFormDialog(isEdit: Boolean, initialCategory: CategoryFormData? = nul
                 AppTextField(
                     value = formData.icon,
                     onValueChange = { formData = formData.copy(icon = it) },
-                    label = "Icon (optional)",
+                    label = stringResource(Res.string.form_label_icon),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -123,7 +132,7 @@ fun CategoryFormDialog(isEdit: Boolean, initialCategory: CategoryFormData? = nul
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )
@@ -131,7 +140,14 @@ fun CategoryFormDialog(isEdit: Boolean, initialCategory: CategoryFormData? = nul
                     Spacer(modifier = Modifier.width(12.dp))
 
                     AppButton(
-                        text = if (isEdit) "Update" else "Create",
+                        text =
+                        if (isEdit) {
+                            stringResource(
+                                Res.string.common_edit,
+                            )
+                        } else {
+                            stringResource(Res.string.common_add)
+                        },
                         onClick = { onSave(formData) },
                         style = AppButtonStyle.Primary,
                         enabled = validationErrors.isEmpty(),

@@ -123,7 +123,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Sign in to your account",
+                    text = stringResource(Res.string.auth_sign_in_to_your_account),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,

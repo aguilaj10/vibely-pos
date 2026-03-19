@@ -42,6 +42,15 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_active
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.form_label_confirm_password
+import vibely_pos.composeapp.generated.resources.form_label_email_required
+import vibely_pos.composeapp.generated.resources.form_label_full_name
+import vibely_pos.composeapp.generated.resources.form_label_password
+import vibely_pos.composeapp.generated.resources.form_label_role
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,7 +93,7 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                 AppTextField(
                     value = formData.email,
                     onValueChange = { formData = formData.copy(email = it) },
-                    label = "Email *",
+                    label = stringResource(Res.string.form_label_email_required),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["email"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -95,7 +104,7 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                 AppTextField(
                     value = formData.fullName,
                     onValueChange = { formData = formData.copy(fullName = it) },
-                    label = "Full Name *",
+                    label = stringResource(Res.string.form_label_full_name),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["fullName"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -112,7 +121,7 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                         value = formData.role.displayName(),
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Role *") },
+                        label = { Text(stringResource(Res.string.form_label_role)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = roleExpanded) },
                         modifier =
                         Modifier
@@ -143,7 +152,7 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                     AppTextField(
                         value = formData.password,
                         onValueChange = { formData = formData.copy(password = it) },
-                        label = "Password *",
+                        label = stringResource(Res.string.form_label_password),
                         variant = AppTextFieldVariant.Outlined,
                         validationState = validationErrors["password"] ?: ValidationState.None,
                         modifier = Modifier.fillMaxWidth(),
@@ -156,7 +165,7 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                     AppTextField(
                         value = formData.confirmPassword,
                         onValueChange = { formData = formData.copy(confirmPassword = it) },
-                        label = "Confirm Password *",
+                        label = stringResource(Res.string.form_label_confirm_password),
                         variant = AppTextFieldVariant.Outlined,
                         validationState = validationErrors["confirmPassword"] ?: ValidationState.None,
                         modifier = Modifier.fillMaxWidth(),
@@ -173,7 +182,7 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Active",
+                        text = stringResource(Res.string.common_active),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -213,7 +222,7 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )

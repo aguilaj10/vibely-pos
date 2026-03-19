@@ -33,6 +33,15 @@ import com.vibely.pos.shared.data.currency.dto.CurrencyDTO
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.utils.formatCurrency
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.form_currency_display
+import vibely_pos.composeapp.generated.resources.form_label_effective_date
+import vibely_pos.composeapp.generated.resources.form_label_from_currency
+import vibely_pos.composeapp.generated.resources.form_label_rate
+import vibely_pos.composeapp.generated.resources.form_label_to_currency
+import vibely_pos.composeapp.generated.resources.form_placeholder_date_example
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +98,7 @@ fun ExchangeRateFormDialog(
                         value = formData.currencyFrom,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("From Currency *") },
+                        label = { Text(stringResource(Res.string.form_label_from_currency)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = fromCurrencyExpanded) },
                         isError = validationErrors["currencyFrom"] != null,
                         supportingText = validationErrors["currencyFrom"]?.let { { Text(it) } },
@@ -104,7 +113,11 @@ fun ExchangeRateFormDialog(
                     ) {
                         currencies.forEach { currency ->
                             DropdownMenuItem(
-                                text = { Text("${currency.code} - ${currency.name}") },
+                                text = {
+                                    Text(
+                                        stringResource(Res.string.form_currency_display, currency.code, currency.name),
+                                    )
+                                },
                                 onClick = {
                                     formData = formData.copy(currencyFrom = currency.code)
                                     fromCurrencyExpanded = false
@@ -125,7 +138,7 @@ fun ExchangeRateFormDialog(
                         value = formData.currencyTo,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("To Currency *") },
+                        label = { Text(stringResource(Res.string.form_label_to_currency)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = toCurrencyExpanded) },
                         isError = validationErrors["currencyTo"] != null,
                         supportingText = validationErrors["currencyTo"]?.let { { Text(it) } },
@@ -140,7 +153,11 @@ fun ExchangeRateFormDialog(
                     ) {
                         currencies.forEach { currency ->
                             DropdownMenuItem(
-                                text = { Text("${currency.code} - ${currency.name}") },
+                                text = {
+                                    Text(
+                                        stringResource(Res.string.form_currency_display, currency.code, currency.name),
+                                    )
+                                },
                                 onClick = {
                                     formData = formData.copy(currencyTo = currency.code)
                                     toCurrencyExpanded = false
@@ -160,7 +177,7 @@ fun ExchangeRateFormDialog(
                             formData = formData.copy(rate = rate ?: 0.0)
                         }
                     },
-                    label = { Text("Rate *") },
+                    label = { Text(stringResource(Res.string.form_label_rate)) },
                     isError = validationErrors["rate"] != null,
                     supportingText = validationErrors["rate"]?.let { { Text(it) } },
                     modifier = Modifier.fillMaxWidth(),
@@ -172,8 +189,8 @@ fun ExchangeRateFormDialog(
                 OutlinedTextField(
                     value = formData.effectiveDate,
                     onValueChange = { formData = formData.copy(effectiveDate = it) },
-                    label = { Text("Effective Date (YYYY-MM-DD) *") },
-                    placeholder = { Text("2024-01-01") },
+                    label = { Text(stringResource(Res.string.form_label_effective_date)) },
+                    placeholder = { Text(stringResource(Res.string.form_placeholder_date_example)) },
                     isError = validationErrors["effectiveDate"] != null,
                     supportingText = validationErrors["effectiveDate"]?.let { { Text(it) } },
                     modifier = Modifier.fillMaxWidth(),
@@ -187,7 +204,7 @@ fun ExchangeRateFormDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )

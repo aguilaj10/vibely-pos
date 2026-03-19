@@ -44,6 +44,14 @@ import compose.icons.fontawesomeicons.solid.TimesCircle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_refresh
+import vibely_pos.composeapp.generated.resources.common_refreshing
+import vibely_pos.composeapp.generated.resources.dashboard_metric_low_stock
+import vibely_pos.composeapp.generated.resources.dashboard_metric_shift
+import vibely_pos.composeapp.generated.resources.dashboard_metric_shift_closed
+import vibely_pos.composeapp.generated.resources.dashboard_metric_shift_open
+import vibely_pos.composeapp.generated.resources.dashboard_metric_todays_sales
+import vibely_pos.composeapp.generated.resources.dashboard_metric_transactions
 import vibely_pos.composeapp.generated.resources.dashboard_quick_actions
 import vibely_pos.composeapp.generated.resources.dashboard_recent_transactions
 import vibely_pos.composeapp.generated.resources.dashboard_title
@@ -108,7 +116,14 @@ fun DashboardScreen(
                     }
 
                     AppButton(
-                        text = if (state.isRefreshing) "Refreshing..." else "Refresh",
+                        text =
+                        if (state.isRefreshing) {
+                            stringResource(
+                                Res.string.common_refreshing,
+                            )
+                        } else {
+                            stringResource(Res.string.common_refresh)
+                        },
                         onClick = { viewModel.onRefresh() },
                         style = AppButtonStyle.Outlined,
                         enabled = !state.isRefreshing,
@@ -131,7 +146,7 @@ fun DashboardScreen(
                     ) {
                         MetricCard(
                             icon = FontAwesomeIcons.Solid.ChartLine,
-                            label = "Today's Sales",
+                            label = stringResource(Res.string.dashboard_metric_todays_sales),
                             value = summary.todaySales.toString(),
                             color = AppColors.Success,
                             modifier = Modifier.weight(1f),
@@ -139,7 +154,7 @@ fun DashboardScreen(
 
                         MetricCard(
                             icon = FontAwesomeIcons.Solid.Receipt,
-                            label = "Transactions",
+                            label = stringResource(Res.string.dashboard_metric_transactions),
                             value = summary.todayTransactionCount.toString(),
                             color = AppColors.Info,
                             modifier = Modifier.weight(1f),
@@ -147,7 +162,7 @@ fun DashboardScreen(
 
                         MetricCard(
                             icon = FontAwesomeIcons.Solid.ExclamationTriangle,
-                            label = "Low Stock",
+                            label = stringResource(Res.string.dashboard_metric_low_stock),
                             value = summary.lowStockCount.toString(),
                             color =
                             if (summary.hasLowStockAlerts()) {
@@ -165,8 +180,15 @@ fun DashboardScreen(
                             } else {
                                 FontAwesomeIcons.Solid.TimesCircle
                             },
-                            label = "Shift",
-                            value = if (summary.hasActiveShift()) "Open" else "Closed",
+                            label = stringResource(Res.string.dashboard_metric_shift),
+                            value =
+                            if (summary.hasActiveShift()) {
+                                stringResource(
+                                    Res.string.dashboard_metric_shift_open,
+                                )
+                            } else {
+                                stringResource(Res.string.dashboard_metric_shift_closed)
+                            },
                             color =
                             if (summary.hasActiveShift()) {
                                 AppColors.Success

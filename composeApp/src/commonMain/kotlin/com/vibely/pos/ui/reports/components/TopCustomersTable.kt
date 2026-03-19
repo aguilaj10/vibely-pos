@@ -9,16 +9,34 @@ import com.vibely.pos.ui.components.DataTable
 import com.vibely.pos.ui.components.DataTableCell
 import com.vibely.pos.ui.components.TableColumn
 import com.vibely.pos.ui.utils.formatCurrency
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.reports_column_customer
+import vibely_pos.composeapp.generated.resources.reports_column_last_visit
+import vibely_pos.composeapp.generated.resources.reports_column_total_spent
+import vibely_pos.composeapp.generated.resources.reports_column_visits
 
 @Composable
 fun TopCustomersTable(customers: List<CustomerAnalytics>, modifier: Modifier = Modifier) {
     DataTable(
         columns =
         listOf(
-            TableColumn(key = "customer", label = "Customer", width = 160.dp),
-            TableColumn(key = "totalSpent", label = "Total Spent", width = 120.dp),
-            TableColumn(key = "visits", label = "Visits", width = 80.dp),
-            TableColumn(key = "lastVisit", label = "Last Visit", width = 120.dp),
+            TableColumn(
+                key = "customer",
+                label = stringResource(Res.string.reports_column_customer),
+                width = 160.dp,
+            ),
+            TableColumn(
+                key = "totalSpent",
+                label = stringResource(Res.string.reports_column_total_spent),
+                width = 120.dp,
+            ),
+            TableColumn(key = "visits", label = stringResource(Res.string.reports_column_visits), width = 80.dp),
+            TableColumn(
+                key = "lastVisit",
+                label = stringResource(Res.string.reports_column_last_visit),
+                width = 120.dp,
+            ),
         ),
         data = customers,
         rowKey = { it.customerId ?: "walk-in" },

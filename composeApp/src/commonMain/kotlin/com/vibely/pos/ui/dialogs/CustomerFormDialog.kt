@@ -37,10 +37,16 @@ import com.vibely.pos.ui.components.ValidationState
 import org.jetbrains.compose.resources.stringResource
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.common_active
+import vibely_pos.composeapp.generated.resources.common_add
 import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.common_edit
 import vibely_pos.composeapp.generated.resources.customers_add
 import vibely_pos.composeapp.generated.resources.customers_edit
 import vibely_pos.composeapp.generated.resources.customers_loyalty_tier
+import vibely_pos.composeapp.generated.resources.form_label_email
+import vibely_pos.composeapp.generated.resources.form_label_first_name
+import vibely_pos.composeapp.generated.resources.form_label_last_name
+import vibely_pos.composeapp.generated.resources.form_label_phone
 
 /**
  * Form dialog for adding or editing customers.
@@ -100,7 +106,7 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                     AppTextField(
                         value = formData.firstName,
                         onValueChange = { formData = formData.copy(firstName = it) },
-                        label = "First Name *",
+                        label = stringResource(Res.string.form_label_first_name),
                         variant = AppTextFieldVariant.Outlined,
                         validationState = validationErrors["firstName"] ?: ValidationState.None,
                         modifier = Modifier.weight(1f),
@@ -109,7 +115,7 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                     AppTextField(
                         value = formData.lastName,
                         onValueChange = { formData = formData.copy(lastName = it) },
-                        label = "Last Name *",
+                        label = stringResource(Res.string.form_label_last_name),
                         variant = AppTextFieldVariant.Outlined,
                         validationState = validationErrors["lastName"] ?: ValidationState.None,
                         modifier = Modifier.weight(1f),
@@ -121,7 +127,7 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                 AppTextField(
                     value = formData.email,
                     onValueChange = { formData = formData.copy(email = it) },
-                    label = "Email",
+                    label = stringResource(Res.string.form_label_email),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationErrors["email"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
@@ -132,7 +138,7 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                 AppTextField(
                     value = formData.phone,
                     onValueChange = { formData = formData.copy(phone = it) },
-                    label = "Phone",
+                    label = stringResource(Res.string.form_label_phone),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -180,7 +186,14 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                     Spacer(modifier = Modifier.width(12.dp))
 
                     AppButton(
-                        text = if (isEdit) "Update" else "Create",
+                        text =
+                        if (isEdit) {
+                            stringResource(
+                                Res.string.common_edit,
+                            )
+                        } else {
+                            stringResource(Res.string.common_add)
+                        },
                         onClick = { onSave(formData) },
                         style = AppButtonStyle.Primary,
                         enabled = validationErrors.isEmpty(),
