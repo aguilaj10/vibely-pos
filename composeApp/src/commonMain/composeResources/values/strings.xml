@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation -->
+    <string name="nav_login">Login</string>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_checkout">New Sale</string>
+    <string name="nav_checkout_edit">Edit Sale</string>
+    <string name="nav_sales">Sales</string>
+    <string name="nav_inventory">Inventory</string>
+    <string name="nav_categories">Categories</string>
+    <string name="nav_suppliers">Suppliers</string>
+    <string name="nav_purchase_orders">Purchase Orders</string>
+    <string name="nav_customers">Customers</string>
+    <string name="nav_users">Users</string>
+    <string name="nav_shifts">Shifts</string>
+    <string name="nav_reports">Reports</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_exchange_rates">Exchange Rates</string>
+    <string name="nav_theme_demo">Theme Demo</string>
+    
+    <!-- Authentication -->
+    <string name="auth_welcome_back">Welcome Back</string>
+    <string name="auth_sign_in_to_your_account">Sign in to your account</string>
+    <string name="auth_email_label">Email</string>
+    <string name="auth_email_placeholder">Enter your email</string>
+    <string name="auth_password_label">Password</string>
+    <string name="auth_password_placeholder">Enter your password</string>
+    <string name="auth_remember_me">Remember me</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_show_password">Show password</string>
+    <string name="auth_hide_password">Hide password</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_store_info">Store Info</string>
+    <string name="settings_receipt">Receipt</string>
+    <string name="settings_tax_currency">Tax &amp; Currency</string>
+    <string name="settings_preferences">Preferences</string>
+    <string name="settings_loading">Loading settings...</string>
+    <string name="settings_error">Failed to load settings</string>
+    <string name="settings_no_settings">No settings found</string>
+    <string name="settings_configure_store">Configure your store settings to get started</string>
+    <string name="settings_thanks_for_visiting">Thanks for visiting!</string>
+    <string name="settings_see_you_soon">See you soon!</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_retry">Retry</string>
+    
+    <!-- User Preferences -->
+    <string name="preferences_user_preferences">User Preferences</string>
+    <string name="preferences_language">Language</string>
+    <string name="preferences_theme">Theme</string>
+    <string name="preferences_enable_notifications">Enable Notifications</string>
+    <string name="preferences_receive_alerts">Receive alerts and updates</string>
+    <string name="preferences_auto_logout_timeout">Auto Logout Timeout</string>
+    <string name="preferences_automatically_logout">Automatically log out after inactivity</string>
+    <string name="preferences_settings_apply">These settings apply to your user account.</string>
+    <string name="preferences_5_min">5 min</string>
+    <string name="preferences_120_min">120 min</string>
+    <string name="preferences_light">Light</string>
+    <string name="preferences_dark">Dark</string>
+    <string name="preferences_system">System Default</string>
+    <string name="preferences_english">English</string>
+    <string name="preferences_spanish">Español</string>
+    <string name="preferences_french">Français</string>
+    
+    <!-- Tax & Currency -->
+    <string name="tax_currency_title">Tax &amp; Currency Settings</string>
+    <string name="tax_currency_label">Tax Rate (%)</string>
+    <string name="tax_currency_placeholder">e.g., 16.0</string>
+    <string name="tax_currency_error_required">Tax rate is required</string>
+    <string name="tax_currency_error_invalid">Invalid number</string>
+    <string name="tax_currency_error_range">Tax rate must be between 0 and 100</string>
+    <string name="tax_currency_currency_label">Currency</string>
+    <string name="tax_currency_usd">USD - US Dollar</string>
+    <string name="tax_currency_mxn">MXN - Mexican Peso</string>
+    <string name="tax_currency_eur">EUR - Euro</string>
+    <string name="tax_currency_preview">Preview</string>
+    <string name="tax_currency_sample_amount">Sample amount:</string>
+    <string name="tax_currency_tax_label">Tax (%1$s%%):</string>
+    <string name="preferences_timeout_format">%1$d min</string>
+    <string name="tax_currency_total_label">Total:</string>
+    <string name="tax_currency_description">Tax rate is applied to all sales. Currency affects how amounts are displayed.</string>
+    
+    <!-- Store Info -->
+    <string name="store_info_title">Store Information</string>
+    <string name="store_info_store_name">Store Name</string>
+    <string name="store_info_store_name_placeholder">Enter store name</string>
+    <string name="store_info_store_name_error">Store name is required</string>
+    <string name="store_info_address">Address</string>
+    <string name="store_info_address_placeholder">Enter store address</string>
+    <string name="store_info_address_error">Address is required</string>
+    <string name="store_info_phone">Phone</string>
+    <string name="store_info_phone_placeholder">Enter phone number</string>
+    <string name="store_info_phone_error">Phone is required</string>
+    <string name="store_info_email">Email</string>
+    <string name="store_info_email_placeholder">Enter email address</string>
+    <string name="store_info_email_error">Email is required</string>
+    <string name="store_info_email_error_invalid">Invalid email format</string>
+    <string name="store_info_description">This information will be displayed on receipts and invoices.</string>
+    
+    <!-- Receipt Config -->
+    <string name="receipt_config_title">Receipt Configuration</string>
+    <string name="receipt_header_label">Receipt Header</string>
+    <string name="receipt_footer_label">Receipt Footer</string>
+    <string name="receipt_logo_url_label">Logo URL (optional)</string>
+    <string name="receipt_header_placeholder">e.g., Thank you for shopping with us!</string>
+    <string name="receipt_footer_placeholder">e.g., Return policy: 30 days with receipt</string>
+    <string name="receipt_show_tax_label">Show Tax on Receipt</string>
+    <string name="receipt_show_tax_description">Display tax breakdown at the bottom</string>
+    <string name="receipt_preview_title">Receipt Preview</string>
+    <string name="receipt_configure_description">Configure how receipts appear to your customers.</string>
+    <string name="receipt_preview_store_name">STORE NAME</string>
+    <string name="receipt_preview_item_1">Item 1</string>
+    <string name="receipt_preview_item_2">Item 2</string>
+    <string name="receipt_preview_subtotal">Subtotal</string>
+    <string name="receipt_preview_tax_label">Tax (16%)</string>
+    <string name="receipt_preview_total_label">TOTAL</string>
+    <string name="receipt_sample_thank_you">Thank you for shopping!</string>
+    <string name="receipt_sample_please_come_again">Please come again!</string>
+    <string name="receipt_sample_logo_placeholder">[Logo: $logoUrl]</string>
+    
+    <!-- Common Actions -->
+    <string name="common_add">Add</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_view">View</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
+    <string name="common_search">Search</string>
+    <string name="common_clear">Clear</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_close">Close</string>
+    <string name="common_clear_filters">Clear Filters</string>
+    <string name="common_status">Status</string>
+    <string name="common_date">Date</string>
+    <string name="common_total">Total</string>
+    <string name="common_amount">Amount</string>
+    <string name="common_items">Items</string>
+    <string name="common_active">Active</string>
+    
+    <!-- Checkout & Cart -->
+    <string name="checkout_title">Checkout</string>
+    <string name="checkout_new_sale">New Sale</string>
+    <string name="checkout_complete_sale">Complete Sale</string>
+    <string name="checkout_cart_title">Cart (%1$d)</string>
+    <string name="checkout_cart_empty">Cart is empty</string>
+    <string name="checkout_search_products">Search for products to add them to cart</string>
+    <string name="checkout_point_of_sale">Point of Sale</string>
+    <string name="checkout_pos_abbr">POS</string>
+    <string name="checkout_coming_soon">Coming Soon</string>
+    
+    <!-- Payment -->
+    <string name="payment_dialog_title">Split Payment</string>
+    <string name="payment_total_amount">Total Amount</string>
+    <string name="payment_remaining">Remaining</string>
+    <string name="payment_add">Add Payment</string>
+    <string name="payment_tenders">Payment Tenders</string>
+    <string name="payment_processing">Processing payments...</string>
+    <string name="payment_method_card">Card</string>
+    <string name="payment_method_cash">Cash</string>
+    <string name="payment_method_transfer">Transfer</string>
+    <string name="payment_process_refund">Process Refund</string>
+    
+    <!-- Shifts -->
+    <string name="shifts_title">Shift Management</string>
+    <string name="shifts_open">Open Shift</string>
+    <string name="shifts_open_new">Open New Shift</string>
+    <string name="shifts_close">Close Shift</string>
+    <string name="shifts_close_title">Close Shift %1$s</string>
+    <string name="shifts_current">Current Shift: %1$s</string>
+    <string name="shifts_opening_balance">Opening Balance:</string>
+    <string name="shifts_opening_balance_prompt">Enter the opening cash balance for this shift.</string>
+    <string name="shifts_cash_reconciliation">Cash Reconciliation</string>
+    <string name="shifts_cash_sales">Cash Sales:</string>
+    <string name="shifts_card_sales">Card Sales:</string>
+    <string name="shifts_expected_cash">Expected Cash:</string>
+    <string name="shifts_variance">Variance:</string>
+    <string name="shifts_bill_coin_breakdown">Bill/Coin Breakdown (Optional)</string>
+    <string name="shifts_calculated_from_breakdown">Calculated from breakdown:</string>
+    <string name="shifts_no_shifts_found">No shifts found</string>
+    
+    <!-- Sales & Reports -->
+    <string name="sales_title">Sales History</string>
+    <string name="sales_invoice">Invoice</string>
+    <string name="sales_invoice_number">Invoice #</string>
+    <string name="sales_payment">Payment</string>
+    <string name="reports_title">Reports</string>
+    <string name="reports_loading">Loading reports...</string>
+    <string name="reports_sales_trend">Sales Trend</string>
+    <string name="reports_category_breakdown">Category Breakdown</string>
+    <string name="reports_top_products">Top Products</string>
+    <string name="reports_top_customers">Top Customers</string>
+    <string name="reports_top_categories">Top Categories</string>
+    <string name="reports_no_data">No data available</string>
+    
+    <!-- Dashboard -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_quick_actions">Quick Actions</string>
+    <string name="dashboard_recent_transactions">Recent Transactions</string>
+    
+    <!-- Inventory & Products -->
+    <string name="inventory_title">Inventory</string>
+    <string name="inventory_all_categories">All Categories</string>
+    <string name="inventory_no_products_found">No products found</string>
+    <string name="inventory_no_categories_found">No categories found</string>
+    <string name="inventory_no_categories_display">No categories to display</string>
+    <string name="inventory_out_of_stock">Out of stock</string>
+    <string name="inventory_low_stock">Low stock: %1$d</string>
+    <string name="inventory_search_placeholder">Search products…</string>
+    <string name="inventory_add_product">Add Product</string>
+    <string name="inventory_line_items">Line Items</string>
+    <string name="inventory_no_items_added">No items added. Click \'Add Product\' to add line items.</string>
+    <string name="inventory_product_count">%1$d products</string>
+    <string name="inventory_unit_price_each">%1$s each</string>
+    
+    <!-- Categories -->
+    <string name="categories_search_placeholder">Search categories…</string>
+    <string name="categories_add">Add Category</string>
+    
+    <!-- Customers -->
+    <string name="customers_add">Add Customer</string>
+    <string name="customers_edit">Edit Customer</string>
+    <string name="customers_no_customers_found">No customers found</string>
+    <string name="customers_loyalty_tier">Loyalty Tier</string>
+    
+    <!-- Suppliers -->
+    <string name="suppliers_add">Add Supplier</string>
+    <string name="suppliers_no_suppliers_found">No suppliers found</string>
+    
+    <!-- Exchange Rates -->
+    <string name="exchange_rates_title">Exchange Rates</string>
+    <string name="exchange_rates_add">Add Exchange Rate</string>
+    <string name="exchange_rates_no_rates_found">No exchange rates found</string>
+    
+    <!-- Users -->
+    <string name="users_add">Add User</string>
+    <string name="users_no_users_found">No users found</string>
+    
+    <!-- Purchase Orders -->
+    <string name="purchase_orders_create">Create PO</string>
+    <string name="purchase_orders_edit">Edit PO</string>
+    <string name="purchase_orders_line_items">Line Items</string>
+    <string name="purchase_orders_add_product">Add Product</string>
+    <string name="purchase_orders_no_items">No items added. Click 'Add Product' to add line items.</string>
+    <string name="purchase_orders_total">Total:</string>
+    <string name="purchase_orders_no_orders_found">No purchase orders found</string>
+    
+    <!-- Refund -->
+    <string name="refund_process_refund">Process Refund</string>
+    <string name="refund_restore_stock_warning">This will restore product stock to inventory.</string>
+    <string name="refund_invoice">Invoice</string>
+    <string name="refund_reason_optional">Reason (optional)</string>
+    
+    <!-- Pagination -->
+    <string name="pagination_page">Page %1$d</string>
+    <string name="pagination_showing_entries">Showing %1$d - %2$d of %3$d entries</string>
+    <string name="pagination_no_data">No data available</string>
+    
+    <!-- Debug -->
+    <string name="debug_mode_badge">DEBUG MODE</string>
+    <string name="debug_mode_icon">🔧</string>
+    
+    <!-- Theme Demo (development/preview screen) -->
+    <string name="theme_demo_title">Vibely POS Theme System</string>
+    <string name="theme_demo_description">A complete demonstration of custom theme components</string>
+    <string name="theme_demo_primary_button">Primary Button</string>
+    <string name="theme_demo_secondary_button">Secondary Button</string>
+    <string name="theme_demo_tertiary_button">Tertiary Button</string>
+    <string name="theme_demo_outlined_button">Outlined Button</string>
+    <string name="theme_demo_destructive_button">Destructive Button</string>
+    <string name="theme_demo_size_small">Small</string>
+    <string name="theme_demo_size_medium">Medium</string>
+    <string name="theme_demo_size_large">Large</string>
+    <string name="theme_demo_success">Success</string>
+    <string name="theme_demo_error">Error</string>
+    <string name="theme_demo_warning">Warning</string>
+    <string name="theme_demo_info">Info</string>
+</resources>

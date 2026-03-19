@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation -->
+    <string name="nav_login">Iniciar Sesión</string>
+    <string name="nav_dashboard">Panel de Control</string>
+    <string name="nav_checkout">Nueva Venta</string>
+    <string name="nav_checkout_edit">Editar Venta</string>
+    <string name="nav_sales">Ventas</string>
+    <string name="nav_inventory">Inventario</string>
+    <string name="nav_categories">Categorías</string>
+    <string name="nav_suppliers">Proveedores</string>
+    <string name="nav_purchase_orders">Órdenes de Compra</string>
+    <string name="nav_customers">Clientes</string>
+    <string name="nav_users">Usuarios</string>
+    <string name="nav_shifts">Turnos</string>
+    <string name="nav_reports">Informes</string>
+    <string name="nav_settings">Configuración</string>
+    <string name="nav_exchange_rates">Tipos de Cambio</string>
+    <string name="nav_theme_demo">Demo de Tema</string>
+    
+    <!-- Authentication -->
+    <string name="auth_welcome_back">Bienvenido de Nuevo</string>
+    <string name="auth_sign_in_to_your_account">Inicia Sesión en tu Cuenta</string>
+    <string name="auth_email_label">Correo Electrónico</string>
+    <string name="auth_email_placeholder">Ingresa tu correo electrónico</string>
+    <string name="auth_password_label">Contraseña</string>
+    <string name="auth_password_placeholder">Ingresa tu contraseña</string>
+    <string name="auth_remember_me">Recuérdame</string>
+    <string name="auth_sign_in">Iniciar Sesión</string>
+    <string name="auth_show_password">Mostrar Contraseña</string>
+    <string name="auth_hide_password">Ocultar Contraseña</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Configuración</string>
+    <string name="settings_store_info">Información de la Tienda</string>
+    <string name="settings_receipt">Recibo</string>
+    <string name="settings_tax_currency">Impuesto &amp; Moneda</string>
+    <string name="settings_preferences">Preferencias</string>
+    <string name="settings_loading">Cargando configuración...</string>
+    <string name="settings_error">Error al cargar la configuración</string>
+    <string name="settings_no_settings">No se encontraron configuraciones</string>
+    <string name="settings_configure_store">Configura tus ajustes de tienda para comenzar</string>
+    <string name="settings_thanks_for_visiting">¡Gracias por visitar!</string>
+    <string name="settings_see_you_soon">¡Hasta pronto!</string>
+    <string name="settings_save">Guardar</string>
+    <string name="settings_retry">Reintentar</string>
+    
+    <!-- User Preferences -->
+    <string name="preferences_user_preferences">Preferencias de Usuario</string>
+    <string name="preferences_language">Idioma</string>
+    <string name="preferences_theme">Tema</string>
+    <string name="preferences_enable_notifications">Habilitar Notificaciones</string>
+    <string name="preferences_receive_alerts">Recibir alertas y actualizaciones</string>
+    <string name="preferences_auto_logout_timeout">Tiempo de Cierre Automático</string>
+    <string name="preferences_automatically_logout">Cerrar sesión automáticamente tras inactividad</string>
+    <string name="preferences_settings_apply">Estos ajustes se aplican a tu cuenta de usuario.</string>
+    <string name="preferences_5_min">5 min</string>
+    <string name="preferences_120_min">120 min</string>
+    <string name="preferences_light">Claro</string>
+    <string name="preferences_dark">Oscuro</string>
+    <string name="preferences_system">Por Defecto del Sistema</string>
+    <string name="preferences_english">Inglés</string>
+    <string name="preferences_spanish">Español</string>
+    <string name="preferences_french">Francés</string>
+    
+    <!-- Tax & Currency -->
+    <string name="tax_currency_title">Configuración de Impuesto &amp; Moneda</string>
+    <string name="tax_currency_label">Tasa de Impuesto (%)</string>
+    <string name="tax_currency_placeholder">ej., 16.0</string>
+    <string name="tax_currency_error_required">La tasa de impuesto es requerida</string>
+    <string name="tax_currency_error_invalid">Número inválido</string>
+    <string name="tax_currency_error_range">La tasa de impuesto debe estar entre 0 y 100</string>
+    <string name="tax_currency_currency_label">Moneda</string>
+    <string name="tax_currency_usd">USD - Dólar Estadounidense</string>
+    <string name="tax_currency_mxn">MXN - Peso Mexicano</string>
+    <string name="tax_currency_eur">EUR - Euro</string>
+    <string name="tax_currency_preview">Vista Previa</string>
+    <string name="tax_currency_sample_amount">Monto de ejemplo:</string>
+    <string name="tax_currency_tax_label">Impuesto (%1$s%%):</string>
+    <string name="preferences_timeout_format">%1$d min</string>
+    <string name="tax_currency_total_label">Total:</string>
+    <string name="tax_currency_description">La tasa de impuesto se aplica a todas las ventas. La moneda afecta cómo se muestran los montos.</string>
+    
+    <!-- Store Info -->
+    <string name="store_info_title">Información de la Tienda</string>
+    <string name="store_info_store_name">Nombre de la Tienda</string>
+    <string name="store_info_store_name_placeholder">Ingrese el nombre de la tienda</string>
+    <string name="store_info_store_name_error">El nombre de la tienda es requerido</string>
+    <string name="store_info_address">Dirección</string>
+    <string name="store_info_address_placeholder">Ingrese la dirección de la tienda</string>
+    <string name="store_info_address_error">La dirección es requerida</string>
+    <string name="store_info_phone">Teléfono</string>
+    <string name="store_info_phone_placeholder">Ingrese el número de teléfono</string>
+    <string name="store_info_phone_error">El teléfono es requerido</string>
+    <string name="store_info_email">Correo Electrónico</string>
+    <string name="store_info_email_placeholder">Ingrese la dirección de correo electrónico</string>
+    <string name="store_info_email_error">El correo electrónico es requerido</string>
+    <string name="store_info_email_error_invalid">Formato de correo electrónico inválido</string>
+    <string name="store_info_description">Esta información se mostrará en los recibos y facturas.</string>
+    
+    <!-- Receipt Config -->
+    <string name="receipt_config_title">Configuración de Recibo</string>
+    <string name="receipt_header_label">Encabezado del Recibo</string>
+    <string name="receipt_footer_label">Pie de Página del Recibo</string>
+    <string name="receipt_logo_url_label">URL del Logotipo (opcional)</string>
+    <string name="receipt_header_placeholder">ej., Gracias por comprar con nosotros!</string>
+    <string name="receipt_footer_placeholder">ej., Política de retorno: 30 días con recibo</string>
+    <string name="receipt_show_tax_label">Mostrar Impuesto en el Recibo</string>
+    <string name="receipt_show_tax_description">Mostrar desglose de impuestos al final</string>
+    <string name="receipt_preview_title">Vista Previa del Recibo</string>
+    <string name="receipt_configure_description">Configure cómo aparecen los recibos para sus clientes.</string>
+    <string name="receipt_preview_store_name">NOMBRE DE LA TIENDA</string>
+    <string name="receipt_preview_item_1">Artículo 1</string>
+    <string name="receipt_preview_item_2">Artículo 2</string>
+    <string name="receipt_preview_subtotal">Subtotal</string>
+    <string name="receipt_preview_tax_label">Impuesto (16%)</string>
+    <string name="receipt_preview_total_label">TOTAL</string>
+    <string name="receipt_sample_thank_you">Gracias por comprar!</string>
+    <string name="receipt_sample_please_come_again">¡Por favor vuelva pronto!</string>
+    <string name="receipt_sample_logo_placeholder">[Logotipo: $logoUrl]</string>
+    
+    <!-- Common Actions -->
+    <string name="common_add">Agregar</string>
+    <string name="common_edit">Editar</string>
+    <string name="common_delete">Eliminar</string>
+    <string name="common_view">Ver</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_retry">Reintentar</string>
+    <string name="common_close">Cerrar</string>
+    <string name="common_clear_filters">Limpiar Filtros</string>
+    <string name="common_status">Estado</string>
+    <string name="common_date">Fecha</string>
+    <string name="common_total">Total</string>
+    <string name="common_amount">Monto</string>
+    <string name="common_items">Artículos</string>
+    <string name="common_active">Activo</string>
+    
+    <!-- Checkout & Cart -->
+    <string name="checkout_title">Caja</string>
+    <string name="checkout_new_sale">Nueva Venta</string>
+    <string name="checkout_complete_sale">Completar Venta</string>
+    <string name="checkout_cart_title">Carrito (%1$d)</string>
+    <string name="checkout_cart_empty">El carrito está vacío</string>
+    <string name="checkout_search_products">Busca productos para agregarlos al carrito</string>
+    <string name="checkout_point_of_sale">Punto de Venta</string>
+    <string name="checkout_pos_abbr">PDV</string>
+    <string name="checkout_coming_soon">Próximamente</string>
+    
+    <!-- Payment -->
+    <string name="payment_dialog_title">Pago Dividido</string>
+    <string name="payment_total_amount">Monto Total</string>
+    <string name="payment_remaining">Restante</string>
+    <string name="payment_add">Agregar Pago</string>
+    <string name="payment_tenders">Formas de Pago</string>
+    <string name="payment_processing">Procesando pagos...</string>
+    <string name="payment_method_card">Tarjeta</string>
+    <string name="payment_method_cash">Efectivo</string>
+    <string name="payment_method_transfer">Transferencia</string>
+    <string name="payment_process_refund">Procesar Reembolso</string>
+    
+    <!-- Shifts -->
+    <string name="shifts_title">Gestión de Turnos</string>
+    <string name="shifts_open">Abrir Turno</string>
+    <string name="shifts_open_new">Abrir Nuevo Turno</string>
+    <string name="shifts_close">Cerrar Turno</string>
+    <string name="shifts_close_title">Cerrar Turno %1$s</string>
+    <string name="shifts_current">Turno Actual: %1$s</string>
+    <string name="shifts_opening_balance">Saldo de Apertura:</string>
+    <string name="shifts_opening_balance_prompt">Ingrese el saldo de efectivo de apertura para este turno.</string>
+    <string name="shifts_cash_reconciliation">Conciliación de Efectivo</string>
+    <string name="shifts_cash_sales">Ventas en Efectivo:</string>
+    <string name="shifts_card_sales">Ventas con Tarjeta:</string>
+    <string name="shifts_expected_cash">Efectivo Esperado:</string>
+    <string name="shifts_variance">Diferencia:</string>
+    <string name="shifts_bill_coin_breakdown">Desglose de Billetes/Monedas (Opcional)</string>
+    <string name="shifts_calculated_from_breakdown">Calculado del desglose:</string>
+    <string name="shifts_no_shifts_found">No se encontraron turnos</string>
+    
+    <!-- Sales & Reports -->
+    <string name="sales_title">Historial de Ventas</string>
+    <string name="sales_invoice">Factura</string>
+    <string name="sales_invoice_number">No. de Factura</string>
+    <string name="sales_payment">Pago</string>
+    <string name="reports_title">Informes</string>
+    <string name="reports_loading">Cargando informes...</string>
+    <string name="reports_sales_trend">Tendencia de Ventas</string>
+    <string name="reports_category_breakdown">Desglose por Categoría</string>
+    <string name="reports_top_products">Productos Más Vendidos</string>
+    <string name="reports_top_customers">Mejores Clientes</string>
+    <string name="reports_top_categories">Categorías Principales</string>
+    <string name="reports_no_data">No hay datos disponibles</string>
+    
+    <!-- Dashboard -->
+    <string name="dashboard_title">Panel de Control</string>
+    <string name="dashboard_quick_actions">Acciones Rápidas</string>
+    <string name="dashboard_recent_transactions">Transacciones Recientes</string>
+    
+    <!-- Inventory & Products -->
+    <string name="inventory_title">Inventario</string>
+    <string name="inventory_all_categories">Todas las Categorías</string>
+    <string name="inventory_no_products_found">No se encontraron productos</string>
+    <string name="inventory_no_categories_found">No se encontraron categorías</string>
+    <string name="inventory_no_categories_display">No hay categorías para mostrar</string>
+    <string name="inventory_out_of_stock">Agotado</string>
+    <string name="inventory_low_stock">Existencias bajas: %1$d</string>
+    <string name="inventory_search_placeholder">Buscar productos…</string>
+    <string name="inventory_add_product">Agregar Producto</string>
+    <string name="inventory_line_items">Artículos de Línea</string>
+    <string name="inventory_no_items_added">No se agregaron artículos. Haga clic en \'Agregar Producto\' para agregar artículos de línea.</string>
+    <string name="inventory_product_count">%1$d productos</string>
+    <string name="inventory_unit_price_each">%1$s cada uno</string>
+    
+    <!-- Categories -->
+    <string name="categories_search_placeholder">Buscar categorías…</string>
+    <string name="categories_add">Agregar Categoría</string>
+    
+    <!-- Customers -->
+    <string name="customers_add">Agregar Cliente</string>
+    <string name="customers_edit">Editar Cliente</string>
+    <string name="customers_no_customers_found">No se encontraron clientes</string>
+    <string name="customers_loyalty_tier">Nivel de Lealtad</string>
+    
+    <!-- Suppliers -->
+    <string name="suppliers_add">Agregar Proveedor</string>
+    <string name="suppliers_no_suppliers_found">No se encontraron proveedores</string>
+    
+    <!-- Exchange Rates -->
+    <string name="exchange_rates_title">Tipos de Cambio</string>
+    <string name="exchange_rates_add">Agregar Tipo de Cambio</string>
+    <string name="exchange_rates_no_rates_found">No se encontraron tipos de cambio</string>
+    
+    <!-- Users -->
+    <string name="users_add">Agregar Usuario</string>
+    <string name="users_no_users_found">No se encontraron usuarios</string>
+    
+    <!-- Purchase Orders -->
+    <string name="purchase_orders_create">Crear OC</string>
+    <string name="purchase_orders_edit">Editar OC</string>
+    <string name="purchase_orders_line_items">Artículos</string>
+    <string name="purchase_orders_add_product">Agregar Producto</string>
+    <string name="purchase_orders_no_items">No hay artículos. Haz clic en 'Agregar Producto' para agregar artículos.</string>
+    <string name="purchase_orders_total">Total:</string>
+    <string name="purchase_orders_no_orders_found">No se encontraron órdenes de compra</string>
+    
+    <!-- Refund -->
+    <string name="refund_restore_stock_warning">Esto restaurará el stock de productos al inventario.</string>
+    <string name="refund_invoice">Factura</string>
+    <string name="refund_reason_optional">Razón (opcional)</string>
+    <string name="refund_process_refund">Procesar Reembolso</string>
+    
+    <!-- Pagination -->
+    <string name="pagination_page">Página %1$d</string>
+    <string name="pagination_showing_entries">Mostrando %1$d - %2$d de %3$d entradas</string>
+    <string name="pagination_no_data">No hay datos disponibles</string>
+    
+    <!-- Debug -->
+    <string name="debug_mode_badge">MODO DEBUG</string>
+    <string name="debug_mode_icon">🔧</string>
+    
+    <!-- Theme Demo (development/preview screen) -->
+    <string name="theme_demo_title">Sistema de Temas de Vibely POS</string>
+    <string name="theme_demo_description">Una demostración completa de componentes de tema personalizados</string>
+    <string name="theme_demo_primary_button">Botón Primario</string>
+    <string name="theme_demo_secondary_button">Botón Secundario</string>
+    <string name="theme_demo_tertiary_button">Botón Terciario</string>
+    <string name="theme_demo_outlined_button">Botón con Borde</string>
+    <string name="theme_demo_destructive_button">Botón Destructivo</string>
+    <string name="theme_demo_size_small">Pequeño</string>
+    <string name="theme_demo_size_medium">Mediano</string>
+    <string name="theme_demo_size_large">Grande</string>
+    <string name="theme_demo_success">Éxito</string>
+    <string name="theme_demo_error">Error</string>
+    <string name="theme_demo_warning">Advertencia</string>
+    <string name="theme_demo_info">Info</string>
+</resources>
