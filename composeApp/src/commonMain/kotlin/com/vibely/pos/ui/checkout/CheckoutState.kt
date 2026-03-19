@@ -17,6 +17,7 @@ data class CheckoutState(
     val completedSaleId: String? = null,
     val paymentTenders: List<PaymentTender> = emptyList(),
     val saleId: String? = null,
+    val customerId: String? = null,
 ) {
     val hasItems: Boolean get() = cart.items.isNotEmpty()
     val totalItems: Int get() = cart.totalItems

@@ -434,6 +434,8 @@
     <string name="categories_product_count">%1$d productos</string>
     
     <!-- Checkout -->
+    <string name="checkout_select_customer">Seleccionar Cliente</string>
+    <string name="checkout_walkin_customer">Cliente sin Registro</string>
     <string name="checkout_no_products_found">No se encontraron productos</string>
     
     <!-- App Name -->

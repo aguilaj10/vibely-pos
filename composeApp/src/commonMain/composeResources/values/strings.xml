@@ -148,6 +148,8 @@
     <string name="checkout_point_of_sale">Point of Sale</string>
     <string name="checkout_pos_abbr">POS</string>
     <string name="checkout_coming_soon">Coming Soon</string>
+    <string name="checkout_select_customer">Select Customer</string>
+    <string name="checkout_walkin_customer">Walk-in Customer</string>
     
     <!-- Payment -->
     <string name="payment_dialog_title">Split Payment</string>

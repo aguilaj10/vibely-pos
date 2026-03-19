@@ -125,6 +125,10 @@ class CheckoutViewModel(
         onAddToCart(product, 1)
     }
 
+    fun onCustomerSelected(customerId: String?) {
+        _state.update { it.copy(customerId = customerId) }
+    }
+
     fun onAddToCart(product: Product, quantity: Int) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
@@ -243,6 +247,7 @@ class CheckoutViewModel(
                 completeSaleUseCase(
                     cart = currentState.cart,
                     cashierId = cashierId,
+                    customerId = currentState.customerId,
                     status = saleStatus,
                     paymentStatus = paymentStatus,
                 )

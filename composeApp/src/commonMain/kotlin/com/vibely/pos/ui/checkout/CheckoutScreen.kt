@@ -21,11 +21,16 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -34,7 +39,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +51,7 @@ import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.sales.valueobject.CartItem
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
+import com.vibely.pos.ui.customers.CustomersViewModel
 import com.vibely.pos.ui.dialogs.PaymentDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
@@ -64,7 +72,9 @@ import vibely_pos.composeapp.generated.resources.checkout_cart_title
 import vibely_pos.composeapp.generated.resources.checkout_complete_sale
 import vibely_pos.composeapp.generated.resources.checkout_no_products_found
 import vibely_pos.composeapp.generated.resources.checkout_search_products
+import vibely_pos.composeapp.generated.resources.checkout_select_customer
 import vibely_pos.composeapp.generated.resources.checkout_title
+import vibely_pos.composeapp.generated.resources.checkout_walkin_customer
 import vibely_pos.composeapp.generated.resources.common_checkout
 import vibely_pos.composeapp.generated.resources.common_total
 import vibely_pos.composeapp.generated.resources.inventory_low_stock
@@ -81,6 +91,11 @@ fun CheckoutScreen(
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val checkoutCompleteSaleText = stringResource(Res.string.checkout_complete_sale)
+
+    val customersViewModel: CustomersViewModel = koinInject()
+    val customersState by customersViewModel.state.collectAsState()
+    var customerExpanded by remember { mutableStateOf(false) }
+    val selectedCustomer = customersState.customers.find { it.id == state.customerId }
 
     LaunchedEffect(saleId) {
         saleId?.let { viewModel.loadSale(it) }
@@ -108,8 +123,51 @@ fun CheckoutScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-
             Spacer(modifier = Modifier.height(24.dp))
+            ExposedDropdownMenuBox(
+                expanded = customerExpanded,
+                onExpandedChange = { customerExpanded = it },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                OutlinedTextField(
+                    value = selectedCustomer?.fullName ?: stringResource(Res.string.checkout_walkin_customer),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(Res.string.checkout_select_customer)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = customerExpanded) },
+                    modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                )
+
+                ExposedDropdownMenu(
+                    expanded = customerExpanded,
+                    onDismissRequest = { customerExpanded = false },
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.checkout_walkin_customer)) },
+                        onClick = {
+                            viewModel.onCustomerSelected(null)
+                            customerExpanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                    customersState.customers
+                        .filter { it.isActive }
+                        .forEach { customer ->
+                            DropdownMenuItem(
+                                text = { Text(customer.fullName) },
+                                onClick = {
+                                    viewModel.onCustomerSelected(customer.id)
+                                    customerExpanded = false
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
 
             Box {
                 DockedSearchBar(
@@ -191,6 +249,7 @@ fun CheckoutScreen(
                         }
                     }
                 }
+
                 Column {
                     Spacer(modifier = Modifier.height(24.dp))
 

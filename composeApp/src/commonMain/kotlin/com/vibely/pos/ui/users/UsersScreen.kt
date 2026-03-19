@@ -214,6 +214,7 @@ private fun UsersHeader(
                     Icon(
                         imageVector = FontAwesomeIcons.Solid.Search,
                         contentDescription = "Search",
+                        modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
@@ -223,6 +224,7 @@ private fun UsersHeader(
                             Icon(
                                 imageVector = FontAwesomeIcons.Solid.Times,
                                 contentDescription = "Clear",
+                                modifier = Modifier.size(20.dp),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }

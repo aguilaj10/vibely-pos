@@ -202,6 +202,7 @@ private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) 
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Search,
                             contentDescription = stringResource(Res.string.common_clear),
+                            modifier = Modifier.size(20.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
