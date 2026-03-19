@@ -28,13 +28,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.vibely.pos.shared.domain.shift.entity.Shift
-import com.vibely.pos.shared.util.FormatUtils.formatCurrency
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatCurrency
 import org.jetbrains.compose.resources.stringResource
 import vibely_pos.composeapp.generated.resources.Res
 import vibely_pos.composeapp.generated.resources.common_cancel
@@ -187,7 +187,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                         fontWeight = FontWeight.Medium,
                     )
                     Text(
-                        text = formatCurrency(calculatedFromBills),
+                        text = calculatedFromBills.formatCurrency(),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -251,7 +251,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    text = formatCurrency(openingBalance),
+                    text = openingBalance.formatCurrency(),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                 )
@@ -268,7 +268,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    text = "+ ${formatCurrency(totalCash)}",
+                    text = "+ ${totalCash.formatCurrency()}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                     color = AppColors.Success,
@@ -286,7 +286,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    text = formatCurrency(totalCard),
+                    text = totalCard.formatCurrency(),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                 )
@@ -304,7 +304,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = formatCurrency(expectedCash),
+                    text = expectedCash.formatCurrency(),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.Primary,
@@ -344,7 +344,7 @@ private fun VarianceDisplay(expected: Double, actual: Double, variance: Double) 
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = "${if (variance >= 0) "+" else ""}${formatCurrency(variance)}",
+                text = "${if (variance >= 0) "+" else ""}${variance.formatCurrency()}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = varianceColor,
@@ -376,7 +376,7 @@ private fun BillCoinRow(label: String, value: String, onValueChange: (String) ->
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
         Text(
-            text = "= ${formatCurrency((value.toDoubleOrNull() ?: 0.0) * denomination)}",
+            text = "= ${((value.toDoubleOrNull() ?: 0.0) * denomination).formatCurrency()}",
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.width(80.dp),
         )

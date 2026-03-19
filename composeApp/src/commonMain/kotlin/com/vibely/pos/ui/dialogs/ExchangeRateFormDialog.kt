@@ -32,6 +32,7 @@ import androidx.compose.ui.window.Dialog
 import com.vibely.pos.shared.data.currency.dto.CurrencyDTO
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
+import com.vibely.pos.ui.utils.formatCurrency
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,7 +153,7 @@ fun ExchangeRateFormDialog(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
-                    value = formData.rate.toString(),
+                    value = formData.rate.formatCurrency(formData.currencyTo),
                     onValueChange = { newValue ->
                         val rate = newValue.toDoubleOrNull()
                         if (rate != null || newValue.isEmpty()) {

@@ -49,6 +49,8 @@ import com.vibely.pos.ui.dialogs.CloseShiftDialog
 import com.vibely.pos.ui.dialogs.OpenShiftDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatCurrency
+import com.vibely.pos.ui.utils.formatDecimal
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Clock
@@ -239,17 +241,17 @@ private fun CurrentShiftCard(shift: Shift) {
                 ShiftInfoItem(label = "Opened", value = FormatUtils.formatDateTime(shift.openedAt))
                 ShiftInfoItem(
                     label = stringResource(Res.string.shifts_opening_balance),
-                    value = FormatUtils.formatCurrency(shift.openingBalance),
+                    value = shift.openingBalance.formatCurrency(),
                 )
                 ShiftInfoItem(
                     label = stringResource(Res.string.shifts_cash_sales),
-                    value = FormatUtils.formatCurrency(shift.totalCash),
+                    value = shift.totalCash.formatCurrency(),
                 )
                 ShiftInfoItem(
                     label = stringResource(Res.string.shifts_card_sales),
-                    value = FormatUtils.formatCurrency(shift.totalCard),
+                    value = shift.totalCard.formatCurrency(),
                 )
-                ShiftInfoItem(label = "Total Sales", value = FormatUtils.formatCurrency(shift.totalSales))
+                ShiftInfoItem(label = "Total Sales", value = shift.totalSales.formatCurrency())
             }
         }
     }
@@ -291,7 +293,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
         KpiCard(
             icon = FontAwesomeIcons.Solid.DollarSign,
             label = "Today's Sales",
-            value = FormatUtils.formatCurrency(todaysSales),
+            value = todaysSales.formatCurrency(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
@@ -299,7 +301,7 @@ private fun KpiCardsRow(openShiftsCount: Int, todaysSales: Double, totalDiscrepa
         KpiCard(
             icon = FontAwesomeIcons.Solid.ExclamationTriangle,
             label = "Total Discrepancy",
-            value = FormatUtils.formatCurrency(totalDiscrepancy),
+            value = totalDiscrepancy.formatCurrency(),
             valueColor = getDiscrepancyColor(totalDiscrepancy),
             modifier = Modifier.weight(1f),
         )
@@ -455,9 +457,9 @@ private fun TableRow(shift: Shift, onView: () -> Unit) {
         TableCell(shift.cashierName ?: "-", modifier = Modifier.weight(1f))
         TableCell(FormatUtils.formatDateTime(shift.openedAt), modifier = Modifier.width(120.dp))
         TableCell(shift.closedAt?.let { FormatUtils.formatDateTime(it) } ?: "-", modifier = Modifier.width(120.dp))
-        TableCell(FormatUtils.formatCurrency(shift.openingBalance), modifier = Modifier.width(100.dp))
+        TableCell(shift.openingBalance.formatCurrency(), modifier = Modifier.width(100.dp))
         TableCell(
-            shift.closingBalance?.let { FormatUtils.formatCurrency(it) } ?: "-",
+            shift.closingBalance?.formatCurrency() ?: "-",
             modifier = Modifier.width(100.dp),
         )
 
@@ -496,7 +498,7 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun DiscrepancyCell(discrepancy: Double?, modifier: Modifier = Modifier) {
-    val displayValue = discrepancy?.let { FormatUtils.formatCurrency(it) } ?: "-"
+    val displayValue = discrepancy?.formatDecimal() ?: "-"
     val color = discrepancy?.let { getDiscrepancyColor(it) } ?: MaterialTheme.colorScheme.onSurfaceVariant
 
     Text(

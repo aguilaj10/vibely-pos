@@ -8,6 +8,7 @@ import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.DataTable
 import com.vibely.pos.ui.components.DataTableCell
 import com.vibely.pos.ui.components.TableColumn
+import com.vibely.pos.ui.utils.formatCurrency
 
 @Composable
 fun TopCustomersTable(customers: List<CustomerAnalytics>, modifier: Modifier = Modifier) {
@@ -24,7 +25,7 @@ fun TopCustomersTable(customers: List<CustomerAnalytics>, modifier: Modifier = M
         cellContent = { column, customer ->
             when (column.key) {
                 "customer" -> DataTableCell(customer.customerName)
-                "totalSpent" -> DataTableCell(FormatUtils.formatCurrency(customer.totalSpent / 100.0))
+                "totalSpent" -> DataTableCell((customer.totalSpent / 100.0).formatCurrency())
                 "visits" -> DataTableCell(customer.visitCount.toString())
                 "lastVisit" -> DataTableCell(FormatUtils.formatDate(customer.lastVisit))
                 else -> DataTableCell("")

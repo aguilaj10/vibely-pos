@@ -49,6 +49,7 @@ import com.vibely.pos.ui.dialogs.PaymentDialog
 import com.vibely.pos.ui.dialogs.RefundDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatDecimal
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.DollarSign
@@ -273,7 +274,7 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit,
             )
 
             Text(
-                text = FormatUtils.formatCurrency(sale.totalAmount),
+                text = sale.totalAmount.formatDecimal(),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,

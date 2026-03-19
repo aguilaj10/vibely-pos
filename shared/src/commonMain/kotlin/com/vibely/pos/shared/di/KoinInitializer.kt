@@ -62,5 +62,4 @@ fun initKoin(platformModules: List<Module> = emptyList(), appDeclaration: KoinAp
 fun sharedModules(): List<Module> = listOf(
     domainModule,
     dataModule,
-    presentationModule,
 )

@@ -11,6 +11,7 @@ import com.vibely.pos.ui.components.DataTableCell
 import com.vibely.pos.ui.components.StatusChip
 import com.vibely.pos.ui.components.StatusChipVariant
 import com.vibely.pos.ui.components.TableColumn
+import com.vibely.pos.ui.utils.formatCurrency
 
 /**
  * Recent transactions table component for dashboard.
@@ -42,7 +43,7 @@ fun RecentTransactionsTable(
             when (column.key) {
                 "invoice" -> DataTableCell(transaction.invoiceNumber)
                 "time" -> DataTableCell(FormatUtils.formatDateTime(transaction.saleDate).substringAfterLast(' '))
-                "amount" -> DataTableCell(transaction.totalAmount.amount.let { FormatUtils.formatCurrency(it) })
+                "amount" -> DataTableCell(transaction.totalAmount.amount.let { it.formatCurrency() })
                 "status" -> TransactionStatusChip(transaction.status)
                 else -> DataTableCell("")
             }

@@ -36,7 +36,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.sales.entity.Product
-import com.vibely.pos.shared.util.FormatUtils.formatCurrency
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -48,6 +47,7 @@ import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.ProductFormDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Boxes
@@ -260,7 +260,7 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
             KpiCard(
                 icon = FontAwesomeIcons.Solid.Wallet,
                 label = "Total Value",
-                value = formatCurrency(totalValue),
+                value = totalValue.formatCurrency(),
                 valueColor = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
             )
@@ -427,7 +427,7 @@ private fun TableRow(product: Product, onEdit: () -> Unit, onDelete: () -> Unit)
         TableCell(product.name, modifier = Modifier.weight(0.8f))
         TableCell(product.categoryName ?: "Uncategorized", modifier = Modifier.width(150.dp))
         TableCell(
-            text = formatCurrency(product.sellingPrice),
+            text = product.sellingPrice.formatCurrency(),
             modifier = Modifier.width(80.dp),
             textAlign = TextAlign.End,
         )

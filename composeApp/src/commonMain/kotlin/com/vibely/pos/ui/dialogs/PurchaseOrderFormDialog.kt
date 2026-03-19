@@ -40,14 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.supplier.entity.Supplier
-import com.vibely.pos.shared.util.FormatUtils.formatCurrency
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
-import com.vibely.pos.ui.dialogs.CurrencyOption
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Plus
@@ -245,7 +244,7 @@ fun PurchaseOrderFormDialog(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = formatCurrency(formData.calculateTotal()),
+                        text = formData.calculateTotal().formatCurrency(),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = AppColors.Primary,
@@ -407,7 +406,7 @@ private fun LineItemRow(
             }
 
             Text(
-                text = formatCurrency(lineItem.calculateSubtotal()),
+                text = lineItem.calculateSubtotal().formatCurrency(),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.width(80.dp),

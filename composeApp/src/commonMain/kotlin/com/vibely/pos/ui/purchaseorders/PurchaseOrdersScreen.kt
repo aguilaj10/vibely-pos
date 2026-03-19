@@ -51,6 +51,7 @@ import com.vibely.pos.ui.dialogs.LineItemFormData
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormData
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormDialog
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Calculator
@@ -263,7 +264,7 @@ private fun KpiCardsRow(totalOrders: Int, pendingOrders: Int, totalAmount: Doubl
         KpiCard(
             icon = FontAwesomeIcons.Solid.Calculator,
             label = "Total Amount",
-            value = FormatUtils.formatCurrency(totalAmount),
+            value = totalAmount.formatCurrency(),
             valueColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
@@ -436,7 +437,7 @@ private fun TableRow(purchaseOrder: PurchaseOrder, onView: () -> Unit, onEdit: (
         )
 
         TableCell(
-            FormatUtils.formatCurrency(purchaseOrder.totalAmount),
+            purchaseOrder.totalAmount.formatCurrency(),
             modifier = Modifier.width(120.dp),
         )
 

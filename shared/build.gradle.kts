@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.buildkonfig)
     alias(libs.plugins.detekt)
     id("spotless-conventions")
 }
@@ -112,6 +113,19 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
         }
+    }
+}
+
+// BuildKonfig configuration
+buildkonfig {
+    packageName = "com.vibely.pos.shared"
+
+    defaultConfigs {
+        buildConfigField(
+            com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            "API_BASE_URL",
+            System.getenv("API_BASE_URL") ?: "http://localhost:8080",
+        )
     }
 }
 

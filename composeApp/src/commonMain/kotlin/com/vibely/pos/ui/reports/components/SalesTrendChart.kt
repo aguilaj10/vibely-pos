@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,19 +18,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.reports.entity.SalesTrend
 import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatCurrency
 
 @Composable
 fun SalesTrendChart(data: List<SalesTrend>, modifier: Modifier = Modifier) {
     val primaryColor = AppColors.Primary
     val gridColor = AppColors.NeutralLight300
     val textColor = AppColors.TextSecondaryLight
-
-    val textMeasurer = rememberTextMeasurer()
 
     val maxRevenue = remember(data) { data.maxOfOrNull { it.revenue } ?: 1L }
     val minRevenue = remember(data) { data.minOfOrNull { it.revenue } ?: 0L }
@@ -117,7 +114,7 @@ fun SalesTrendChart(data: List<SalesTrend>, modifier: Modifier = Modifier) {
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = FormatUtils.formatCurrency(maxRevenue.toDouble()),
+                text = maxRevenue.toDouble().formatCurrency(),
                 style = MaterialTheme.typography.labelSmall,
                 color = textColor,
             )

@@ -27,12 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.vibely.pos.shared.domain.sales.valueobject.PaymentType
 import com.vibely.pos.shared.domain.sales.valueobject.toDisplayString
-import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.checkout.PaymentTender
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Times
@@ -97,7 +97,7 @@ fun PaymentDialog(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = FormatUtils.formatCurrency(totalAmount),
+                            text = totalAmount.formatCurrency(),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )
@@ -109,7 +109,7 @@ fun PaymentDialog(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = FormatUtils.formatCurrency(remainingAmount),
+                            text = remainingAmount.formatCurrency(),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = if (remainingAmount > 0) AppColors.Warning else AppColors.Success,
@@ -237,7 +237,7 @@ fun PaymentDialog(
                                     fontWeight = FontWeight.Medium,
                                 )
                                 Text(
-                                    text = FormatUtils.formatCurrency(tender.amount),
+                                    text = tender.amount.formatCurrency(),
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }

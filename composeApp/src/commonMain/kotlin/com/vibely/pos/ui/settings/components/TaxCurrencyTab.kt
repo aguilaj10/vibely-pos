@@ -27,11 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.vibely.pos.shared.util.FormatUtils.formatCurrency
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.theme.AppColors
 import com.vibely.pos.ui.theme.PosShapes
+import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.DollarSign
@@ -111,7 +111,7 @@ fun TaxCurrencyTab(
                             when {
                                 newValue.isBlank() -> errorRequired
                                 rate == null -> errorInvalid
-                                rate < 0 || rate > 100 -> errorRange
+                                rate !in 0.0..100.0 -> errorRange
                                 else -> null
                             }
                     },
@@ -220,7 +220,7 @@ fun TaxCurrencyTab(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = formatCurrency(100.0),
+                        text = 100.0.formatCurrency(),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -238,7 +238,7 @@ fun TaxCurrencyTab(
                     )
                     val taxAmount = (taxRate.toDoubleOrNull() ?: 0.0) / 100 * 100
                     Text(
-                        text = formatCurrency(taxAmount),
+                        text = taxAmount.formatCurrency(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -255,7 +255,7 @@ fun TaxCurrencyTab(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = formatCurrency((100 + ((taxRate.toDoubleOrNull() ?: 0.0) / 100 * 100))),
+                        text = (100 + ((taxRate.toDoubleOrNull() ?: 0.0) / 100 * 100)).formatCurrency(),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                     )

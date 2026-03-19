@@ -7,6 +7,7 @@ androidx-activity = "1.13.0"
 androidx-datastore = "1.2.1"
 androidx-lifecycle = "2.9.6"
 bcrypt = "0.10.2"
+buildkonfig = "0.17.1"
 compose = "1.10.2"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.2"
@@ -100,6 +101,7 @@ detekt-koin-rules = { module = "dev.androidbroadcast.rules.koin:detekt-koin4-rul
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

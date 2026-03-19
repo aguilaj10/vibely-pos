@@ -5,6 +5,7 @@ import com.vibely.pos.ui.checkout.CheckoutViewModel
 import com.vibely.pos.ui.common.ConnectivityViewModel
 import com.vibely.pos.ui.customers.CustomersViewModel
 import com.vibely.pos.ui.dashboard.DashboardViewModel
+import com.vibely.pos.ui.exchangerates.ExchangeRatesViewModel
 import com.vibely.pos.ui.inventory.InventoryViewModel
 import com.vibely.pos.ui.purchaseorders.PurchaseOrdersViewModel
 import com.vibely.pos.ui.reports.ReportsViewModel
@@ -32,4 +33,5 @@ val uiModule =
         factory { UsersViewModel(get(), get(), get(), get(), get()) }
         factory { ReportsViewModel(get(), get(), get(), get(), get()) }
         factory { SettingsViewModel(get(), get(), get(), get(), get()) }
+        factory { ExchangeRatesViewModel(get(), get(), get(), get(), get()) }
     }

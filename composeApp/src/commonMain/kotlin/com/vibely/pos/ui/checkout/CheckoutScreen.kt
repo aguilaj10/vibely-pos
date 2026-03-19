@@ -35,7 +35,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -43,12 +42,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.sales.valueobject.CartItem
-import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.dialogs.PaymentDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Cube
@@ -265,7 +264,7 @@ fun CheckoutScreen(
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
-                            text = FormatUtils.formatCurrency(state.totalAmount),
+                            text = state.totalAmount.formatCurrency(),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -394,7 +393,7 @@ private fun ProductSearchItem(product: Product, onClick: () -> Unit, modifier: M
             }
 
             Text(
-                text = FormatUtils.formatCurrency(product.sellingPrice),
+                text = product.sellingPrice.formatCurrency(),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -484,7 +483,7 @@ private fun CartItemCard(item: CartItem, onQuantityChange: (Int) -> Unit, onRemo
                 }
 
                 Text(
-                    text = FormatUtils.formatCurrency(item.subtotal),
+                    text = item.subtotal.formatCurrency(),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -492,7 +491,7 @@ private fun CartItemCard(item: CartItem, onQuantityChange: (Int) -> Unit, onRemo
             }
 
             Text(
-                text = "${FormatUtils.formatCurrency(item.unitPrice)} each",
+                text = "${item.unitPrice.formatCurrency()} each",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
