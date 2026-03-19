@@ -67,6 +67,8 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
+private const val DEFAULT_BASE_URL = "http://localhost:8080"
+
 /**
  * Koin module for the Data layer.
  *
@@ -100,6 +102,10 @@ val dataModule =
 
         // HTTP Client for Supabase and general API calls
         single {
+            // Log API_BASE_URL configuration
+            val apiBaseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL)
+            println("🌐 DataModule - API_BASE_URL: $apiBaseUrl")
+
             val isDebugMode = getProperty("DEBUG_MODE", "false") == "true"
             val localAuthDataSource: LocalAuthDataSource = get()
             val platformName = Platform.name
@@ -164,7 +170,7 @@ val dataModule =
         single {
             RemoteAuthDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -175,7 +181,7 @@ val dataModule =
         single {
             RemoteDashboardDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -186,13 +192,13 @@ val dataModule =
         single {
             RemoteProductDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
         single {
             RemoteSaleDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -204,7 +210,7 @@ val dataModule =
         single {
             RemotePaymentDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -215,13 +221,13 @@ val dataModule =
         single {
             RemoteInventoryDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
         single {
             RemoteCategoryDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -233,7 +239,7 @@ val dataModule =
         single {
             RemoteCustomerDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -244,7 +250,7 @@ val dataModule =
         single {
             RemoteSupplierDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -255,7 +261,7 @@ val dataModule =
         single {
             RemotePurchaseOrderDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -266,7 +272,7 @@ val dataModule =
         single {
             RemoteShiftDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -277,7 +283,7 @@ val dataModule =
         single {
             RemoteUserDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -288,7 +294,7 @@ val dataModule =
         single {
             RemoteReportsDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 
@@ -299,7 +305,7 @@ val dataModule =
         single {
             RemoteCurrencyDataSource(
                 httpClient = get(),
-                baseUrl = getProperty("API_BASE_URL", "http://localhost:8080"),
+                baseUrl = getProperty("API_BASE_URL", DEFAULT_BASE_URL),
             )
         }
 

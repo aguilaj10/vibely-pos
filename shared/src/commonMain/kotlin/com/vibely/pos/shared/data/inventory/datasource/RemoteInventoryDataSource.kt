@@ -11,7 +11,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-class RemoteInventoryDataSource(private val httpClient: HttpClient, private val baseUrl: String = "http://localhost:8080") {
+class RemoteInventoryDataSource(private val httpClient: HttpClient, private val baseUrl: String) {
 
     suspend fun getTransactions(
         productId: String? = null,

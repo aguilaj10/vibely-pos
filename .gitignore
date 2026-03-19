@@ -72,3 +72,4 @@ composeResources/
 /.opencode
 /openspec/config.yaml
 /docs/LOCALIZATION_IMPLEMENTATION_PLAN.md
+/run-jvm.sh

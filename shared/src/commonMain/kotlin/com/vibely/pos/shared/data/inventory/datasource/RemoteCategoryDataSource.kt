@@ -15,7 +15,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-class RemoteCategoryDataSource(private val httpClient: HttpClient, private val baseUrl: String = "http://localhost:8080") {
+class RemoteCategoryDataSource(private val httpClient: HttpClient, private val baseUrl: String) {
     suspend fun getAll(isActive: Boolean? = null, page: Int = 1, pageSize: Int = 50): Result<List<CategoryDTO>> = Result.runCatching {
         val response: HttpResponse =
             httpClient.get("$baseUrl/api/categories") {

@@ -17,7 +17,6 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class CompleteSaleUseCaseTest {
-
     private class MockProductRepository : ProductRepository {
         val products = mutableMapOf<String, Product>()
 
@@ -88,21 +87,26 @@ class CompleteSaleUseCaseTest {
         val mockProductRepo = MockProductRepository()
         val mockSaleRepo = MockSaleRepository()
 
-        val product = Product.create(
-            id = "prod-1",
-            name = "Test Product",
-            sku = "SKU-001",
-            costPrice = 50.0,
-            sellingPrice = 100.0,
-            currentStock = 10,
-            minStockLevel = 5,
-            categoryId = "cat-1",
-            isActive = true,
-        )
+        val product =
+            Product.create(
+                id = "prod-1",
+                name = "Test Product",
+                sku = "SKU-001",
+                costPrice = 50.0,
+                sellingPrice = 100.0,
+                currentStock = 10,
+                minStockLevel = 5,
+                categoryId = "cat-1",
+                isActive = true,
+            )
         mockProductRepo.products[product.id] = product
 
-        val cart = Cart()
-            .add(product, 2).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
+        val cart =
+            Cart()
+                .add(
+                    product,
+                    2,
+                ).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
 
         val useCase = CompleteSaleUseCase(mockSaleRepo, mockProductRepo)
 
@@ -135,18 +139,22 @@ class CompleteSaleUseCaseTest {
         val mockProductRepo = MockProductRepository()
         val mockSaleRepo = MockSaleRepository()
 
-        val product = Product.create(
-            id = "prod-1",
-            name = "Test Product",
-            sku = "SKU-001",
-            costPrice = 50.0,
-            sellingPrice = 100.0,
-            currentStock = 10,
-            minStockLevel = 5,
-            categoryId = "cat-1",
-            isActive = true,
-        )
-        val cart = Cart().add(product, 2).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
+        val product =
+            Product.create(
+                id = "prod-1",
+                name = "Test Product",
+                sku = "SKU-001",
+                costPrice = 50.0,
+                sellingPrice = 100.0,
+                currentStock = 10,
+                minStockLevel = 5,
+                categoryId = "cat-1",
+                isActive = true,
+            )
+        val cart =
+            Cart().add(product, 2).let {
+                if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart")
+            }
 
         val useCase = CompleteSaleUseCase(mockSaleRepo, mockProductRepo)
 
@@ -161,29 +169,32 @@ class CompleteSaleUseCaseTest {
         val mockProductRepo = MockProductRepository()
         val mockSaleRepo = MockSaleRepository()
 
-        val product = Product.create(
-            id = "prod-1",
-            name = "Test Product",
-            sku = "SKU-001",
-            costPrice = 50.0,
-            sellingPrice = 100.0,
-            currentStock = 1,
-            minStockLevel = 5,
-            categoryId = "cat-1",
-            isActive = true,
-        )
+        val product =
+            Product.create(
+                id = "prod-1",
+                name = "Test Product",
+                sku = "SKU-001",
+                costPrice = 50.0,
+                sellingPrice = 100.0,
+                currentStock = 1,
+                minStockLevel = 5,
+                categoryId = "cat-1",
+                isActive = true,
+            )
         mockProductRepo.products[product.id] = product
 
-        val cart = Cart(
-            items = listOf(
-                CartItem(
-                    productId = product.id,
-                    productName = product.name,
-                    quantity = 5,
-                    unitPrice = product.sellingPrice,
+        val cart =
+            Cart(
+                items =
+                listOf(
+                    CartItem(
+                        productId = product.id,
+                        productName = product.name,
+                        quantity = 5,
+                        unitPrice = product.sellingPrice,
+                    ),
                 ),
-            ),
-        )
+            )
 
         val useCase = CompleteSaleUseCase(mockSaleRepo, mockProductRepo)
 
@@ -198,20 +209,24 @@ class CompleteSaleUseCaseTest {
         val mockProductRepo = MockProductRepository()
         val mockSaleRepo = MockSaleRepository()
 
-        val product = Product.create(
-            id = "prod-1",
-            name = "Test Product",
-            sku = "SKU-001",
-            costPrice = 50.0,
-            sellingPrice = 100.0,
-            currentStock = 10,
-            minStockLevel = 5,
-            categoryId = "cat-1",
-            isActive = true,
-        )
+        val product =
+            Product.create(
+                id = "prod-1",
+                name = "Test Product",
+                sku = "SKU-001",
+                costPrice = 50.0,
+                sellingPrice = 100.0,
+                currentStock = 10,
+                minStockLevel = 5,
+                categoryId = "cat-1",
+                isActive = true,
+            )
         mockProductRepo.products[product.id] = product
 
-        val cart = Cart().add(product, 2).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
+        val cart =
+            Cart().add(product, 2).let {
+                if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart")
+            }
 
         mockSaleRepo.createResult = Result.Error("Database error", "DB_ERROR")
 
@@ -229,34 +244,43 @@ class CompleteSaleUseCaseTest {
         val mockProductRepo = MockProductRepository()
         val mockSaleRepo = MockSaleRepository()
 
-        val product1 = Product.create(
-            id = "prod-1",
-            name = "Product 1",
-            sku = "SKU-001",
-            costPrice = 50.0,
-            sellingPrice = 100.0,
-            currentStock = 10,
-            minStockLevel = 5,
-            categoryId = "cat-1",
-            isActive = true,
-        )
-        val product2 = Product.create(
-            id = "prod-2",
-            name = "Product 2",
-            sku = "SKU-002",
-            costPrice = 25.0,
-            sellingPrice = 50.0,
-            currentStock = 20,
-            minStockLevel = 5,
-            categoryId = "cat-1",
-            isActive = true,
-        )
+        val product1 =
+            Product.create(
+                id = "prod-1",
+                name = "Product 1",
+                sku = "SKU-001",
+                costPrice = 50.0,
+                sellingPrice = 100.0,
+                currentStock = 10,
+                minStockLevel = 5,
+                categoryId = "cat-1",
+                isActive = true,
+            )
+        val product2 =
+            Product.create(
+                id = "prod-2",
+                name = "Product 2",
+                sku = "SKU-002",
+                costPrice = 25.0,
+                sellingPrice = 50.0,
+                currentStock = 20,
+                minStockLevel = 5,
+                categoryId = "cat-1",
+                isActive = true,
+            )
         mockProductRepo.products[product1.id] = product1
         mockProductRepo.products[product2.id] = product2
 
-        val cart = Cart()
-            .add(product1, 2).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
-            .add(product2, 3).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
+        val cart =
+            Cart()
+                .add(
+                    product1,
+                    2,
+                ).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
+                .add(
+                    product2,
+                    3,
+                ).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
 
         val useCase = CompleteSaleUseCase(mockSaleRepo, mockProductRepo)
 
@@ -264,8 +288,10 @@ class CompleteSaleUseCaseTest {
 
         assertIs<Result.Success<Sale>>(result)
         assertEquals(350.0, result.data.totalAmount)
-        assertEquals(8, mockProductRepo.products[product1.id]?.currentStock)
-        assertEquals(17, mockProductRepo.products[product2.id]?.currentStock)
+        // Stock deduction is handled by backend (SaleCreationHelper.deductStockAndLogTransactions)
+        // The use case only validates cart and creates sale records
+        assertEquals(10, mockProductRepo.products[product1.id]?.currentStock) // Stock unchanged
+        assertEquals(20, mockProductRepo.products[product2.id]?.currentStock) // Stock unchanged
     }
 
     @Test
@@ -273,20 +299,24 @@ class CompleteSaleUseCaseTest {
         val mockProductRepo = MockProductRepository()
         val mockSaleRepo = MockSaleRepository()
 
-        val product = Product.create(
-            id = "prod-1",
-            name = "Test Product",
-            sku = "SKU-001",
-            costPrice = 50.0,
-            sellingPrice = 100.0,
-            currentStock = 100,
-            minStockLevel = 5,
-            categoryId = "cat-1",
-            isActive = true,
-        )
+        val product =
+            Product.create(
+                id = "prod-1",
+                name = "Test Product",
+                sku = "SKU-001",
+                costPrice = 50.0,
+                sellingPrice = 100.0,
+                currentStock = 100,
+                minStockLevel = 5,
+                categoryId = "cat-1",
+                isActive = true,
+            )
         mockProductRepo.products[product.id] = product
 
-        val cart = Cart().add(product, 1).let { if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart") }
+        val cart =
+            Cart().add(product, 1).let {
+                if (it is Result.Success) it.data else throw RuntimeException("Failed to create cart")
+            }
 
         val useCase = CompleteSaleUseCase(mockSaleRepo, mockProductRepo)
 
