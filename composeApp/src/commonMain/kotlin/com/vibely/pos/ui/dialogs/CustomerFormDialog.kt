@@ -44,8 +44,7 @@ import vibely_pos.composeapp.generated.resources.customers_add
 import vibely_pos.composeapp.generated.resources.customers_edit
 import vibely_pos.composeapp.generated.resources.customers_loyalty_tier
 import vibely_pos.composeapp.generated.resources.form_label_email
-import vibely_pos.composeapp.generated.resources.form_label_first_name
-import vibely_pos.composeapp.generated.resources.form_label_last_name
+import vibely_pos.composeapp.generated.resources.form_label_full_name
 import vibely_pos.composeapp.generated.resources.form_label_phone
 
 /**
@@ -99,28 +98,14 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
+                AppTextField(
+                    value = formData.fullName,
+                    onValueChange = { formData = formData.copy(fullName = it) },
+                    label = stringResource(Res.string.form_label_full_name),
+                    variant = AppTextFieldVariant.Outlined,
+                    validationState = validationErrors["fullName"] ?: ValidationState.None,
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    AppTextField(
-                        value = formData.firstName,
-                        onValueChange = { formData = formData.copy(firstName = it) },
-                        label = stringResource(Res.string.form_label_first_name),
-                        variant = AppTextFieldVariant.Outlined,
-                        validationState = validationErrors["firstName"] ?: ValidationState.None,
-                        modifier = Modifier.weight(1f),
-                    )
-
-                    AppTextField(
-                        value = formData.lastName,
-                        onValueChange = { formData = formData.copy(lastName = it) },
-                        label = stringResource(Res.string.form_label_last_name),
-                        variant = AppTextFieldVariant.Outlined,
-                        validationState = validationErrors["lastName"] ?: ValidationState.None,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -261,12 +246,8 @@ private fun LoyaltyTierDisplay(tier: String?) {
 private fun validateCustomerForm(data: CustomerFormData, isEdit: Boolean): Map<String, ValidationState> {
     val errors = mutableMapOf<String, ValidationState>()
 
-    if (data.firstName.isBlank()) {
-        errors["firstName"] = ValidationState.Error("First name is required")
-    }
-
-    if (data.lastName.isBlank()) {
-        errors["lastName"] = ValidationState.Error("Last name is required")
+    if (data.fullName.isBlank()) {
+        errors["fullName"] = ValidationState.Error("Full name is required")
     }
 
     if (data.email.isNotBlank() && !isValidEmail(data.email)) {
@@ -286,8 +267,7 @@ private fun isValidEmail(email: String): Boolean {
  */
 data class CustomerFormData(
     val id: String = "",
-    val firstName: String = "",
-    val lastName: String = "",
+    val fullName: String = "",
     val email: String = "",
     val phone: String = "",
     val loyaltyPoints: Int = 0,

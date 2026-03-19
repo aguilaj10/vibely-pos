@@ -149,8 +149,7 @@ fun CustomersScreen(
                 editingCustomer?.let {
                     CustomerFormData(
                         id = it.id,
-                        firstName = it.firstName,
-                        lastName = it.lastName,
+                        fullName = it.fullName,
                         email = it.email ?: "",
                         phone = it.phone ?: "",
                         loyaltyPoints = it.loyaltyPoints,

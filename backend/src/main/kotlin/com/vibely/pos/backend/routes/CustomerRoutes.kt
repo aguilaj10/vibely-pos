@@ -1,4 +1,5 @@
 @file:Suppress("UndocumentedPublicFunction", "ComplexCondition")
+
 package com.vibely.pos.backend.routes
 
 import com.vibely.pos.backend.dto.request.AddLoyaltyPointsRequest
@@ -58,10 +59,11 @@ private fun Route.usePaths(customerService: CustomerService) {
 }
 
 private suspend fun ApplicationCall.handleGetAllCustomers(customerService: CustomerService) {
-    val userId = principal<JWTPrincipal>()
-        ?.payload
-        ?.getClaim(CLAIM_USER_ID)
-        ?.asString()
+    val userId =
+        principal<JWTPrincipal>()
+            ?.payload
+            ?.getClaim(CLAIM_USER_ID)
+            ?.asString()
 
     if (userId == null) {
         respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
@@ -86,10 +88,11 @@ private suspend fun ApplicationCall.handleGetById(customerService: CustomerServi
         return
     }
 
-    val userId = principal<JWTPrincipal>()
-        ?.payload
-        ?.getClaim(CLAIM_USER_ID)
-        ?.asString()
+    val userId =
+        principal<JWTPrincipal>()
+            ?.payload
+            ?.getClaim(CLAIM_USER_ID)
+            ?.asString()
 
     if (userId == null) {
         respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
@@ -103,10 +106,11 @@ private suspend fun ApplicationCall.handleGetById(customerService: CustomerServi
 }
 
 private suspend fun ApplicationCall.handleCreateCustomer(customerService: CustomerService) {
-    val userId = principal<JWTPrincipal>()
-        ?.payload
-        ?.getClaim(CLAIM_USER_ID)
-        ?.asString()
+    val userId =
+        principal<JWTPrincipal>()
+            ?.payload
+            ?.getClaim(CLAIM_USER_ID)
+            ?.asString()
 
     if (userId == null) {
         respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
@@ -115,7 +119,7 @@ private suspend fun ApplicationCall.handleCreateCustomer(customerService: Custom
 
     val requestBody = receive<CreateCustomerRequest>()
 
-    if (requestBody.code.isBlank() || requestBody.firstName.isBlank() || requestBody.lastName.isBlank()) {
+    if (requestBody.code.isBlank() || requestBody.fullName.isBlank()) {
         respond(HttpStatusCode.BadRequest, mapOf(ERROR_KEY to ERROR_MISSING_REQUIRED))
         return
     }
@@ -133,10 +137,11 @@ private suspend fun ApplicationCall.handleUpdateCustomer(customerService: Custom
         return
     }
 
-    val userId = principal<JWTPrincipal>()
-        ?.payload
-        ?.getClaim(CLAIM_USER_ID)
-        ?.asString()
+    val userId =
+        principal<JWTPrincipal>()
+            ?.payload
+            ?.getClaim(CLAIM_USER_ID)
+            ?.asString()
 
     if (userId == null) {
         respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
@@ -158,10 +163,11 @@ private suspend fun ApplicationCall.handleDeleteCustomer(customerService: Custom
         return
     }
 
-    val userId = principal<JWTPrincipal>()
-        ?.payload
-        ?.getClaim(CLAIM_USER_ID)
-        ?.asString()
+    val userId =
+        principal<JWTPrincipal>()
+            ?.payload
+            ?.getClaim(CLAIM_USER_ID)
+            ?.asString()
 
     if (userId == null) {
         respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
@@ -181,10 +187,11 @@ private suspend fun ApplicationCall.handleAddLoyaltyPoints(customerService: Cust
         return
     }
 
-    val userId = principal<JWTPrincipal>()
-        ?.payload
-        ?.getClaim(CLAIM_USER_ID)
-        ?.asString()
+    val userId =
+        principal<JWTPrincipal>()
+            ?.payload
+            ?.getClaim(CLAIM_USER_ID)
+            ?.asString()
 
     if (userId == null) {
         respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))
@@ -206,10 +213,11 @@ private suspend fun ApplicationCall.handleGetPurchaseHistory(customerService: Cu
         return
     }
 
-    val userId = principal<JWTPrincipal>()
-        ?.payload
-        ?.getClaim(CLAIM_USER_ID)
-        ?.asString()
+    val userId =
+        principal<JWTPrincipal>()
+            ?.payload
+            ?.getClaim(CLAIM_USER_ID)
+            ?.asString()
 
     if (userId == null) {
         respond(HttpStatusCode.Unauthorized, mapOf(ERROR_KEY to ERROR_UNAUTHORIZED))

@@ -1,4 +1,5 @@
 @file:Suppress("UndocumentedPublicClass", "UndocumentedPublicFunction", "LongParameterList")
+
 package com.vibely.pos.backend.services
 
 import com.vibely.pos.backend.common.DatabaseColumns
@@ -23,18 +24,20 @@ private const val ERROR_DELETE_FAILED = "Failed to delete customer"
 private const val ERROR_LOYALTY_FAILED = "Failed to add loyalty points"
 private const val ERROR_PURCHASE_HISTORY_FAILED = "Failed to fetch purchase history"
 
-class CustomerService(private val supabaseClient: SupabaseClient) : BaseService() {
-
+class CustomerService(
+    private val supabaseClient: SupabaseClient,
+) : BaseService() {
     suspend fun getAllCustomers(
         userId: String,
         isActive: Boolean?,
         searchQuery: String?,
         page: Int,
-        pageSize: Int
+        pageSize: Int,
     ): Result<List<CustomerDTO>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_FETCH_FAILED) {
-            supabaseClient.from(TableNames.CUSTOMERS)
+            supabaseClient
+                .from(TableNames.CUSTOMERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.USER_ID, userId)
@@ -51,80 +54,86 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
                     }
                     order(DatabaseColumns.FULL_NAME, Order.ASCENDING)
                     range(from, to)
-                }
-                .decodeList<CustomerDTO>()
+                }.decodeList<CustomerDTO>()
         }
     }
 
-    suspend fun getCustomerById(userId: String, customerId: String): Result<CustomerDTO> {
-        return executeQuery(ERROR_CUSTOMER_NOT_FOUND) {
-            supabaseClient.from(TableNames.CUSTOMERS)
+    suspend fun getCustomerById(
+        userId: String,
+        customerId: String,
+    ): Result<CustomerDTO> =
+        executeQuery(ERROR_CUSTOMER_NOT_FOUND) {
+            supabaseClient
+                .from(TableNames.CUSTOMERS)
                 .select {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
                         eq(DatabaseColumns.USER_ID, userId)
                     }
-                }
-                .decodeSingle<CustomerDTO>()
+                }.decodeSingle<CustomerDTO>()
         }
-    }
 
-    suspend fun createCustomer(userId: String, request: CreateCustomerRequest): Result<CustomerDTO> {
-        return executeQuery(ERROR_CREATE_FAILED) {
-            val data = buildJsonObject {
-                put(DatabaseColumns.USER_ID, userId)
-                put(DatabaseColumns.CUSTOMER_CODE, request.code)
-                put(DatabaseColumns.FULL_NAME, "${request.firstName} ${request.lastName}".trim())
-                request.email?.let { put(DatabaseColumns.EMAIL, it) }
-                request.phone?.let { put(DatabaseColumns.PHONE, it) }
-                put(DatabaseColumns.LOYALTY_POINTS, request.loyaltyPoints)
-                request.loyaltyTier?.let { put(DatabaseColumns.LOYALTY_TIER, it) }
-                put(DatabaseColumns.TOTAL_PURCHASES, request.totalPurchases)
-                put(DatabaseColumns.IS_ACTIVE, request.isActive)
-            }
+    suspend fun createCustomer(
+        userId: String,
+        request: CreateCustomerRequest,
+    ): Result<CustomerDTO> =
+        executeQuery(ERROR_CREATE_FAILED) {
+            val data =
+                buildJsonObject {
+                    put(DatabaseColumns.USER_ID, userId)
+                    put(DatabaseColumns.CUSTOMER_CODE, request.code)
+                    put(DatabaseColumns.FULL_NAME, request.fullName)
+                    request.email?.let { put(DatabaseColumns.EMAIL, it) }
+                    request.phone?.let { put(DatabaseColumns.PHONE, it) }
+                    put(DatabaseColumns.LOYALTY_POINTS, request.loyaltyPoints)
+                    request.loyaltyTier?.let { put(DatabaseColumns.LOYALTY_TIER, it) }
+                    put(DatabaseColumns.TOTAL_PURCHASES, request.totalPurchases)
+                    put(DatabaseColumns.IS_ACTIVE, request.isActive)
+                }
 
-            supabaseClient.from(TableNames.CUSTOMERS)
+            supabaseClient
+                .from(TableNames.CUSTOMERS)
                 .insert(data) {
                     select()
-                }
-                .decodeSingle<CustomerDTO>()
+                }.decodeSingle<CustomerDTO>()
         }
-    }
 
     suspend fun updateCustomer(
         userId: String,
         customerId: String,
         request: UpdateCustomerRequest,
-    ): Result<CustomerDTO> {
-        return executeQuery(ERROR_UPDATE_FAILED) {
-            val data = buildJsonObject {
-                request.code?.let { put(DatabaseColumns.CUSTOMER_CODE, it) }
-                if (request.firstName != null && request.lastName != null) {
-                    put(DatabaseColumns.FULL_NAME, "${request.firstName} ${request.lastName}".trim())
+    ): Result<CustomerDTO> =
+        executeQuery(ERROR_UPDATE_FAILED) {
+            val data =
+                buildJsonObject {
+                    request.code?.let { put(DatabaseColumns.CUSTOMER_CODE, it) }
+                    request.fullName?.let { put(DatabaseColumns.FULL_NAME, it) }
+                    request.email?.let { put(DatabaseColumns.EMAIL, it) }
+                    request.phone?.let { put(DatabaseColumns.PHONE, it) }
+                    request.loyaltyPoints?.let { put(DatabaseColumns.LOYALTY_POINTS, it) }
+                    request.loyaltyTier?.let { put(DatabaseColumns.LOYALTY_TIER, it) }
+                    request.totalPurchases?.let { put(DatabaseColumns.TOTAL_PURCHASES, it) }
+                    request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
                 }
-                request.email?.let { put(DatabaseColumns.EMAIL, it) }
-                request.phone?.let { put(DatabaseColumns.PHONE, it) }
-                request.loyaltyPoints?.let { put(DatabaseColumns.LOYALTY_POINTS, it) }
-                request.loyaltyTier?.let { put(DatabaseColumns.LOYALTY_TIER, it) }
-                request.totalPurchases?.let { put(DatabaseColumns.TOTAL_PURCHASES, it) }
-                request.isActive?.let { put(DatabaseColumns.IS_ACTIVE, it) }
-            }
 
-            supabaseClient.from(TableNames.CUSTOMERS)
+            supabaseClient
+                .from(TableNames.CUSTOMERS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
                         eq(DatabaseColumns.USER_ID, userId)
                     }
                     select()
-                }
-                .decodeSingle<CustomerDTO>()
+                }.decodeSingle<CustomerDTO>()
         }
-    }
 
-    suspend fun deleteCustomer(userId: String, customerId: String): Result<Unit> {
-        return executeQuery(ERROR_DELETE_FAILED) {
-            supabaseClient.from(TableNames.CUSTOMERS)
+    suspend fun deleteCustomer(
+        userId: String,
+        customerId: String,
+    ): Result<Unit> =
+        executeQuery(ERROR_DELETE_FAILED) {
+            supabaseClient
+                .from(TableNames.CUSTOMERS)
                 .delete {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
@@ -132,42 +141,42 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
                     }
                 }
         }
-    }
 
     suspend fun addLoyaltyPoints(
         userId: String,
         customerId: String,
         request: AddLoyaltyPointsRequest,
-    ): Result<CustomerDTO> {
-        return executeQuery(ERROR_LOYALTY_FAILED) {
-            val currentCustomer = supabaseClient.from(TableNames.CUSTOMERS)
-                .select {
-                    filter {
-                        eq(DatabaseColumns.ID, customerId)
-                        eq(DatabaseColumns.USER_ID, userId)
-                    }
-                }
-                .decodeSingle<CustomerDTO>()
+    ): Result<CustomerDTO> =
+        executeQuery(ERROR_LOYALTY_FAILED) {
+            val currentCustomer =
+                supabaseClient
+                    .from(TableNames.CUSTOMERS)
+                    .select {
+                        filter {
+                            eq(DatabaseColumns.ID, customerId)
+                            eq(DatabaseColumns.USER_ID, userId)
+                        }
+                    }.decodeSingle<CustomerDTO>()
 
             val newPoints = currentCustomer.loyaltyPoints + request.points
             val newTier = calculateLoyaltyTier(newPoints)
 
-            val data = buildJsonObject {
-                put(DatabaseColumns.LOYALTY_POINTS, newPoints)
-                put(DatabaseColumns.LOYALTY_TIER, newTier)
-            }
+            val data =
+                buildJsonObject {
+                    put(DatabaseColumns.LOYALTY_POINTS, newPoints)
+                    put(DatabaseColumns.LOYALTY_TIER, newTier)
+                }
 
-            supabaseClient.from(TableNames.CUSTOMERS)
+            supabaseClient
+                .from(TableNames.CUSTOMERS)
                 .update(data) {
                     filter {
                         eq(DatabaseColumns.ID, customerId)
                         eq(DatabaseColumns.USER_ID, userId)
                     }
                     select()
-                }
-                .decodeSingle<CustomerDTO>()
+                }.decodeSingle<CustomerDTO>()
         }
-    }
 
     /**
      * Retrieves purchase history for a customer.
@@ -182,11 +191,12 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
         userId: String,
         customerId: String,
         page: Int,
-        pageSize: Int
+        pageSize: Int,
     ): Result<List<JsonObject>> {
         val (from, to) = calculatePaginationRange(page, pageSize)
         return executeQuery(ERROR_PURCHASE_HISTORY_FAILED) {
-            supabaseClient.from(TableNames.SALES)
+            supabaseClient
+                .from(TableNames.SALES)
                 .select {
                     filter {
                         eq(DatabaseColumns.CUSTOMER_ID, customerId)
@@ -194,15 +204,15 @@ class CustomerService(private val supabaseClient: SupabaseClient) : BaseService(
                     }
                     order(DatabaseColumns.SALE_DATE, Order.DESCENDING)
                     range(from, to)
-                }
-                .decodeList<JsonObject>()
+                }.decodeList<JsonObject>()
         }
     }
 
-    private fun calculateLoyaltyTier(points: Int): String = when {
-        points >= DatabaseColumns.PLATINUM_THRESHOLD -> "Platinum"
-        points >= DatabaseColumns.GOLD_THRESHOLD -> "Gold"
-        points >= DatabaseColumns.SILVER_THRESHOLD -> "Silver"
-        else -> "Bronze"
-    }
+    private fun calculateLoyaltyTier(points: Int): String =
+        when {
+            points >= DatabaseColumns.PLATINUM_THRESHOLD -> "Platinum"
+            points >= DatabaseColumns.GOLD_THRESHOLD -> "Gold"
+            points >= DatabaseColumns.SILVER_THRESHOLD -> "Silver"
+            else -> "Bronze"
+        }
 }

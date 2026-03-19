@@ -45,7 +45,6 @@ class CustomersViewModel(
     private val updateCustomerUseCase: UpdateCustomerUseCase,
     private val deleteCustomerUseCase: DeleteCustomerUseCase,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(CustomersState())
     val state: StateFlow<CustomersState> = _state.asStateFlow()
 
@@ -61,10 +60,11 @@ class CustomersViewModel(
 
             val currentPagination = _state.value.pagination
             when (
-                val result = getAllCustomersUseCase(
-                    page = currentPagination.currentPage,
-                    pageSize = currentPagination.pageSize,
-                )
+                val result =
+                    getAllCustomersUseCase(
+                        page = currentPagination.currentPage,
+                        pageSize = currentPagination.pageSize,
+                    )
             ) {
                 is Result.Success -> {
                     val customers = result.data
@@ -82,6 +82,7 @@ class CustomersViewModel(
                         )
                     }
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
@@ -103,10 +104,11 @@ class CustomersViewModel(
             return
         }
 
-        searchJob = viewModelScope.launch {
-            delay(300)
-            searchCustomers(query)
-        }
+        searchJob =
+            viewModelScope.launch {
+                delay(300)
+                searchCustomers(query)
+            }
     }
 
     private suspend fun searchCustomers(query: String) {
@@ -128,6 +130,7 @@ class CustomersViewModel(
                     )
                 }
             }
+
             is Result.Error -> {
                 _state.update {
                     it.copy(
@@ -169,26 +172,32 @@ class CustomersViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
 
-            val customer = Customer(
-                id = formData.id.ifBlank { randomUuidString() },
-                code = generateCustomerCode(),
-                firstName = formData.firstName,
-                lastName = formData.lastName,
-                email = formData.email.ifBlank { null },
-                phone = formData.phone.ifBlank { null },
-                loyaltyPoints = formData.loyaltyPoints,
-                loyaltyTier = formData.loyaltyTier,
-                totalPurchases = formData.totalPurchases,
-                isActive = formData.isActive,
-                createdAt = Clock.System.now(),
-                updatedAt = Clock.System.now(),
-            )
+            val nameParts = formData.fullName.split(" ", limit = 2)
+            val firstName = nameParts.getOrElse(0) { "" }
+            val lastName = nameParts.getOrElse(1) { "" }
 
-            val result = if (formData.id.isBlank()) {
-                createCustomerUseCase(customer)
-            } else {
-                updateCustomerUseCase(customer)
-            }
+            val customer =
+                Customer(
+                    id = formData.id.ifBlank { randomUuidString() },
+                    code = generateCustomerCode(),
+                    firstName = firstName,
+                    lastName = lastName,
+                    email = formData.email.ifBlank { null },
+                    phone = formData.phone.ifBlank { null },
+                    loyaltyPoints = formData.loyaltyPoints,
+                    loyaltyTier = formData.loyaltyTier,
+                    totalPurchases = formData.totalPurchases,
+                    isActive = formData.isActive,
+                    createdAt = Clock.System.now(),
+                    updatedAt = Clock.System.now(),
+                )
+
+            val result =
+                if (formData.id.isBlank()) {
+                    createCustomerUseCase(customer)
+                } else {
+                    updateCustomerUseCase(customer)
+                }
 
             when (result) {
                 is Result.Success -> {
@@ -202,6 +211,7 @@ class CustomersViewModel(
                     }
                     loadCustomers()
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(
@@ -231,6 +241,7 @@ class CustomersViewModel(
                     }
                     loadCustomers()
                 }
+
                 is Result.Error -> {
                     _state.update {
                         it.copy(

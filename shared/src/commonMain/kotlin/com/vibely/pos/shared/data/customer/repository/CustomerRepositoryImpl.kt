@@ -12,7 +12,6 @@ import kotlinx.serialization.json.put
 class CustomerRepositoryImpl(private val remoteDataSource: RemoteCustomerDataSource) :
     BaseRepository(),
     CustomerRepository {
-
     override suspend fun getAll(isActive: Boolean?, page: Int, pageSize: Int): Result<List<Customer>> = mapList(
         remoteDataSource.getAllCustomers(isActive, page, pageSize),
         CustomerMapper::toDomain,
@@ -25,17 +24,17 @@ class CustomerRepositoryImpl(private val remoteDataSource: RemoteCustomerDataSou
 
     override suspend fun create(customer: Customer): Result<Customer> {
         val dto = CustomerMapper.toDTO(customer)
-        val json = buildJsonObject {
-            put("code", dto.code)
-            put("first_name", dto.firstName)
-            put("last_name", dto.lastName)
-            dto.email?.let { put("email", it) }
-            dto.phone?.let { put("phone", it) }
-            put("loyalty_points", dto.loyaltyPoints)
-            dto.loyaltyTier?.let { put("loyalty_tier", it) }
-            put("total_purchases", dto.totalPurchases)
-            put("is_active", dto.isActive)
-        }
+        val json =
+            buildJsonObject {
+                put("code", dto.code)
+                put("full_name", dto.fullName)
+                dto.email?.let { put("email", it) }
+                dto.phone?.let { put("phone", it) }
+                put("loyalty_points", dto.loyaltyPoints)
+                dto.loyaltyTier?.let { put("loyalty_tier", it) }
+                put("total_purchases", dto.totalPurchases)
+                put("is_active", dto.isActive)
+            }
         return mapSingle(
             remoteDataSource.createCustomer(json),
             CustomerMapper::toDomain,
@@ -44,17 +43,17 @@ class CustomerRepositoryImpl(private val remoteDataSource: RemoteCustomerDataSou
 
     override suspend fun update(customer: Customer): Result<Customer> {
         val dto = CustomerMapper.toDTO(customer)
-        val json = buildJsonObject {
-            put("code", dto.code)
-            put("first_name", dto.firstName)
-            put("last_name", dto.lastName)
-            dto.email?.let { put("email", it) }
-            dto.phone?.let { put("phone", it) }
-            put("loyalty_points", dto.loyaltyPoints)
-            dto.loyaltyTier?.let { put("loyalty_tier", it) }
-            put("total_purchases", dto.totalPurchases)
-            put("is_active", dto.isActive)
-        }
+        val json =
+            buildJsonObject {
+                put("code", dto.code)
+                put("full_name", dto.fullName)
+                dto.email?.let { put("email", it) }
+                dto.phone?.let { put("phone", it) }
+                put("loyalty_points", dto.loyaltyPoints)
+                dto.loyaltyTier?.let { put("loyalty_tier", it) }
+                put("total_purchases", dto.totalPurchases)
+                put("is_active", dto.isActive)
+            }
         return mapSingle(
             remoteDataSource.updateCustomer(customer.id, json),
             CustomerMapper::toDomain,

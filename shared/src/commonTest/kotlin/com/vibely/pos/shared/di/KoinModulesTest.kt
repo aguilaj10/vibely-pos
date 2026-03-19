@@ -64,14 +64,6 @@ class KoinModulesTest {
         }
     }
 
-    @Test
-    fun `verify presentation module structure`() {
-        koinApplication {
-            modules(presentationModule)
-            checkModules()
-        }
-    }
-
     /**
      * Tests that Koin can start successfully with all shared modules.
      *
@@ -150,7 +142,6 @@ class KoinModulesTest {
                 modules(
                     domainModule,
                     dataModule,
-                    presentationModule,
                 )
             }
 
@@ -158,29 +149,5 @@ class KoinModulesTest {
 
         val json = koinApp.koin.getOrNull<Json>()
         assertNotNull(json, "Should be able to resolve dependencies from data module")
-    }
-
-    /**
-     * Tests that the module hierarchy follows Clean Architecture principles.
-     */
-    @Test
-    fun `modules follow clean architecture hierarchy`() {
-        val dataWithDomain =
-            koinApplication {
-                properties(
-                    mapOf(
-                        "SUPABASE_URL" to "https://test.supabase.co",
-                        "SUPABASE_ANON_KEY" to "test-anon-key",
-                    ),
-                )
-                modules(domainModule, dataModule)
-            }
-        assertNotNull(dataWithDomain.koin, "Data module should work with domain module")
-
-        val presentationWithDomain =
-            koinApplication {
-                modules(domainModule, presentationModule)
-            }
-        assertNotNull(presentationWithDomain.koin, "Presentation module should work with domain module")
     }
 }

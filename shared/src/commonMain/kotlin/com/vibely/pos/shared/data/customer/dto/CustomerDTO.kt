@@ -7,12 +7,10 @@ import kotlinx.serialization.Serializable
 data class CustomerDTO(
     @SerialName("id")
     val id: String,
-    @SerialName("code")
+    @SerialName("customer_code")
     val code: String,
-    @SerialName("first_name")
-    val firstName: String,
-    @SerialName("last_name")
-    val lastName: String,
+    @SerialName("full_name")
+    val fullName: String,
     @SerialName("email")
     val email: String? = null,
     @SerialName("phone")
