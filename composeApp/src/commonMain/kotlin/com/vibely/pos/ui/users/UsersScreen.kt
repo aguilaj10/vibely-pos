@@ -65,7 +65,11 @@ import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.UserCheck
 import compose.icons.fontawesomeicons.solid.UserPlus
 import compose.icons.fontawesomeicons.solid.Users
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.users_add
+import vibely_pos.composeapp.generated.resources.users_no_users_found
 
 @Composable
 fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: UsersViewModel = koinInject()) {
@@ -222,7 +226,7 @@ private fun UsersHeader(
             )
 
             AppButton(
-                text = "Add User",
+                text = stringResource(Res.string.users_add),
                 onClick = onAddUser,
                 style = AppButtonStyle.Primary,
                 icon = {
@@ -485,7 +489,7 @@ private fun UsersTable(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No users found",
+                            text = stringResource(Res.string.users_no_users_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

@@ -57,7 +57,17 @@ import compose.icons.fontawesomeicons.solid.ExclamationTriangle
 import compose.icons.fontawesomeicons.solid.Eye
 import compose.icons.fontawesomeicons.solid.Play
 import compose.icons.fontawesomeicons.solid.Stop
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.shifts_card_sales
+import vibely_pos.composeapp.generated.resources.shifts_cash_sales
+import vibely_pos.composeapp.generated.resources.shifts_close
+import vibely_pos.composeapp.generated.resources.shifts_current
+import vibely_pos.composeapp.generated.resources.shifts_no_shifts_found
+import vibely_pos.composeapp.generated.resources.shifts_open
+import vibely_pos.composeapp.generated.resources.shifts_opening_balance
+import vibely_pos.composeapp.generated.resources.shifts_title
 import kotlin.math.abs
 
 @Composable
@@ -161,14 +171,14 @@ private fun ShiftsHeader(hasOpenShift: Boolean, onOpenShift: () -> Unit, onClose
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Shift Management",
+            text = stringResource(Res.string.shifts_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
         )
 
         if (hasOpenShift) {
             AppButton(
-                text = "Close Shift",
+                text = stringResource(Res.string.shifts_close),
                 onClick = onCloseShift,
                 style = AppButtonStyle.Secondary,
                 icon = {
@@ -181,7 +191,7 @@ private fun ShiftsHeader(hasOpenShift: Boolean, onOpenShift: () -> Unit, onClose
             )
         } else {
             AppButton(
-                text = "Open Shift",
+                text = stringResource(Res.string.shifts_open),
                 onClick = onOpenShift,
                 style = AppButtonStyle.Primary,
                 icon = {
@@ -213,7 +223,7 @@ private fun CurrentShiftCard(shift: Shift) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Current Shift: ${shift.shiftNumber}",
+                    text = stringResource(Res.string.shifts_current, shift.shiftNumber),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -227,9 +237,18 @@ private fun CurrentShiftCard(shift: Shift) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 ShiftInfoItem(label = "Opened", value = FormatUtils.formatDateTime(shift.openedAt))
-                ShiftInfoItem(label = "Opening Balance", value = FormatUtils.formatCurrency(shift.openingBalance))
-                ShiftInfoItem(label = "Cash Sales", value = FormatUtils.formatCurrency(shift.totalCash))
-                ShiftInfoItem(label = "Card Sales", value = FormatUtils.formatCurrency(shift.totalCard))
+                ShiftInfoItem(
+                    label = stringResource(Res.string.shifts_opening_balance),
+                    value = FormatUtils.formatCurrency(shift.openingBalance),
+                )
+                ShiftInfoItem(
+                    label = stringResource(Res.string.shifts_cash_sales),
+                    value = FormatUtils.formatCurrency(shift.totalCash),
+                )
+                ShiftInfoItem(
+                    label = stringResource(Res.string.shifts_card_sales),
+                    value = FormatUtils.formatCurrency(shift.totalCard),
+                )
                 ShiftInfoItem(label = "Total Sales", value = FormatUtils.formatCurrency(shift.totalSales))
             }
         }
@@ -362,7 +381,7 @@ private fun ShiftsTable(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No shifts found",
+                            text = stringResource(Res.string.shifts_no_shifts_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

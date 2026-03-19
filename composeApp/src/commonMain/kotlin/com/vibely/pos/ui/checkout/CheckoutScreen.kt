@@ -57,7 +57,14 @@ import compose.icons.fontawesomeicons.solid.Plus
 import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.ShoppingCart
 import compose.icons.fontawesomeicons.solid.Times
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.checkout_cart_empty
+import vibely_pos.composeapp.generated.resources.checkout_cart_title
+import vibely_pos.composeapp.generated.resources.checkout_complete_sale
+import vibely_pos.composeapp.generated.resources.checkout_search_products
+import vibely_pos.composeapp.generated.resources.checkout_title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +76,7 @@ fun CheckoutScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val checkoutCompleteSaleText = stringResource(Res.string.checkout_complete_sale)
 
     LaunchedEffect(saleId) {
         saleId?.let { viewModel.loadSale(it) }
@@ -83,7 +91,7 @@ fun CheckoutScreen(
 
     LaunchedEffect(state.checkoutSuccess) {
         if (state.checkoutSuccess) {
-            snackbarHostState.showSnackbar("Sale completed successfully!")
+            snackbarHostState.showSnackbar(checkoutCompleteSaleText)
             viewModel.onCheckoutSuccessDismiss()
         }
     }
@@ -91,7 +99,7 @@ fun CheckoutScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
             Text(
-                text = "Checkout",
+                text = stringResource(Res.string.checkout_title),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -108,7 +116,7 @@ fun CheckoutScreen(
                             onSearch = {},
                             expanded = state.shouldExpand,
                             onExpandedChange = { if (!it) viewModel.onSearchQueryChange("") },
-                            placeholder = { Text("Search products…") },
+                            placeholder = { Text(stringResource(Res.string.checkout_search_products)) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = FontAwesomeIcons.Solid.Search,
@@ -183,7 +191,7 @@ fun CheckoutScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
-                        text = "Cart (${state.totalItems})",
+                        text = stringResource(Res.string.checkout_cart_title, state.totalItems),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -210,7 +218,7 @@ fun CheckoutScreen(
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
-                                    text = "Cart is empty",
+                                    text = stringResource(Res.string.checkout_cart_empty),
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )

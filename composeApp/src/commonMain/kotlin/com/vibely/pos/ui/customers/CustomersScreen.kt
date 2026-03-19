@@ -54,7 +54,11 @@ import compose.icons.fontawesomeicons.solid.Store
 import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.User
 import compose.icons.fontawesomeicons.solid.UserPlus
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.customers_add
+import vibely_pos.composeapp.generated.resources.customers_no_customers_found
 
 @Composable
 fun CustomersScreen(
@@ -100,7 +104,8 @@ fun CustomersScreen(
 
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -112,7 +117,8 @@ fun CustomersScreen(
                     customers = state.customers,
                     onEditCustomer = viewModel::onEditCustomer,
                     onDeleteCustomer = viewModel::onDeleteCustomer,
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
@@ -135,7 +141,8 @@ fun CustomersScreen(
             val editingCustomer = state.editingCustomer
             CustomerFormDialog(
                 isEdit = editingCustomer != null,
-                initialData = editingCustomer?.let {
+                initialData =
+                editingCustomer?.let {
                     CustomerFormData(
                         id = it.id,
                         firstName = it.firstName,
@@ -169,7 +176,8 @@ fun CustomersScreen(
 @Composable
 private fun CustomersHeader(searchQuery: String, onSearchQueryChange: (String) -> Unit, onClearSearch: () -> Unit, onAddCustomer: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -204,7 +212,7 @@ private fun CustomersHeader(searchQuery: String, onSearchQueryChange: (String) -
         )
 
         AppButton(
-            text = "Add Customer",
+            text = stringResource(Res.string.customers_add),
             onClick = onAddCustomer,
             style = AppButtonStyle.Primary,
             icon = {
@@ -221,7 +229,8 @@ private fun CustomersHeader(searchQuery: String, onSearchQueryChange: (String) -
 @Composable
 private fun KpiCardsRow(totalCustomers: Int, activeCustomers: Int, totalLoyaltyPoints: Int) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -314,7 +323,8 @@ private fun CustomersTable(
 
             if (customers.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -328,7 +338,7 @@ private fun CustomersTable(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No customers found",
+                            text = stringResource(Res.string.customers_no_customers_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -353,7 +363,8 @@ private fun CustomersTable(
 @Composable
 private fun TableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -384,7 +395,8 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun TableRow(customer: Customer, onEdit: () -> Unit, onDelete: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -442,13 +454,14 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun LoyaltyTierChip(tier: String?, modifier: Modifier = Modifier) {
-    val (backgroundColor, textColor, label) = when (tier) {
-        "Platinum" -> Triple(AppColors.NeutralLight800, Color.White, "Platinum")
-        "Gold" -> Triple(Color(0xFFFFD700), Color.Black, "Gold")
-        "Silver" -> Triple(AppColors.NeutralLight400, Color.White, "Silver")
-        "Bronze" -> Triple(Color(0xFFCD7F32), Color.White, "Bronze")
-        else -> Triple(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant, "-")
-    }
+    val (backgroundColor, textColor, label) =
+        when (tier) {
+            "Platinum" -> Triple(AppColors.NeutralLight800, Color.White, "Platinum")
+            "Gold" -> Triple(Color(0xFFFFD700), Color.Black, "Gold")
+            "Silver" -> Triple(AppColors.NeutralLight400, Color.White, "Silver")
+            "Bronze" -> Triple(Color(0xFFCD7F32), Color.White, "Bronze")
+            else -> Triple(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant, "-")
+        }
 
     Surface(
         modifier = modifier,
@@ -467,11 +480,12 @@ private fun LoyaltyTierChip(tier: String?, modifier: Modifier = Modifier) {
 
 @Composable
 private fun StatusChip(isActive: Boolean, modifier: Modifier = Modifier) {
-    val (backgroundColor, textColor, label) = if (isActive) {
-        Triple(AppColors.Success, Color.White, "Active")
-    } else {
-        Triple(AppColors.ErrorDark, Color.White, "Inactive")
-    }
+    val (backgroundColor, textColor, label) =
+        if (isActive) {
+            Triple(AppColors.Success, Color.White, "Active")
+        } else {
+            Triple(AppColors.ErrorDark, Color.White, "Inactive")
+        }
 
     Surface(
         modifier = modifier,

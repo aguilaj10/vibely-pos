@@ -29,6 +29,23 @@ import compose.icons.fontawesomeicons.solid.Envelope
 import compose.icons.fontawesomeicons.solid.MapMarkerAlt
 import compose.icons.fontawesomeicons.solid.Phone
 import compose.icons.fontawesomeicons.solid.Store
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.store_info_address
+import vibely_pos.composeapp.generated.resources.store_info_address_error
+import vibely_pos.composeapp.generated.resources.store_info_address_placeholder
+import vibely_pos.composeapp.generated.resources.store_info_description
+import vibely_pos.composeapp.generated.resources.store_info_email
+import vibely_pos.composeapp.generated.resources.store_info_email_error
+import vibely_pos.composeapp.generated.resources.store_info_email_error_invalid
+import vibely_pos.composeapp.generated.resources.store_info_email_placeholder
+import vibely_pos.composeapp.generated.resources.store_info_phone
+import vibely_pos.composeapp.generated.resources.store_info_phone_error
+import vibely_pos.composeapp.generated.resources.store_info_phone_placeholder
+import vibely_pos.composeapp.generated.resources.store_info_store_name
+import vibely_pos.composeapp.generated.resources.store_info_store_name_error
+import vibely_pos.composeapp.generated.resources.store_info_store_name_placeholder
+import vibely_pos.composeapp.generated.resources.store_info_title
 
 @Composable
 fun StoreInfoTab(
@@ -47,8 +64,15 @@ fun StoreInfoTab(
     var phoneError by remember { mutableStateOf<String?>(null) }
     var emailError by remember { mutableStateOf<String?>(null) }
 
+    val errorStoreNameRequired = stringResource(Res.string.store_info_store_name_error)
+    val errorAddressRequired = stringResource(Res.string.store_info_address_error)
+    val errorPhoneRequired = stringResource(Res.string.store_info_phone_error)
+    val errorEmailRequired = stringResource(Res.string.store_info_email_error)
+    val errorEmailInvalid = stringResource(Res.string.store_info_email_error_invalid)
+
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
     ) {
@@ -57,13 +81,14 @@ fun StoreInfoTab(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "Store Information",
+                    text = stringResource(Res.string.store_info_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -72,10 +97,10 @@ fun StoreInfoTab(
                     value = storeName,
                     onValueChange = { newValue ->
                         storeName = newValue
-                        storeNameError = if (newValue.isBlank()) "Store name is required" else null
+                        storeNameError = if (newValue.isBlank()) errorStoreNameRequired else null
                     },
-                    label = { Text("Store Name") },
-                    placeholder = { Text("Enter store name") },
+                    label = { Text(stringResource(Res.string.store_info_store_name)) },
+                    placeholder = { Text(stringResource(Res.string.store_info_store_name_placeholder)) },
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Store,
@@ -95,10 +120,10 @@ fun StoreInfoTab(
                     value = address,
                     onValueChange = { newValue ->
                         address = newValue
-                        addressError = if (newValue.isBlank()) "Address is required" else null
+                        addressError = if (newValue.isBlank()) errorAddressRequired else null
                     },
-                    label = { Text("Address") },
-                    placeholder = { Text("Enter store address") },
+                    label = { Text(stringResource(Res.string.store_info_address)) },
+                    placeholder = { Text(stringResource(Res.string.store_info_address_placeholder)) },
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.MapMarkerAlt,
@@ -119,10 +144,10 @@ fun StoreInfoTab(
                     value = phone,
                     onValueChange = { newValue ->
                         phone = newValue
-                        phoneError = if (newValue.isBlank()) "Phone is required" else null
+                        phoneError = if (newValue.isBlank()) errorPhoneRequired else null
                     },
-                    label = { Text("Phone") },
-                    placeholder = { Text("Enter phone number") },
+                    label = { Text(stringResource(Res.string.store_info_phone)) },
+                    placeholder = { Text(stringResource(Res.string.store_info_phone_placeholder)) },
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Phone,
@@ -134,7 +159,10 @@ fun StoreInfoTab(
                     supportingText = phoneError?.let { { Text(it) } },
                     enabled = !isSaving,
                     singleLine = true,
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    keyboardOptions =
+                    androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                    ),
                     shape = PosShapes.InputField,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -143,16 +171,17 @@ fun StoreInfoTab(
                     value = email,
                     onValueChange = { newValue ->
                         email = newValue
-                        emailError = if (newValue.isBlank()) {
-                            "Email is required"
-                        } else if (!newValue.contains("@")) {
-                            "Invalid email format"
-                        } else {
-                            null
-                        }
+                        emailError =
+                            if (newValue.isBlank()) {
+                                errorEmailRequired
+                            } else if (!newValue.contains("@")) {
+                                errorEmailInvalid
+                            } else {
+                                null
+                            }
                     },
-                    label = { Text("Email") },
-                    placeholder = { Text("Enter email address") },
+                    label = { Text(stringResource(Res.string.store_info_email)) },
+                    placeholder = { Text(stringResource(Res.string.store_info_email_placeholder)) },
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Envelope,
@@ -164,7 +193,10 @@ fun StoreInfoTab(
                     supportingText = emailError?.let { { Text(it) } },
                     enabled = !isSaving,
                     singleLine = true,
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Email),
+                    keyboardOptions =
+                    androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                    ),
                     shape = PosShapes.InputField,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -172,7 +204,7 @@ fun StoreInfoTab(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "This information will be displayed on receipts and invoices.",
+                    text = stringResource(Res.string.store_info_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = AppColors.TextSecondaryLight,
                 )

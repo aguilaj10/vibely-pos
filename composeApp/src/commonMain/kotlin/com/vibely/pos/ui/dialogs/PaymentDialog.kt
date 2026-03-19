@@ -36,6 +36,18 @@ import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Times
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.payment_add
+import vibely_pos.composeapp.generated.resources.payment_dialog_title
+import vibely_pos.composeapp.generated.resources.payment_method_card
+import vibely_pos.composeapp.generated.resources.payment_method_cash
+import vibely_pos.composeapp.generated.resources.payment_method_transfer
+import vibely_pos.composeapp.generated.resources.payment_processing
+import vibely_pos.composeapp.generated.resources.payment_remaining
+import vibely_pos.composeapp.generated.resources.payment_tenders
+import vibely_pos.composeapp.generated.resources.payment_total_amount
 
 @Composable
 fun PaymentDialog(
@@ -67,7 +79,7 @@ fun PaymentDialog(
                 modifier = Modifier.padding(24.dp),
             ) {
                 Text(
-                    text = "Split Payment",
+                    text = stringResource(Res.string.payment_dialog_title),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                 )
@@ -80,7 +92,7 @@ fun PaymentDialog(
                 ) {
                     Column {
                         Text(
-                            text = "Total Amount",
+                            text = stringResource(Res.string.payment_total_amount),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -92,7 +104,7 @@ fun PaymentDialog(
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
-                            text = "Remaining",
+                            text = stringResource(Res.string.payment_remaining),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -108,7 +120,7 @@ fun PaymentDialog(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Add Payment",
+                    text = stringResource(Res.string.payment_add),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -120,7 +132,7 @@ fun PaymentDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     AppButton(
-                        text = "Cash",
+                        text = stringResource(Res.string.payment_method_cash),
                         onClick = { selectedType = PaymentType.CASH },
                         style =
                         if (selectedType ==
@@ -134,7 +146,7 @@ fun PaymentDialog(
                         enabled = !isProcessing,
                     )
                     AppButton(
-                        text = "Card",
+                        text = stringResource(Res.string.payment_method_card),
                         onClick = { selectedType = PaymentType.CREDIT_CARD },
                         style =
                         if (selectedType ==
@@ -148,7 +160,7 @@ fun PaymentDialog(
                         enabled = !isProcessing,
                     )
                     AppButton(
-                        text = "Transfer",
+                        text = stringResource(Res.string.payment_method_transfer),
                         onClick = { selectedType = PaymentType.BANK_TRANSFER },
                         style =
                         if (selectedType ==
@@ -178,7 +190,7 @@ fun PaymentDialog(
                         enabled = !isProcessing,
                     )
                     AppButton(
-                        text = "Add",
+                        text = stringResource(Res.string.payment_add),
                         onClick = {
                             val amount = amountInput.toDoubleOrNull()
                             if (amount != null && amount > 0 && selectedType != null) {
@@ -199,7 +211,7 @@ fun PaymentDialog(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Payment Tenders",
+                        text = stringResource(Res.string.payment_tenders),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -256,7 +268,7 @@ fun PaymentDialog(
                         CircularProgressIndicator(modifier = Modifier.size(24.dp))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Processing payments...",
+                            text = stringResource(Res.string.payment_processing),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -267,7 +279,7 @@ fun PaymentDialog(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         AppButton(
-                            text = "Cancel",
+                            text = stringResource(Res.string.common_cancel),
                             onClick = onDismiss,
                             style = AppButtonStyle.Text,
                             modifier = Modifier.weight(1f),

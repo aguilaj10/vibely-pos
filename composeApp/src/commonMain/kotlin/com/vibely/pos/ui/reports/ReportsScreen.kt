@@ -42,7 +42,15 @@ import compose.icons.fontawesomeicons.solid.ChartLine
 import compose.icons.fontawesomeicons.solid.ChartPie
 import compose.icons.fontawesomeicons.solid.Sync
 import compose.icons.fontawesomeicons.solid.Users
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.reports_category_breakdown
+import vibely_pos.composeapp.generated.resources.reports_loading
+import vibely_pos.composeapp.generated.resources.reports_sales_trend
+import vibely_pos.composeapp.generated.resources.reports_title
+import vibely_pos.composeapp.generated.resources.reports_top_customers
+import vibely_pos.composeapp.generated.resources.reports_top_products
 
 /**
  * Reports screen composable displaying business analytics and performance metrics.
@@ -69,7 +77,8 @@ fun ReportsScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
@@ -91,7 +100,7 @@ fun ReportsScreen(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                         Text(
-                            text = "Reports",
+                            text = stringResource(Res.string.reports_title),
                             style = MaterialTheme.typography.headlineLarge,
                         )
                     }
@@ -145,7 +154,8 @@ fun ReportsScreen(
                         MetricsCards(
                             totalSales = report.totalRevenue,
                             totalProfit = report.totalProfit,
-                            profitMargin = if (report.totalRevenue > 0) {
+                            profitMargin =
+                            if (report.totalRevenue > 0) {
                                 (report.totalProfit.toDouble() / report.totalRevenue * 100).toFloat()
                             } else {
                                 0f
@@ -159,7 +169,7 @@ fun ReportsScreen(
 
                     // Sales Trend Chart
                     Text(
-                        text = "Sales Trend",
+                        text = stringResource(Res.string.reports_sales_trend),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(bottom = 12.dp),
                     )
@@ -170,14 +180,16 @@ fun ReportsScreen(
                             title = "No trend data available",
                             description = "No sales data for this period",
                             size = EmptyStateSize.Medium,
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .fillMaxWidth()
                                 .height(200.dp),
                         )
                     } else {
                         SalesTrendChart(
                             data = state.salesTrend,
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .fillMaxWidth()
                                 .height(250.dp),
                         )
@@ -187,7 +199,7 @@ fun ReportsScreen(
 
                     // Category Breakdown
                     Text(
-                        text = "Category Breakdown",
+                        text = stringResource(Res.string.reports_category_breakdown),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(bottom = 12.dp),
                     )
@@ -198,14 +210,16 @@ fun ReportsScreen(
                             title = "No category data available",
                             description = "No sales data by category for this period",
                             size = EmptyStateSize.Medium,
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .fillMaxWidth()
                                 .height(200.dp),
                         )
                     } else {
                         CategoryBreakdownChart(
                             data = state.categoryBreakdown,
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .fillMaxWidth()
                                 .height(250.dp),
                         )
@@ -215,7 +229,7 @@ fun ReportsScreen(
 
                     // Top Products Table
                     Text(
-                        text = "Top Products",
+                        text = stringResource(Res.string.reports_top_products),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(bottom = 12.dp),
                     )
@@ -239,7 +253,7 @@ fun ReportsScreen(
 
                     // Top Customers Table
                     Text(
-                        text = "Top Customers",
+                        text = stringResource(Res.string.reports_top_customers),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(bottom = 12.dp),
                     )
@@ -269,7 +283,8 @@ fun ReportsScreen(
 @Composable
 private fun LoadingState() {
     Box(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .height(400.dp),
         contentAlignment = Alignment.Center,
@@ -280,7 +295,7 @@ private fun LoadingState() {
             CircularProgressIndicator()
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Loading reports...",
+                text = stringResource(Res.string.reports_loading),
                 style = MaterialTheme.typography.bodyLarge,
                 color = AppColors.TextSecondaryLight,
             )

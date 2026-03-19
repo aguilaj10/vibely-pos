@@ -58,7 +58,15 @@ import compose.icons.fontawesomeicons.solid.Receipt
 import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Sync
 import compose.icons.fontawesomeicons.solid.TimesCircle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_date
+import vibely_pos.composeapp.generated.resources.common_status
+import vibely_pos.composeapp.generated.resources.common_total
+import vibely_pos.composeapp.generated.resources.sales_invoice_number
+import vibely_pos.composeapp.generated.resources.sales_payment
+import vibely_pos.composeapp.generated.resources.sales_title
 
 @Composable
 fun SalesListScreen(onNavigate: (Screen) -> Unit = {}, modifier: Modifier = Modifier, viewModel: SalesListViewModel = koinInject()) {
@@ -108,7 +116,7 @@ fun SalesListScreen(onNavigate: (Screen) -> Unit = {}, modifier: Modifier = Modi
                         tint = AppColors.Primary,
                     )
                     Text(
-                        text = "Sales History",
+                        text = stringResource(Res.string.sales_title),
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -353,35 +361,35 @@ private fun SalesTableHeader() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Invoice #",
+            text = stringResource(Res.string.sales_invoice_number),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f),
         )
         Text(
-            text = "Date",
+            text = stringResource(Res.string.common_date),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f),
         )
         Text(
-            text = "Total",
+            text = stringResource(Res.string.common_total),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(0.8f),
         )
         Text(
-            text = "Payment",
+            text = stringResource(Res.string.sales_payment),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(0.8f),
         )
         Text(
-            text = "Status",
+            text = stringResource(Res.string.common_status),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

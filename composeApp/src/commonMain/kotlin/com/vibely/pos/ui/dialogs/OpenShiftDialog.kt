@@ -28,6 +28,13 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.shifts_open
+import vibely_pos.composeapp.generated.resources.shifts_open_new
+import vibely_pos.composeapp.generated.resources.shifts_opening_balance
+import vibely_pos.composeapp.generated.resources.shifts_opening_balance_prompt
 
 @Composable
 fun OpenShiftDialog(onSave: (Double) -> Unit, onDismiss: () -> Unit) {
@@ -53,7 +60,7 @@ fun OpenShiftDialog(onSave: (Double) -> Unit, onDismiss: () -> Unit) {
                     .padding(24.dp),
             ) {
                 Text(
-                    text = "Open New Shift",
+                    text = stringResource(Res.string.shifts_open_new),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -62,7 +69,7 @@ fun OpenShiftDialog(onSave: (Double) -> Unit, onDismiss: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Enter the opening cash balance for this shift.",
+                    text = stringResource(Res.string.shifts_opening_balance_prompt),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -72,7 +79,7 @@ fun OpenShiftDialog(onSave: (Double) -> Unit, onDismiss: () -> Unit) {
                 AppTextField(
                     value = openingBalance,
                     onValueChange = { openingBalance = it },
-                    label = "Opening Balance",
+                    label = stringResource(Res.string.shifts_opening_balance),
                     variant = AppTextFieldVariant.Outlined,
                     validationState = validationError,
                     modifier = Modifier.fillMaxWidth(),
@@ -95,7 +102,7 @@ fun OpenShiftDialog(onSave: (Double) -> Unit, onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )
@@ -103,7 +110,7 @@ fun OpenShiftDialog(onSave: (Double) -> Unit, onDismiss: () -> Unit) {
                     Spacer(modifier = Modifier.width(12.dp))
 
                     AppButton(
-                        text = "Open Shift",
+                        text = stringResource(Res.string.shifts_open),
                         onClick = {
                             val balance = openingBalance.toDoubleOrNull() ?: 0.0
                             onSave(balance)

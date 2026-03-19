@@ -30,6 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_delete
+import vibely_pos.composeapp.generated.resources.common_edit
+import vibely_pos.composeapp.generated.resources.common_view
+import vibely_pos.composeapp.generated.resources.pagination_no_data
 
 data class TableColumn(
     val key: String,
@@ -65,7 +71,8 @@ fun <T> DataTable(
     var currentSort by remember(sortState) { mutableStateOf(sortState) }
 
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
@@ -75,18 +82,25 @@ fun <T> DataTable(
             columns = columns,
             sortState = currentSort,
             onSort = { columnKey ->
-                val newDirection = when {
-                    currentSort.columnKey == columnKey -> when (currentSort.direction) {
-                        SortDirection.None -> SortDirection.Ascending
-                        SortDirection.Ascending -> SortDirection.Descending
-                        SortDirection.Descending -> SortDirection.None
+                val newDirection =
+                    when {
+                        currentSort.columnKey == columnKey -> {
+                            when (currentSort.direction) {
+                                SortDirection.None -> SortDirection.Ascending
+                                SortDirection.Ascending -> SortDirection.Descending
+                                SortDirection.Descending -> SortDirection.None
+                            }
+                        }
+
+                        else -> {
+                            SortDirection.Ascending
+                        }
                     }
-                    else -> SortDirection.Ascending
-                }
-                currentSort = SortState(
-                    columnKey = if (newDirection == SortDirection.None) "" else columnKey,
-                    direction = newDirection,
-                )
+                currentSort =
+                    SortState(
+                        columnKey = if (newDirection == SortDirection.None) "" else columnKey,
+                        direction = newDirection,
+                    )
                 onSort?.invoke(columnKey)
             },
             hasActions = actionsColumn != null,
@@ -99,13 +113,14 @@ fun <T> DataTable(
                 emptyContent()
             } else {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .height(200.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "No data available",
+                        text = stringResource(Res.string.pagination_no_data),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -131,7 +146,8 @@ fun <T> DataTable(
 @Composable
 private fun TableHeader(columns: List<TableColumn>, sortState: SortState, onSort: (String) -> Unit, hasActions: Boolean) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -155,7 +171,8 @@ private fun TableHeaderCell(column: TableColumn, sortState: SortState, onSort: (
     val isSorted = sortState.columnKey == column.key
 
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .width(column.width)
             .then(
                 if (column.sortable) {
@@ -165,7 +182,8 @@ private fun TableHeaderCell(column: TableColumn, sortState: SortState, onSort: (
                 },
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = when (column.alignment) {
+        horizontalArrangement =
+        when (column.alignment) {
             TextAlign.End -> Arrangement.End
             TextAlign.Center -> Arrangement.Center
             else -> Arrangement.Start
@@ -175,7 +193,8 @@ private fun TableHeaderCell(column: TableColumn, sortState: SortState, onSort: (
             androidx.compose.material3.Icon(
                 imageVector = column.headerIcon,
                 contentDescription = null,
-                modifier = Modifier
+                modifier =
+                Modifier
                     .height(16.dp)
                     .width(16.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -191,7 +210,8 @@ private fun TableHeaderCell(column: TableColumn, sortState: SortState, onSort: (
         if (column.sortable) {
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = when {
+                text =
+                when {
                     !isSorted || sortState.direction == SortDirection.None -> ""
                     sortState.direction == SortDirection.Ascending -> "↑"
                     else -> "↓"
@@ -212,7 +232,8 @@ private fun <T> TableRow(
     actionsContent: (@Composable () -> Unit)?,
 ) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
             .then(
@@ -221,14 +242,14 @@ private fun <T> TableRow(
                 } else {
                     Modifier
                 },
-            )
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            ).padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         columns.forEach { column ->
             Box(
                 modifier = Modifier.width(column.width),
-                contentAlignment = when (column.alignment) {
+                contentAlignment =
+                when (column.alignment) {
                     TextAlign.End -> Alignment.CenterEnd
                     TextAlign.Center -> Alignment.Center
                     else -> Alignment.CenterStart
@@ -262,27 +283,30 @@ fun DataTableActions(onEdit: (() -> Unit)? = null, onDelete: (() -> Unit)? = nul
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         if (onView != null) {
+            val viewText = stringResource(Res.string.common_view)
             AppIconButton(
-                text = "View",
-                contentDescription = "View",
+                text = viewText,
+                contentDescription = viewText,
                 onClick = onView,
                 size = AppIconButtonSize.Small,
                 variant = AppIconButtonVariant.Ghost,
             )
         }
         if (onEdit != null) {
+            val editText = stringResource(Res.string.common_edit)
             AppIconButton(
-                text = "Edit",
-                contentDescription = "Edit",
+                text = editText,
+                contentDescription = editText,
                 onClick = onEdit,
                 size = AppIconButtonSize.Small,
                 variant = AppIconButtonVariant.Ghost,
             )
         }
         if (onDelete != null) {
+            val deleteText = stringResource(Res.string.common_delete)
             AppIconButton(
-                text = "Delete",
-                contentDescription = "Delete",
+                text = deleteText,
+                contentDescription = deleteText,
                 onClick = onDelete,
                 size = AppIconButtonSize.Small,
                 variant = AppIconButtonVariant.Error,

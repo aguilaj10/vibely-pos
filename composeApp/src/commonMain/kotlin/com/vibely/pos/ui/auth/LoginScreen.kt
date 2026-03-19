@@ -38,7 +38,19 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.ValidationState
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.auth_email_label
+import vibely_pos.composeapp.generated.resources.auth_email_placeholder
+import vibely_pos.composeapp.generated.resources.auth_hide_password
+import vibely_pos.composeapp.generated.resources.auth_password_label
+import vibely_pos.composeapp.generated.resources.auth_password_placeholder
+import vibely_pos.composeapp.generated.resources.auth_remember_me
+import vibely_pos.composeapp.generated.resources.auth_show_password
+import vibely_pos.composeapp.generated.resources.auth_sign_in
+import vibely_pos.composeapp.generated.resources.auth_sign_in_to_your_account
+import vibely_pos.composeapp.generated.resources.auth_welcome_back
 
 /**
  * Login screen for user authentication.
@@ -78,23 +90,34 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
         contentAlignment = Alignment.Center,
     ) {
         AppCard(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .width(400.dp)
                 .padding(16.dp),
             style = AppCardStyle.Elevated,
             elevation = 4.dp,
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 // Title
                 Text(
-                    text = "Welcome Back",
+                    text = stringResource(Res.string.auth_welcome_back),
                     style = MaterialTheme.typography.headlineMedium,
                     textAlign = TextAlign.Center,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Subtitle
+                Text(
+                    text = stringResource(Res.string.auth_sign_in_to_your_account),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -111,21 +134,24 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                 // Email field
                 AppTextField(
                     value = state.email,
-                    onValueChange = viewModel::onEmailChange,
-                    label = "Email",
-                    placeholder = "Enter your email",
-                    validationState = if (state.emailError != null) {
+                    onValueChange = { viewModel.onEmailChange(it) },
+                    label = stringResource(Res.string.auth_email_label),
+                    placeholder = stringResource(Res.string.auth_email_placeholder),
+                    validationState =
+                    if (state.emailError != null) {
                         ValidationState.Error(state.emailError!!)
                     } else {
                         ValidationState.None
                     },
                     enabled = !state.isLoading,
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(
+                    keyboardOptions =
+                    KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next,
                     ),
-                    keyboardActions = KeyboardActions(
+                    keyboardActions =
+                    KeyboardActions(
                         onNext = { focusManager.moveFocus(FocusDirection.Down) },
                     ),
                     modifier = Modifier.fillMaxWidth(),
@@ -136,27 +162,34 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                 // Password field
                 AppTextField(
                     value = state.password,
-                    onValueChange = viewModel::onPasswordChange,
-                    label = "Password",
-                    placeholder = "Enter your password",
-                    validationState = if (state.passwordError != null) {
+                    onValueChange = { viewModel.onPasswordChange(it) },
+                    label = stringResource(Res.string.auth_password_label),
+                    placeholder = stringResource(Res.string.auth_password_placeholder),
+                    validationState =
+                    if (state.passwordError != null) {
                         ValidationState.Error(state.passwordError!!)
                     } else {
                         ValidationState.None
                     },
                     enabled = !state.isLoading,
                     singleLine = true,
-                    visualTransformation = if (state.isPasswordVisible) {
+                    visualTransformation =
+                    if (state.isPasswordVisible) {
                         VisualTransformation.None
                     } else {
                         PasswordVisualTransformation()
                     },
                     trailingIcon = {
+                        val hidePasswordDesc = stringResource(Res.string.auth_hide_password)
+                        val showPasswordDesc = stringResource(Res.string.auth_show_password)
+
                         IconButton(
                             onClick = viewModel::onPasswordVisibilityToggle,
                             enabled = !state.isLoading,
-                            modifier = Modifier.semantics {
-                                contentDescription = if (state.isPasswordVisible) "Hide password" else "Show password"
+                            modifier =
+                            Modifier.semantics {
+                                contentDescription =
+                                    if (state.isPasswordVisible) hidePasswordDesc else showPasswordDesc
                             },
                         ) {
                             Text(
@@ -165,11 +198,13 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                             )
                         }
                     },
-                    keyboardOptions = KeyboardOptions(
+                    keyboardOptions =
+                    KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done,
                     ),
-                    keyboardActions = KeyboardActions(
+                    keyboardActions =
+                    KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
                             if (state.isLoginEnabled) {
@@ -194,9 +229,10 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Remember me",
+                        text = stringResource(Res.string.auth_remember_me),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (state.isLoading) {
+                        color =
+                        if (state.isLoading) {
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                         } else {
                             MaterialTheme.colorScheme.onSurface
@@ -220,7 +256,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
 
                 // Login button
                 AppButton(
-                    text = "Sign In",
+                    text = stringResource(Res.string.auth_sign_in),
                     onClick = viewModel::onLoginClick,
                     modifier = Modifier.fillMaxWidth(),
                     style = AppButtonStyle.Primary,

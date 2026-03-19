@@ -54,7 +54,11 @@ import compose.icons.fontawesomeicons.solid.Store
 import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.Truck
 import compose.icons.fontawesomeicons.solid.TruckLoading
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.suppliers_add
+import vibely_pos.composeapp.generated.resources.suppliers_no_suppliers_found
 
 @Composable
 fun SuppliersScreen(
@@ -99,7 +103,8 @@ fun SuppliersScreen(
 
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -113,7 +118,8 @@ fun SuppliersScreen(
                     viewModel = viewModel,
                     onEditSupplier = viewModel::onEditSupplier,
                     onDeleteSupplier = viewModel::onDeleteSupplier,
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
@@ -129,7 +135,8 @@ fun SuppliersScreen(
             val editingSupplier = state.editingSupplier
             SupplierFormDialog(
                 isEdit = editingSupplier != null,
-                initialData = editingSupplier?.let {
+                initialData =
+                editingSupplier?.let {
                     SupplierFormData(
                         id = it.id,
                         name = it.name,
@@ -161,7 +168,8 @@ fun SuppliersScreen(
 @Composable
 private fun SuppliersHeader(searchQuery: String, onSearchQueryChange: (String) -> Unit, onClearSearch: () -> Unit, onAddSupplier: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -196,7 +204,7 @@ private fun SuppliersHeader(searchQuery: String, onSearchQueryChange: (String) -
         )
 
         AppButton(
-            text = "Add Supplier",
+            text = stringResource(Res.string.suppliers_add),
             onClick = onAddSupplier,
             style = AppButtonStyle.Primary,
             icon = {
@@ -213,7 +221,8 @@ private fun SuppliersHeader(searchQuery: String, onSearchQueryChange: (String) -
 @Composable
 private fun KpiCardsRow(totalSuppliers: Int, activeSuppliers: Int) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -300,7 +309,8 @@ private fun SuppliersTable(
 
             if (suppliers.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -314,7 +324,7 @@ private fun SuppliersTable(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No suppliers found",
+                            text = stringResource(Res.string.suppliers_no_suppliers_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -346,7 +356,8 @@ private fun SuppliersTable(
 @Composable
 private fun TableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -376,7 +387,8 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun TableRow(supplier: Supplier, onEdit: () -> Unit, onDelete: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -432,11 +444,12 @@ private fun TableCell(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun StatusChip(isActive: Boolean, modifier: Modifier = Modifier) {
-    val (backgroundColor, textColor, label) = if (isActive) {
-        Triple(AppColors.Success, Color.White, "Active")
-    } else {
-        Triple(AppColors.ErrorDark, Color.White, "Inactive")
-    }
+    val (backgroundColor, textColor, label) =
+        if (isActive) {
+            Triple(AppColors.Success, Color.White, "Active")
+        } else {
+            Triple(AppColors.ErrorDark, Color.White, "Inactive")
+        }
 
     Surface(
         modifier = modifier,

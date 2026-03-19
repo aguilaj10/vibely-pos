@@ -34,6 +34,13 @@ import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_active
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.customers_add
+import vibely_pos.composeapp.generated.resources.customers_edit
+import vibely_pos.composeapp.generated.resources.customers_loyalty_tier
 
 /**
  * Form dialog for adding or editing customers.
@@ -71,7 +78,14 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                     .verticalScroll(rememberScrollState()),
             ) {
                 Text(
-                    text = if (isEdit) "Edit Customer" else "Add Customer",
+                    text =
+                    if (isEdit) {
+                        stringResource(
+                            Res.string.customers_edit,
+                        )
+                    } else {
+                        stringResource(Res.string.customers_add)
+                    },
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -136,7 +150,7 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Active",
+                        text = stringResource(Res.string.common_active),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -158,7 +172,7 @@ fun CustomerFormDialog(isEdit: Boolean, initialData: CustomerFormData? = null, o
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )
@@ -212,7 +226,7 @@ private fun LoyaltyTierDisplay(tier: String?) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Loyalty Tier",
+            text = stringResource(Res.string.customers_loyalty_tier),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

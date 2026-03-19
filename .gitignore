@@ -71,3 +71,4 @@ composeResources/
 /.claude
 /.opencode
 /openspec/config.yaml
+/docs/LOCALIZATION_IMPLEMENTATION_PLAN.md

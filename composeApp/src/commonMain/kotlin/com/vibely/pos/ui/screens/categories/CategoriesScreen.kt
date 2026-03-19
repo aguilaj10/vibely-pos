@@ -58,7 +58,15 @@ import compose.icons.fontawesomeicons.solid.Plus
 import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Tags
 import compose.icons.fontawesomeicons.solid.Trash
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.categories_add
+import vibely_pos.composeapp.generated.resources.categories_search_placeholder
+import vibely_pos.composeapp.generated.resources.common_clear
+import vibely_pos.composeapp.generated.resources.common_search
+import vibely_pos.composeapp.generated.resources.inventory_no_categories_display
+import vibely_pos.composeapp.generated.resources.inventory_no_categories_found
 
 @Composable
 fun CategoriesScreen(
@@ -107,7 +115,8 @@ fun CategoriesScreen(
 
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -119,7 +128,8 @@ fun CategoriesScreen(
                     categories = state.categories,
                     onEditCategory = viewModel::onEditCategory,
                     onDeleteCategory = viewModel::onDeleteCategory,
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
@@ -144,7 +154,8 @@ fun CategoriesScreen(
             val category = state.categories.find { it.id == categoryId }
             ConfirmationDialog(
                 title = "Delete Category",
-                message = "Are you sure you want to delete \"${category?.name ?: "this category"}\"? " +
+                message =
+                "Are you sure you want to delete \"${category?.name ?: "this category"}\"? " +
                     "Products in this category will become uncategorized.",
                 confirmText = "Delete",
                 onConfirm = viewModel::onConfirmDeleteCategory,
@@ -158,7 +169,8 @@ fun CategoriesScreen(
 @Composable
 private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) -> Unit, onClearSearch: () -> Unit, onAddCategory: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -169,11 +181,11 @@ private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) 
             onValueChange = onSearchQueryChange,
             modifier = Modifier.width(480.dp),
             variant = AppTextFieldVariant.Outlined,
-            placeholder = "Search categories...",
+            placeholder = stringResource(Res.string.categories_search_placeholder),
             leadingIcon = {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Search,
-                    contentDescription = "Search",
+                    contentDescription = stringResource(Res.string.common_search),
                     modifier = Modifier.size(20.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -183,7 +195,7 @@ private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) 
                     IconButton(onClick = onClearSearch) {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Search,
-                            contentDescription = "Clear",
+                            contentDescription = stringResource(Res.string.common_clear),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -193,7 +205,7 @@ private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) 
         )
 
         AppButton(
-            text = "Add Category",
+            text = stringResource(Res.string.categories_add),
             onClick = onAddCategory,
             style = AppButtonStyle.Primary,
             icon = {
@@ -210,7 +222,8 @@ private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) 
 @Composable
 private fun KpiCardsRow(totalCategories: Int, totalProducts: Int, avgPerCategory: Int, largestCategory: String) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -343,7 +356,8 @@ private fun CategoriesContent(
         } else {
             item {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .height(200.dp),
                     contentAlignment = Alignment.Center,
@@ -359,7 +373,7 @@ private fun CategoriesContent(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No categories found",
+                            text = stringResource(Res.string.inventory_no_categories_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -399,13 +413,15 @@ private fun TopCategoryCard(category: Category, onEdit: () -> Unit, onDelete: ()
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .size(40.dp)
                         .background(iconBackgroundColor ?: AppColors.NeutralLight600, RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center,
@@ -448,7 +464,8 @@ private fun TopCategoryCard(category: Category, onEdit: () -> Unit, onDelete: ()
             }
 
             Row(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .align(Alignment.TopEnd)
                     .padding(4.dp),
             ) {
@@ -493,13 +510,14 @@ private fun CategoriesTable(categories: List<Category>, onEditCategory: (String)
 
             if (categories.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .height(100.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "No categories to display",
+                        text = stringResource(Res.string.inventory_no_categories_display),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -523,7 +541,8 @@ private fun CategoriesTable(categories: List<Category>, onEditCategory: (String)
 @Composable
 private fun TableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -551,7 +570,8 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun TableRow(category: Category, onEdit: () -> Unit, onDelete: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -611,7 +631,8 @@ private fun ColorCell(color: String?, modifier: Modifier = Modifier) {
     ) {
         val parsedColor = parseColor(color)
         Box(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .size(16.dp)
                 .background(parsedColor ?: AppColors.NeutralLight400, RoundedCornerShape(4.dp)),
         )

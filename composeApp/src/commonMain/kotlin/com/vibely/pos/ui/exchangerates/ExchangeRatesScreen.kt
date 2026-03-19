@@ -47,7 +47,14 @@ import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.MoneyBillWave
 import compose.icons.fontawesomeicons.solid.Plus
 import compose.icons.fontawesomeicons.solid.Trash
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_delete
+import vibely_pos.composeapp.generated.resources.common_edit
+import vibely_pos.composeapp.generated.resources.exchange_rates_add
+import vibely_pos.composeapp.generated.resources.exchange_rates_no_rates_found
+import vibely_pos.composeapp.generated.resources.exchange_rates_title
 
 @Composable
 fun ExchangeRatesScreen(
@@ -152,14 +159,14 @@ private fun ExchangeRatesHeader(onAddExchangeRate: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Exchange Rates",
+            text = stringResource(Res.string.exchange_rates_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
         )
 
         AppButton(
-            text = "Add Exchange Rate",
+            text = stringResource(Res.string.exchange_rates_add),
             onClick = onAddExchangeRate,
             style = AppButtonStyle.Primary,
             icon = {
@@ -207,7 +214,7 @@ private fun ExchangeRatesTable(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No exchange rates found",
+                            text = stringResource(Res.string.exchange_rates_no_rates_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -288,7 +295,7 @@ private fun TableRow(exchangeRate: CurrencyExchangeRate, onEdit: () -> Unit, onD
             ) {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Edit,
-                    contentDescription = "Edit",
+                    contentDescription = stringResource(Res.string.common_edit),
                     modifier = Modifier.size(16.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -300,7 +307,7 @@ private fun TableRow(exchangeRate: CurrencyExchangeRate, onEdit: () -> Unit, onD
             ) {
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.Trash,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(Res.string.common_delete),
                     modifier = Modifier.size(16.dp),
                     tint = AppColors.ErrorDark,
                 )

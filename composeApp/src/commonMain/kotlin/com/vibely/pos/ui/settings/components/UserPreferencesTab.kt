@@ -40,6 +40,25 @@ import compose.icons.fontawesomeicons.solid.Bell
 import compose.icons.fontawesomeicons.solid.Clock
 import compose.icons.fontawesomeicons.solid.Language
 import compose.icons.fontawesomeicons.solid.Palette
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.preferences_120_min
+import vibely_pos.composeapp.generated.resources.preferences_5_min
+import vibely_pos.composeapp.generated.resources.preferences_auto_logout_timeout
+import vibely_pos.composeapp.generated.resources.preferences_automatically_logout
+import vibely_pos.composeapp.generated.resources.preferences_dark
+import vibely_pos.composeapp.generated.resources.preferences_enable_notifications
+import vibely_pos.composeapp.generated.resources.preferences_english
+import vibely_pos.composeapp.generated.resources.preferences_french
+import vibely_pos.composeapp.generated.resources.preferences_language
+import vibely_pos.composeapp.generated.resources.preferences_light
+import vibely_pos.composeapp.generated.resources.preferences_receive_alerts
+import vibely_pos.composeapp.generated.resources.preferences_settings_apply
+import vibely_pos.composeapp.generated.resources.preferences_spanish
+import vibely_pos.composeapp.generated.resources.preferences_system
+import vibely_pos.composeapp.generated.resources.preferences_theme
+import vibely_pos.composeapp.generated.resources.preferences_timeout_format
+import vibely_pos.composeapp.generated.resources.preferences_user_preferences
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
@@ -52,7 +71,9 @@ fun UserPreferencesTab(
 ) {
     var language by remember(userPreferences) { mutableStateOf(userPreferences?.language ?: "en") }
     var theme by remember(userPreferences) { mutableStateOf(userPreferences?.theme ?: "system") }
-    var enableNotifications by remember(userPreferences) { mutableStateOf(userPreferences?.enableNotifications ?: true) }
+    var enableNotifications by remember(
+        userPreferences,
+    ) { mutableStateOf(userPreferences?.enableNotifications ?: true) }
     var autoLogoutTimeout by remember(userPreferences) {
         mutableFloatStateOf(
             (userPreferences?.autoLogoutTimeout?.inWholeMinutes?.toFloat() ?: 30f),
@@ -63,21 +84,24 @@ fun UserPreferencesTab(
     var themeExpanded by remember { mutableStateOf(false) }
 
     val languages = listOf("en", "es", "fr")
-    val languageLabels = mapOf(
-        "en" to "English",
-        "es" to "Español",
-        "fr" to "Français",
-    )
+    val languageLabels =
+        mapOf(
+            "en" to stringResource(Res.string.preferences_english),
+            "es" to stringResource(Res.string.preferences_spanish),
+            "fr" to stringResource(Res.string.preferences_french),
+        )
 
     val themes = listOf("light", "dark", "system")
-    val themeLabels = mapOf(
-        "light" to "Light",
-        "dark" to "Dark",
-        "system" to "System Default",
-    )
+    val themeLabels =
+        mapOf(
+            "light" to stringResource(Res.string.preferences_light),
+            "dark" to stringResource(Res.string.preferences_dark),
+            "system" to stringResource(Res.string.preferences_system),
+        )
 
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
     ) {
@@ -86,13 +110,14 @@ fun UserPreferencesTab(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "User Preferences",
+                    text = stringResource(Res.string.preferences_user_preferences),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -107,7 +132,7 @@ fun UserPreferencesTab(
                         value = languageLabels[language] ?: language,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Language") },
+                        label = { Text(stringResource(Res.string.preferences_language)) },
                         leadingIcon = {
                             androidx.compose.material3.Icon(
                                 imageVector = FontAwesomeIcons.Solid.Language,
@@ -121,7 +146,8 @@ fun UserPreferencesTab(
                         enabled = !isSaving,
                         singleLine = true,
                         shape = PosShapes.InputField,
-                        modifier = Modifier
+                        modifier =
+                        Modifier
                             .fillMaxWidth()
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                     )
@@ -153,7 +179,7 @@ fun UserPreferencesTab(
                         value = themeLabels[theme] ?: theme,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Theme") },
+                        label = { Text(stringResource(Res.string.preferences_theme)) },
                         leadingIcon = {
                             androidx.compose.material3.Icon(
                                 imageVector = FontAwesomeIcons.Solid.Palette,
@@ -167,7 +193,8 @@ fun UserPreferencesTab(
                         enabled = !isSaving,
                         singleLine = true,
                         shape = PosShapes.InputField,
-                        modifier = Modifier
+                        modifier =
+                        Modifier
                             .fillMaxWidth()
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                     )
@@ -205,13 +232,13 @@ fun UserPreferencesTab(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             Text(
-                                text = "Enable Notifications",
+                                text = stringResource(Res.string.preferences_enable_notifications),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                         Text(
-                            text = "Receive alerts and updates",
+                            text = stringResource(Res.string.preferences_receive_alerts),
                             style = MaterialTheme.typography.bodySmall,
                             color = AppColors.TextSecondaryLight,
                             modifier = Modifier.padding(start = 32.dp),
@@ -221,7 +248,8 @@ fun UserPreferencesTab(
                         checked = enableNotifications,
                         onCheckedChange = { enableNotifications = it },
                         enabled = !isSaving,
-                        colors = SwitchDefaults.colors(
+                        colors =
+                        SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
                             checkedTrackColor = AppColors.Primary,
                             uncheckedThumbColor = MaterialTheme.colorScheme.outline,
@@ -243,14 +271,14 @@ fun UserPreferencesTab(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = "Auto Logout Timeout",
+                        text = stringResource(Res.string.preferences_auto_logout_timeout),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
 
                 Text(
-                    text = "Automatically log out after inactivity",
+                    text = stringResource(Res.string.preferences_automatically_logout),
                     style = MaterialTheme.typography.bodySmall,
                     color = AppColors.TextSecondaryLight,
                     modifier = Modifier.padding(start = 32.dp, bottom = 8.dp),
@@ -273,7 +301,8 @@ fun UserPreferencesTab(
                         valueRange = 5f..120f,
                         steps = 22,
                         enabled = !isSaving,
-                        colors = SliderDefaults.colors(
+                        colors =
+                        SliderDefaults.colors(
                             thumbColor = AppColors.Primary,
                             activeTrackColor = AppColors.Primary,
                             inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -286,17 +315,17 @@ fun UserPreferencesTab(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = "5 min",
+                            text = stringResource(Res.string.preferences_5_min),
                             style = MaterialTheme.typography.labelSmall,
                             color = AppColors.TextSecondaryLight,
                         )
                         Text(
-                            text = "${autoLogoutTimeout.toInt()} min",
+                            text = stringResource(Res.string.preferences_timeout_format, autoLogoutTimeout.toInt()),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary,
                         )
                         Text(
-                            text = "120 min",
+                            text = stringResource(Res.string.preferences_120_min),
                             style = MaterialTheme.typography.labelSmall,
                             color = AppColors.TextSecondaryLight,
                         )
@@ -306,7 +335,7 @@ fun UserPreferencesTab(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "These settings apply to your user account.",
+                    text = stringResource(Res.string.preferences_settings_apply),
                     style = MaterialTheme.typography.bodySmall,
                     color = AppColors.TextSecondaryLight,
                 )

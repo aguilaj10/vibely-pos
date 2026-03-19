@@ -59,7 +59,11 @@ import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Tags
 import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.Wallet
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.inventory_add_product
+import vibely_pos.composeapp.generated.resources.inventory_no_products_found
 
 @Composable
 fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: InventoryViewModel = koinInject()) {
@@ -105,7 +109,8 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
 
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -117,7 +122,8 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
                     products = state.products,
                     onEditProduct = viewModel::onEditProduct,
                     onDeleteProduct = viewModel::onDeleteProduct,
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
@@ -164,7 +170,8 @@ fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier,
 @Composable
 private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -> Unit, onClearSearch: () -> Unit, onAddProduct: () -> Unit) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -199,7 +206,7 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
         )
 
         AppButton(
-            text = "Add Product",
+            text = stringResource(Res.string.inventory_add_product),
             onClick = onAddProduct,
             style = AppButtonStyle.Primary,
             icon = {
@@ -217,7 +224,8 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
 private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Double, categoriesCount: Int, isLoading: Boolean = false) {
     if (isLoading) {
         Box(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .height(120.dp),
@@ -227,7 +235,8 @@ private fun KpiCardsRow(totalProducts: Int, lowStockCount: Int, totalValue: Doub
         }
     } else {
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -329,7 +338,8 @@ private fun ProductsTable(
 
             if (products.isEmpty()) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center,
@@ -345,7 +355,7 @@ private fun ProductsTable(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No products found",
+                            text = stringResource(Res.string.inventory_no_products_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -372,7 +382,8 @@ private fun ProductsTable(
 @Composable
 private fun TableHeader() {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -406,7 +417,8 @@ private fun TableRow(product: Product, onEdit: () -> Unit, onDelete: () -> Unit)
     val status = getStockStatus(product)
 
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -469,11 +481,12 @@ private fun TableCell(text: String, modifier: Modifier = Modifier, textAlign: Te
 
 @Composable
 private fun StatusChip(status: StockStatus, modifier: Modifier = Modifier) {
-    val (backgroundColor, textColor, label) = when (status) {
-        StockStatus.Good -> Triple(AppColors.Success, Color.White, "Good")
-        StockStatus.Medium -> Triple(AppColors.NeutralLight600, Color.White, "Medium")
-        StockStatus.Low -> Triple(AppColors.ErrorDark, Color.White, "Low")
-    }
+    val (backgroundColor, textColor, label) =
+        when (status) {
+            StockStatus.Good -> Triple(AppColors.Success, Color.White, "Good")
+            StockStatus.Medium -> Triple(AppColors.NeutralLight600, Color.White, "Medium")
+            StockStatus.Low -> Triple(AppColors.ErrorDark, Color.White, "Low")
+        }
 
     Surface(
         modifier = modifier,

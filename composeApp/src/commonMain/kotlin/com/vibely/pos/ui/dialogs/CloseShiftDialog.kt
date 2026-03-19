@@ -35,6 +35,19 @@ import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.ValidationState
 import com.vibely.pos.ui.theme.AppColors
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.shifts_bill_coin_breakdown
+import vibely_pos.composeapp.generated.resources.shifts_calculated_from_breakdown
+import vibely_pos.composeapp.generated.resources.shifts_card_sales
+import vibely_pos.composeapp.generated.resources.shifts_cash_reconciliation
+import vibely_pos.composeapp.generated.resources.shifts_cash_sales
+import vibely_pos.composeapp.generated.resources.shifts_close
+import vibely_pos.composeapp.generated.resources.shifts_close_title
+import vibely_pos.composeapp.generated.resources.shifts_expected_cash
+import vibely_pos.composeapp.generated.resources.shifts_opening_balance
+import vibely_pos.composeapp.generated.resources.shifts_variance
 import kotlin.math.abs
 
 @Composable
@@ -95,7 +108,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                     .verticalScroll(rememberScrollState()),
             ) {
                 Text(
-                    text = "Close Shift ${shift.shiftNumber}",
+                    text = stringResource(Res.string.shifts_close_title, shift.shiftNumber),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -113,7 +126,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Cash Reconciliation",
+                    text = stringResource(Res.string.shifts_cash_reconciliation),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -141,7 +154,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Bill/Coin Breakdown (Optional)",
+                    text = stringResource(Res.string.shifts_bill_coin_breakdown),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -169,7 +182,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        text = "Calculated from breakdown:",
+                        text = stringResource(Res.string.shifts_calculated_from_breakdown),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                     )
@@ -198,7 +211,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )
@@ -206,7 +219,7 @@ fun CloseShiftDialog(shift: Shift, onSave: (closingBalance: Double, notes: Strin
                     Spacer(modifier = Modifier.width(12.dp))
 
                     AppButton(
-                        text = "Close Shift",
+                        text = stringResource(Res.string.shifts_close),
                         onClick = { onSave(actualCashValue, notes.ifBlank { null }) },
                         style = AppButtonStyle.Primary,
                         enabled = validationError == ValidationState.None,
@@ -234,7 +247,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Opening Balance:",
+                    text = stringResource(Res.string.shifts_opening_balance),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
@@ -251,7 +264,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Cash Sales:",
+                    text = stringResource(Res.string.shifts_cash_sales),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
@@ -269,7 +282,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Card Sales:",
+                    text = stringResource(Res.string.shifts_card_sales),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
@@ -286,7 +299,7 @@ private fun ShiftSummaryCard(openingBalance: Double, totalCash: Double, totalCar
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Expected Cash:",
+                    text = stringResource(Res.string.shifts_expected_cash),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -326,7 +339,7 @@ private fun VarianceDisplay(expected: Double, actual: Double, variance: Double) 
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Variance:",
+                text = stringResource(Res.string.shifts_variance),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
             )

@@ -35,6 +35,27 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.Image
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.receipt_config_title
+import vibely_pos.composeapp.generated.resources.receipt_configure_description
+import vibely_pos.composeapp.generated.resources.receipt_footer_label
+import vibely_pos.composeapp.generated.resources.receipt_footer_placeholder
+import vibely_pos.composeapp.generated.resources.receipt_header_label
+import vibely_pos.composeapp.generated.resources.receipt_header_placeholder
+import vibely_pos.composeapp.generated.resources.receipt_logo_url_label
+import vibely_pos.composeapp.generated.resources.receipt_preview_item_1
+import vibely_pos.composeapp.generated.resources.receipt_preview_item_2
+import vibely_pos.composeapp.generated.resources.receipt_preview_store_name
+import vibely_pos.composeapp.generated.resources.receipt_preview_subtotal
+import vibely_pos.composeapp.generated.resources.receipt_preview_tax_label
+import vibely_pos.composeapp.generated.resources.receipt_preview_title
+import vibely_pos.composeapp.generated.resources.receipt_preview_total_label
+import vibely_pos.composeapp.generated.resources.receipt_sample_logo_placeholder
+import vibely_pos.composeapp.generated.resources.receipt_sample_please_come_again
+import vibely_pos.composeapp.generated.resources.receipt_sample_thank_you
+import vibely_pos.composeapp.generated.resources.receipt_show_tax_description
+import vibely_pos.composeapp.generated.resources.receipt_show_tax_label
 
 @Composable
 fun ReceiptConfigTab(
@@ -49,7 +70,8 @@ fun ReceiptConfigTab(
     var showTax by remember(receiptSettings) { mutableStateOf(receiptSettings?.showTax ?: true) }
 
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
     ) {
@@ -58,13 +80,14 @@ fun ReceiptConfigTab(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "Receipt Configuration",
+                    text = stringResource(Res.string.receipt_config_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -72,8 +95,8 @@ fun ReceiptConfigTab(
                 OutlinedTextField(
                     value = header,
                     onValueChange = { header = it },
-                    label = { Text("Receipt Header") },
-                    placeholder = { Text("e.g., Thank you for shopping with us!") },
+                    label = { Text(stringResource(Res.string.receipt_header_label)) },
+                    placeholder = { Text(stringResource(Res.string.receipt_header_placeholder)) },
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Edit,
@@ -91,8 +114,8 @@ fun ReceiptConfigTab(
                 OutlinedTextField(
                     value = footer,
                     onValueChange = { footer = it },
-                    label = { Text("Receipt Footer") },
-                    placeholder = { Text("e.g., Return policy: 30 days with receipt") },
+                    label = { Text(stringResource(Res.string.receipt_footer_label)) },
+                    placeholder = { Text(stringResource(Res.string.receipt_footer_placeholder)) },
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Edit,
@@ -110,7 +133,7 @@ fun ReceiptConfigTab(
                 OutlinedTextField(
                     value = logoUrl,
                     onValueChange = { logoUrl = it },
-                    label = { Text("Logo URL (optional)") },
+                    label = { Text(stringResource(Res.string.receipt_logo_url_label)) },
                     placeholder = { Text("https://example.com/logo.png") },
                     leadingIcon = {
                         androidx.compose.material3.Icon(
@@ -132,12 +155,12 @@ fun ReceiptConfigTab(
                 ) {
                     Column {
                         Text(
-                            text = "Show Tax on Receipt",
+                            text = stringResource(Res.string.receipt_show_tax_label),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
-                            text = "Display tax breakdown at the bottom",
+                            text = stringResource(Res.string.receipt_show_tax_description),
                             style = MaterialTheme.typography.bodySmall,
                             color = AppColors.TextSecondaryLight,
                         )
@@ -146,7 +169,8 @@ fun ReceiptConfigTab(
                         checked = showTax,
                         onCheckedChange = { showTax = it },
                         enabled = !isSaving,
-                        colors = SwitchDefaults.colors(
+                        colors =
+                        SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
                             checkedTrackColor = AppColors.Primary,
                             uncheckedThumbColor = MaterialTheme.colorScheme.outline,
@@ -158,7 +182,7 @@ fun ReceiptConfigTab(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Configure how receipts appear to your customers.",
+                    text = stringResource(Res.string.receipt_configure_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = AppColors.TextSecondaryLight,
                 )
@@ -168,15 +192,15 @@ fun ReceiptConfigTab(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Receipt Preview",
+            text = stringResource(Res.string.receipt_preview_title),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
         ReceiptPreviewCard(
-            header = header.ifBlank { "Thank you for shopping!" },
-            footer = footer.ifBlank { "Please come again!" },
+            header = header.ifBlank { stringResource(Res.string.receipt_sample_thank_you) },
+            footer = footer.ifBlank { stringResource(Res.string.receipt_sample_please_come_again) },
             showTax = showTax,
             logoUrl = logoUrl.ifBlank { null },
         )
@@ -187,26 +211,29 @@ fun ReceiptConfigTab(
 private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean, logoUrl: String?, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
+        colors =
+        CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = PosShapes.ProductCard,
     ) {
         Column(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
         ) {
             if (logoUrl != null) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .height(60.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "[Logo: $logoUrl]",
+                        text = stringResource(Res.string.receipt_sample_logo_placeholder),
                         style = MaterialTheme.typography.bodySmall,
                         color = AppColors.TextSecondaryLight,
                     )
@@ -215,7 +242,7 @@ private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean,
             }
 
             Text(
-                text = "STORE NAME",
+                text = stringResource(Res.string.receipt_preview_store_name),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -241,7 +268,7 @@ private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Item 1",
+                    text = stringResource(Res.string.receipt_preview_item_1),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
@@ -255,7 +282,7 @@ private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Item 2",
+                    text = stringResource(Res.string.receipt_preview_item_2),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
@@ -273,7 +300,7 @@ private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Subtotal",
+                    text = stringResource(Res.string.receipt_preview_subtotal),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
@@ -288,7 +315,7 @@ private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        text = "Tax (16%)",
+                        text = stringResource(Res.string.receipt_preview_tax_label),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -309,7 +336,7 @@ private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "TOTAL",
+                    text = stringResource(Res.string.receipt_preview_total_label),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -334,7 +361,7 @@ private fun ReceiptPreviewCard(header: String, footer: String, showTax: Boolean,
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Receipt Preview",
+                text = stringResource(Res.string.receipt_preview_title),
                 style = MaterialTheme.typography.labelSmall,
                 color = AppColors.TextSecondaryLight,
                 modifier = Modifier.align(Alignment.CenterHorizontally),

@@ -52,6 +52,15 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Plus
 import compose.icons.fontawesomeicons.solid.Trash
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.purchase_orders_add_product
+import vibely_pos.composeapp.generated.resources.purchase_orders_create
+import vibely_pos.composeapp.generated.resources.purchase_orders_edit
+import vibely_pos.composeapp.generated.resources.purchase_orders_line_items
+import vibely_pos.composeapp.generated.resources.purchase_orders_no_items
+import vibely_pos.composeapp.generated.resources.purchase_orders_total
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,7 +100,14 @@ fun PurchaseOrderFormDialog(
                     .verticalScroll(rememberScrollState()),
             ) {
                 Text(
-                    text = if (isEdit) "Edit Purchase Order" else "Create Purchase Order",
+                    text =
+                    if (isEdit) {
+                        stringResource(
+                            Res.string.purchase_orders_edit,
+                        )
+                    } else {
+                        stringResource(Res.string.purchase_orders_create)
+                    },
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -154,12 +170,12 @@ fun PurchaseOrderFormDialog(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Line Items",
+                        text = stringResource(Res.string.purchase_orders_line_items),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
                     AppButton(
-                        text = "Add Product",
+                        text = stringResource(Res.string.purchase_orders_add_product),
                         onClick = {
                             formData =
                                 formData.copy(
@@ -181,7 +197,7 @@ fun PurchaseOrderFormDialog(
 
                 if (formData.lineItems.isEmpty()) {
                     Text(
-                        text = "No items added. Click 'Add Product' to add line items.",
+                        text = stringResource(Res.string.purchase_orders_no_items),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 16.dp),
@@ -223,7 +239,7 @@ fun PurchaseOrderFormDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     Text(
-                        text = "Total:",
+                        text = stringResource(Res.string.purchase_orders_total),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -256,7 +272,7 @@ fun PurchaseOrderFormDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                     )

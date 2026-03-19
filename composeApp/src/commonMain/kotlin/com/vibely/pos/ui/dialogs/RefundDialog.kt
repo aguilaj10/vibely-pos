@@ -34,6 +34,15 @@ import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.TimesCircle
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.common_amount
+import vibely_pos.composeapp.generated.resources.common_cancel
+import vibely_pos.composeapp.generated.resources.common_items
+import vibely_pos.composeapp.generated.resources.refund_invoice
+import vibely_pos.composeapp.generated.resources.refund_process_refund
+import vibely_pos.composeapp.generated.resources.refund_reason_optional
+import vibely_pos.composeapp.generated.resources.refund_restore_stock_warning
 
 /**
  * Refund confirmation dialog with reason input.
@@ -78,7 +87,7 @@ fun RefundDialog(sale: Sale, itemsCount: Int, onConfirm: (String) -> Unit, onDis
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Process Refund",
+                    text = stringResource(Res.string.refund_process_refund),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -91,7 +100,7 @@ fun RefundDialog(sale: Sale, itemsCount: Int, onConfirm: (String) -> Unit, onDis
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "This will restore product stock to inventory.",
+                    text = stringResource(Res.string.refund_restore_stock_warning),
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColors.Warning,
                 )
@@ -101,7 +110,7 @@ fun RefundDialog(sale: Sale, itemsCount: Int, onConfirm: (String) -> Unit, onDis
                 AppTextField(
                     value = reason,
                     onValueChange = { reason = it },
-                    label = "Reason (optional)",
+                    label = stringResource(Res.string.refund_reason_optional),
                     variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3,
@@ -114,7 +123,7 @@ fun RefundDialog(sale: Sale, itemsCount: Int, onConfirm: (String) -> Unit, onDis
                     horizontalArrangement = Arrangement.End,
                 ) {
                     AppButton(
-                        text = "Cancel",
+                        text = stringResource(Res.string.common_cancel),
                         onClick = onDismiss,
                         style = AppButtonStyle.Text,
                         enabled = !isProcessing,
@@ -123,7 +132,7 @@ fun RefundDialog(sale: Sale, itemsCount: Int, onConfirm: (String) -> Unit, onDis
                     Spacer(modifier = Modifier.width(12.dp))
 
                     AppButton(
-                        text = "Process Refund",
+                        text = stringResource(Res.string.refund_process_refund),
                         onClick = {
                             isProcessing = true
                             onConfirm(reason)
@@ -157,7 +166,7 @@ private fun SaleInfoCard(sale: Sale, itemsCount: Int) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Invoice",
+                    text = stringResource(Res.string.refund_invoice),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -176,7 +185,7 @@ private fun SaleInfoCard(sale: Sale, itemsCount: Int) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Amount",
+                    text = stringResource(Res.string.common_amount),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -195,7 +204,7 @@ private fun SaleInfoCard(sale: Sale, itemsCount: Int) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Items",
+                    text = stringResource(Res.string.common_items),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

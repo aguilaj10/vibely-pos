@@ -41,7 +41,12 @@ import compose.icons.fontawesomeicons.solid.ExclamationTriangle
 import compose.icons.fontawesomeicons.solid.Receipt
 import compose.icons.fontawesomeicons.solid.Sync
 import compose.icons.fontawesomeicons.solid.TimesCircle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.dashboard_quick_actions
+import vibely_pos.composeapp.generated.resources.dashboard_recent_transactions
+import vibely_pos.composeapp.generated.resources.dashboard_title
 
 @Composable
 fun DashboardScreen(
@@ -75,7 +80,8 @@ fun DashboardScreen(
             }
 
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
@@ -96,7 +102,7 @@ fun DashboardScreen(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                         Text(
-                            text = "Dashboard",
+                            text = stringResource(Res.string.dashboard_title),
                             style = MaterialTheme.typography.headlineLarge,
                         )
                     }
@@ -143,7 +149,8 @@ fun DashboardScreen(
                             icon = FontAwesomeIcons.Solid.ExclamationTriangle,
                             label = "Low Stock",
                             value = summary.lowStockCount.toString(),
-                            color = if (summary.hasLowStockAlerts()) {
+                            color =
+                            if (summary.hasLowStockAlerts()) {
                                 AppColors.Warning
                             } else {
                                 AppColors.Success
@@ -152,14 +159,16 @@ fun DashboardScreen(
                         )
 
                         MetricCard(
-                            icon = if (summary.hasActiveShift()) {
+                            icon =
+                            if (summary.hasActiveShift()) {
                                 FontAwesomeIcons.Solid.CheckCircle
                             } else {
                                 FontAwesomeIcons.Solid.TimesCircle
                             },
                             label = "Shift",
                             value = if (summary.hasActiveShift()) "Open" else "Closed",
-                            color = if (summary.hasActiveShift()) {
+                            color =
+                            if (summary.hasActiveShift()) {
                                 AppColors.Success
                             } else {
                                 AppColors.TextSecondaryLight
@@ -172,7 +181,7 @@ fun DashboardScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
-                    text = "Recent Transactions",
+                    text = stringResource(Res.string.dashboard_recent_transactions),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 12.dp),
                 )
@@ -204,7 +213,7 @@ fun DashboardScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        text = "Quick Actions",
+                        text = stringResource(Res.string.dashboard_quick_actions),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(bottom = 12.dp),
                     )

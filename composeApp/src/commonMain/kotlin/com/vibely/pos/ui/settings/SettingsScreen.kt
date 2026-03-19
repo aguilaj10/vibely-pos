@@ -51,7 +51,20 @@ import compose.icons.fontawesomeicons.solid.ExclamationCircle
 import compose.icons.fontawesomeicons.solid.Receipt
 import compose.icons.fontawesomeicons.solid.Store
 import compose.icons.fontawesomeicons.solid.UserCog
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.settings_configure_store
+import vibely_pos.composeapp.generated.resources.settings_error
+import vibely_pos.composeapp.generated.resources.settings_loading
+import vibely_pos.composeapp.generated.resources.settings_no_settings
+import vibely_pos.composeapp.generated.resources.settings_preferences
+import vibely_pos.composeapp.generated.resources.settings_receipt
+import vibely_pos.composeapp.generated.resources.settings_retry
+import vibely_pos.composeapp.generated.resources.settings_save
+import vibely_pos.composeapp.generated.resources.settings_store_info
+import vibely_pos.composeapp.generated.resources.settings_tax_currency
+import vibely_pos.composeapp.generated.resources.settings_title
 import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,12 +107,13 @@ private fun SettingsScreenContent(
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
-    val tabs = listOf(
-        TabItem("Store Info", FontAwesomeIcons.Solid.Store),
-        TabItem("Receipt", FontAwesomeIcons.Solid.Receipt),
-        TabItem("Tax & Currency", FontAwesomeIcons.Solid.Cog),
-        TabItem("Preferences", FontAwesomeIcons.Solid.UserCog),
-    )
+    val tabs =
+        listOf(
+            TabItem(stringResource(Res.string.settings_store_info), FontAwesomeIcons.Solid.Store),
+            TabItem(stringResource(Res.string.settings_receipt), FontAwesomeIcons.Solid.Receipt),
+            TabItem(stringResource(Res.string.settings_tax_currency), FontAwesomeIcons.Solid.Cog),
+            TabItem(stringResource(Res.string.settings_preferences), FontAwesomeIcons.Solid.UserCog),
+        )
 
     Scaffold(
         modifier = modifier,
@@ -108,7 +122,7 @@ private fun SettingsScreenContent(
                 title = {
                     Column {
                         Text(
-                            text = "Settings",
+                            text = stringResource(Res.string.settings_title),
                             style = MaterialTheme.typography.titleLarge,
                         )
                     }
@@ -117,14 +131,15 @@ private fun SettingsScreenContent(
                     val successState = state as? SettingsUiState.Success
                     if (successState?.isSaving == true) {
                         CircularProgressIndicator(
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .size(24.dp)
                                 .padding(end = 16.dp),
                             strokeWidth = 2.dp,
                         )
                     } else {
                         AppButton(
-                            text = "Save",
+                            text = stringResource(Res.string.settings_save),
                             onClick = {
                                 when (selectedTabIndex) {
                                     0 -> {
@@ -137,6 +152,7 @@ private fun SettingsScreenContent(
                                             )
                                         }
                                     }
+
                                     1 -> {
                                         successState?.receiptSettings?.let { receipt ->
                                             onUpdateReceiptSettings(
@@ -147,6 +163,7 @@ private fun SettingsScreenContent(
                                             )
                                         }
                                     }
+
                                     2 -> {
                                         successState?.taxSettings?.let { tax ->
                                             onUpdateTaxSettings(
@@ -155,6 +172,7 @@ private fun SettingsScreenContent(
                                             )
                                         }
                                     }
+
                                     3 -> {
                                         successState?.userPreferences?.let { prefs ->
                                             onUpdateUserPreferences(
@@ -173,7 +191,8 @@ private fun SettingsScreenContent(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
+                colors =
+                TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onSurface,
                 ),
@@ -181,7 +200,8 @@ private fun SettingsScreenContent(
         },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
@@ -213,7 +233,8 @@ private fun SettingsScreenContent(
             }
 
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .padding(16.dp),
             ) {
@@ -221,24 +242,26 @@ private fun SettingsScreenContent(
                     is SettingsUiState.Loading -> {
                         LoadingState()
                     }
+
                     is SettingsUiState.Error -> {
                         ErrorState(
                             message = currentState.message,
                             onRetry = onLoadSettings,
                         )
                     }
+
                     is SettingsUiState.Success -> {
                         if (currentState.isLoading) {
                             LoadingState()
                         } else if (currentState.storeSettings == null) {
                             EmptyState(
                                 icon = FontAwesomeIcons.Solid.Cog,
-                                title = "No settings found",
-                                description = "Configure your store settings to get started",
+                                title = stringResource(Res.string.settings_no_settings),
+                                description = stringResource(Res.string.settings_configure_store),
                                 size = EmptyStateSize.Large,
                                 action = {
                                     AppButton(
-                                        text = "Retry",
+                                        text = stringResource(Res.string.settings_retry),
                                         onClick = onLoadSettings,
                                         style = AppButtonStyle.Primary,
                                     )
@@ -247,26 +270,37 @@ private fun SettingsScreenContent(
                             )
                         } else {
                             when (selectedTabIndex) {
-                                0 -> StoreInfoTab(
-                                    storeSettings = currentState.storeSettings,
-                                    onStoreInfoChange = onUpdateStoreInfo,
-                                    isSaving = currentState.isSaving,
-                                )
-                                1 -> ReceiptConfigTab(
-                                    receiptSettings = currentState.receiptSettings,
-                                    onReceiptSettingsChange = onUpdateReceiptSettings,
-                                    isSaving = currentState.isSaving,
-                                )
-                                2 -> TaxCurrencyTab(
-                                    taxSettings = currentState.taxSettings,
-                                    onTaxSettingsChange = onUpdateTaxSettings,
-                                    isSaving = currentState.isSaving,
-                                )
-                                3 -> UserPreferencesTab(
-                                    userPreferences = currentState.userPreferences,
-                                    onPreferencesChange = onUpdateUserPreferences,
-                                    isSaving = currentState.isSaving,
-                                )
+                                0 -> {
+                                    StoreInfoTab(
+                                        storeSettings = currentState.storeSettings,
+                                        onStoreInfoChange = onUpdateStoreInfo,
+                                        isSaving = currentState.isSaving,
+                                    )
+                                }
+
+                                1 -> {
+                                    ReceiptConfigTab(
+                                        receiptSettings = currentState.receiptSettings,
+                                        onReceiptSettingsChange = onUpdateReceiptSettings,
+                                        isSaving = currentState.isSaving,
+                                    )
+                                }
+
+                                2 -> {
+                                    TaxCurrencyTab(
+                                        taxSettings = currentState.taxSettings,
+                                        onTaxSettingsChange = onUpdateTaxSettings,
+                                        isSaving = currentState.isSaving,
+                                    )
+                                }
+
+                                3 -> {
+                                    UserPreferencesTab(
+                                        userPreferences = currentState.userPreferences,
+                                        onPreferencesChange = onUpdateUserPreferences,
+                                        isSaving = currentState.isSaving,
+                                    )
+                                }
                             }
                         }
                     }
@@ -288,7 +322,7 @@ private fun LoadingState() {
             CircularProgressIndicator()
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Loading settings...",
+                text = stringResource(Res.string.settings_loading),
                 style = MaterialTheme.typography.bodyLarge,
                 color = AppColors.TextSecondaryLight,
             )
@@ -300,12 +334,12 @@ private fun LoadingState() {
 private fun ErrorState(message: String, onRetry: () -> Unit) {
     EmptyState(
         icon = FontAwesomeIcons.Solid.ExclamationCircle,
-        title = "Failed to load settings",
+        title = stringResource(Res.string.settings_error),
         description = message,
         size = EmptyStateSize.Large,
         action = {
             AppButton(
-                text = "Retry",
+                text = stringResource(Res.string.settings_retry),
                 onClick = onRetry,
                 style = AppButtonStyle.Primary,
             )
@@ -319,47 +353,52 @@ private data class TabItem(val title: String, val icon: androidx.compose.ui.grap
 @Preview
 @Composable
 private fun SettingsScreenPreview() {
-    val mockStore = StoreSettings(
-        id = "1",
-        storeName = "Vibely Coffee",
-        address = "123 Main St, City",
-        phone = "123-456-7890",
-        email = "contact@vibely.coffee",
-        createdAt = TimeUtil.now(),
-        updatedAt = TimeUtil.now(),
-    )
-    val mockReceipt = ReceiptSettings(
-        id = "1",
-        header = "Thanks for visiting!",
-        footer = "See you soon!",
-        logoUrl = null,
-        showTax = true,
-        createdAt = TimeUtil.now(),
-        updatedAt = TimeUtil.now(),
-    )
-    val mockTax = TaxSettings(
-        id = "1",
-        taxRate = 16.0,
-        currency = "USD",
-        createdAt = TimeUtil.now(),
-        updatedAt = TimeUtil.now(),
-    )
-    val mockPrefs = UserPreferences(
-        id = "1",
-        language = "en",
-        theme = "system",
-        enableNotifications = true,
-        autoLogoutTimeout = 30.minutes,
-        createdAt = TimeUtil.now(),
-        updatedAt = TimeUtil.now(),
-    )
+    val mockStore =
+        StoreSettings(
+            id = "1",
+            storeName = "Vibely Coffee",
+            address = "123 Main St, City",
+            phone = "123-456-7890",
+            email = "contact@vibely.coffee",
+            createdAt = TimeUtil.now(),
+            updatedAt = TimeUtil.now(),
+        )
+    val mockReceipt =
+        ReceiptSettings(
+            id = "1",
+            header = "Thanks for visiting!",
+            footer = "See you soon!",
+            logoUrl = null,
+            showTax = true,
+            createdAt = TimeUtil.now(),
+            updatedAt = TimeUtil.now(),
+        )
+    val mockTax =
+        TaxSettings(
+            id = "1",
+            taxRate = 16.0,
+            currency = "USD",
+            createdAt = TimeUtil.now(),
+            updatedAt = TimeUtil.now(),
+        )
+    val mockPrefs =
+        UserPreferences(
+            id = "1",
+            language = "en",
+            theme = "system",
+            enableNotifications = true,
+            autoLogoutTimeout = 30.minutes,
+            createdAt = TimeUtil.now(),
+            updatedAt = TimeUtil.now(),
+        )
 
-    val state = SettingsUiState.Success(
-        storeSettings = mockStore,
-        receiptSettings = mockReceipt,
-        taxSettings = mockTax,
-        userPreferences = mockPrefs,
-    )
+    val state =
+        SettingsUiState.Success(
+            storeSettings = mockStore,
+            receiptSettings = mockReceipt,
+            taxSettings = mockTax,
+            userPreferences = mockPrefs,
+        )
 
     AppTheme {
         SettingsScreenContent(

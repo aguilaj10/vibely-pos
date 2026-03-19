@@ -36,6 +36,23 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.DollarSign
 import compose.icons.fontawesomeicons.solid.Percent
+import org.jetbrains.compose.resources.stringResource
+import vibely_pos.composeapp.generated.resources.Res
+import vibely_pos.composeapp.generated.resources.tax_currency_currency_label
+import vibely_pos.composeapp.generated.resources.tax_currency_description
+import vibely_pos.composeapp.generated.resources.tax_currency_error_invalid
+import vibely_pos.composeapp.generated.resources.tax_currency_error_range
+import vibely_pos.composeapp.generated.resources.tax_currency_error_required
+import vibely_pos.composeapp.generated.resources.tax_currency_eur
+import vibely_pos.composeapp.generated.resources.tax_currency_label
+import vibely_pos.composeapp.generated.resources.tax_currency_mxn
+import vibely_pos.composeapp.generated.resources.tax_currency_placeholder
+import vibely_pos.composeapp.generated.resources.tax_currency_preview
+import vibely_pos.composeapp.generated.resources.tax_currency_sample_amount
+import vibely_pos.composeapp.generated.resources.tax_currency_tax_label
+import vibely_pos.composeapp.generated.resources.tax_currency_title
+import vibely_pos.composeapp.generated.resources.tax_currency_total_label
+import vibely_pos.composeapp.generated.resources.tax_currency_usd
 
 @Composable
 fun TaxCurrencyTab(
@@ -50,12 +67,16 @@ fun TaxCurrencyTab(
 
     var taxRateError by remember { mutableStateOf<String?>(null) }
 
+    val errorRequired = stringResource(Res.string.tax_currency_error_required)
+    val errorInvalid = stringResource(Res.string.tax_currency_error_invalid)
+    val errorRange = stringResource(Res.string.tax_currency_error_range)
+
     val currencies = listOf("USD", "MXN", "EUR")
     val currencyLabels =
         mapOf(
-            "USD" to "USD - US Dollar",
-            "MXN" to "MXN - Mexican Peso",
-            "EUR" to "EUR - Euro",
+            "USD" to stringResource(Res.string.tax_currency_usd),
+            "MXN" to stringResource(Res.string.tax_currency_mxn),
+            "EUR" to stringResource(Res.string.tax_currency_eur),
         )
 
     Column(
@@ -76,7 +97,7 @@ fun TaxCurrencyTab(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "Tax & Currency Settings",
+                    text = stringResource(Res.string.tax_currency_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -88,14 +109,14 @@ fun TaxCurrencyTab(
                         val rate = newValue.toDoubleOrNull()
                         taxRateError =
                             when {
-                                newValue.isBlank() -> "Tax rate is required"
-                                rate == null -> "Invalid number"
-                                rate < 0 || rate > 100 -> "Tax rate must be between 0 and 100"
+                                newValue.isBlank() -> errorRequired
+                                rate == null -> errorInvalid
+                                rate < 0 || rate > 100 -> errorRange
                                 else -> null
                             }
                     },
-                    label = { Text("Tax Rate (%)") },
-                    placeholder = { Text("e.g., 16.0") },
+                    label = { Text(stringResource(Res.string.tax_currency_label)) },
+                    placeholder = { Text(stringResource(Res.string.tax_currency_placeholder)) },
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Percent,
@@ -122,7 +143,7 @@ fun TaxCurrencyTab(
                         value = currencyLabels[currency] ?: currency,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Currency") },
+                        label = { Text(stringResource(Res.string.tax_currency_currency_label)) },
                         leadingIcon = {
                             androidx.compose.material3.Icon(
                                 imageVector = FontAwesomeIcons.Solid.DollarSign,
@@ -162,7 +183,7 @@ fun TaxCurrencyTab(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Tax rate is applied to all sales. Currency affects how amounts are displayed.",
+                    text = stringResource(Res.string.tax_currency_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = AppColors.TextSecondaryLight,
                 )
@@ -183,7 +204,7 @@ fun TaxCurrencyTab(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = "Preview",
+                    text = stringResource(Res.string.tax_currency_preview),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -194,7 +215,7 @@ fun TaxCurrencyTab(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Sample amount:",
+                        text = stringResource(Res.string.tax_currency_sample_amount),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -211,7 +232,7 @@ fun TaxCurrencyTab(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Tax ($taxRate%):",
+                        text = stringResource(Res.string.tax_currency_tax_label, taxRate),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -229,7 +250,7 @@ fun TaxCurrencyTab(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "Total:",
+                        text = stringResource(Res.string.tax_currency_total_label),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
