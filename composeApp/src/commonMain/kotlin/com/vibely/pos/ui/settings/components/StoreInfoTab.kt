@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -108,7 +109,7 @@ fun StoreInfoTab(
                             imageVector = FontAwesomeIcons.Solid.Store,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(end = 20.dp),
+                            modifier = Modifier.padding(end = 20.dp).size(20.dp),
                         )
                     },
                     validationState =
@@ -138,7 +139,7 @@ fun StoreInfoTab(
                             imageVector = FontAwesomeIcons.Solid.MapMarkerAlt,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(end = 20.dp),
+                            modifier = Modifier.padding(end = 20.dp).size(20.dp),
                         )
                     },
                     validationState =
@@ -169,7 +170,7 @@ fun StoreInfoTab(
                             imageVector = FontAwesomeIcons.Solid.Phone,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(end = 20.dp),
+                            modifier = Modifier.padding(end = 20.dp).size(20.dp),
                         )
                     },
                     validationState =
@@ -210,7 +211,7 @@ fun StoreInfoTab(
                             imageVector = FontAwesomeIcons.Solid.Envelope,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(end = 20.dp),
+                            modifier = Modifier.padding(end = 20.dp).size(20.dp),
                         )
                     },
                     validationState =

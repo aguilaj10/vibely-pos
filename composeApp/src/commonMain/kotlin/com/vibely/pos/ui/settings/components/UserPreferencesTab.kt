@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
@@ -14,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -134,10 +136,11 @@ fun UserPreferencesTab(
                         readOnly = true,
                         label = stringResource(Res.string.preferences_language),
                         leadingIcon = {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 imageVector = FontAwesomeIcons.Solid.Language,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(end = 20.dp).size(20.dp),
                             )
                         },
                         trailingIcon = {
@@ -181,10 +184,11 @@ fun UserPreferencesTab(
                         readOnly = true,
                         label = stringResource(Res.string.preferences_theme),
                         leadingIcon = {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 imageVector = FontAwesomeIcons.Solid.Palette,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(end = 20.dp).size(20.dp),
                             )
                         },
                         trailingIcon = {
@@ -226,10 +230,11 @@ fun UserPreferencesTab(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 imageVector = FontAwesomeIcons.Solid.Bell,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(end = 20.dp).size(20.dp),
                             )
                             Text(
                                 text = stringResource(Res.string.preferences_enable_notifications),

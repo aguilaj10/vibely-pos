@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -99,10 +101,11 @@ fun ReceiptConfigTab(
                     label = stringResource(Res.string.receipt_header_label),
                     placeholder = stringResource(Res.string.receipt_header_placeholder),
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = FontAwesomeIcons.Solid.Edit,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 20.dp).size(20.dp),
                         )
                     },
                     enabled = !isSaving,
@@ -118,10 +121,11 @@ fun ReceiptConfigTab(
                     label = stringResource(Res.string.receipt_footer_label),
                     placeholder = stringResource(Res.string.receipt_footer_placeholder),
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = FontAwesomeIcons.Solid.Edit,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 20.dp).size(20.dp),
                         )
                     },
                     enabled = !isSaving,
@@ -137,10 +141,11 @@ fun ReceiptConfigTab(
                     label = stringResource(Res.string.receipt_logo_url_label),
                     placeholder = "https://example.com/logo.png",
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = FontAwesomeIcons.Solid.Image,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 20.dp).size(20.dp),
                         )
                     },
                     enabled = !isSaving,

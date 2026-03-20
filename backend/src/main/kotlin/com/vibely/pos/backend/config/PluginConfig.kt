@@ -18,6 +18,7 @@ import com.vibely.pos.shared.data.auth.dto.UserDTO
 import com.vibely.pos.shared.data.currency.dto.CurrencyDTO
 import com.vibely.pos.shared.data.currency.dto.CurrencyExchangeRateDTO
 import com.vibely.pos.shared.data.customer.dto.CustomerDTO
+import com.vibely.pos.shared.data.dashboard.dto.ActiveShiftInfoDTO
 import com.vibely.pos.shared.data.dashboard.dto.DashboardSummaryDTO
 import com.vibely.pos.shared.data.dashboard.dto.LowStockProductDTO
 import com.vibely.pos.shared.data.dashboard.dto.RecentTransactionDTO
@@ -151,6 +152,7 @@ private fun initializeSharedSerializers() {
         UserPreferencesDTO.serializer()
 
         // Shift DTOs
+        ActiveShiftInfoDTO.serializer()
         ShiftDTO.serializer()
         ShiftSummaryDTO.serializer()
 

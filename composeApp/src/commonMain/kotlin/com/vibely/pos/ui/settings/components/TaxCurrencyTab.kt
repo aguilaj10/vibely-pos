@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -15,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -119,10 +121,11 @@ fun TaxCurrencyTab(
                     label = stringResource(Res.string.tax_currency_label),
                     placeholder = stringResource(Res.string.tax_currency_placeholder),
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = FontAwesomeIcons.Solid.Percent,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 20.dp).size(20.dp),
                         )
                     },
                     validationState =
@@ -152,10 +155,11 @@ fun TaxCurrencyTab(
                         readOnly = true,
                         label = stringResource(Res.string.tax_currency_currency_label),
                         leadingIcon = {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 imageVector = FontAwesomeIcons.Solid.DollarSign,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(end = 20.dp).size(20.dp),
                             )
                         },
                         trailingIcon = {
