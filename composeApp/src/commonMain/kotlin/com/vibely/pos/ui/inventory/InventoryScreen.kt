@@ -45,7 +45,6 @@ import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.ProductFormDialog
-import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
@@ -57,6 +56,7 @@ import compose.icons.fontawesomeicons.solid.ExclamationTriangle
 import compose.icons.fontawesomeicons.solid.Plus
 import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Tags
+import compose.icons.fontawesomeicons.solid.Times
 import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.Wallet
 import org.jetbrains.compose.resources.stringResource
@@ -71,7 +71,7 @@ import vibely_pos.composeapp.generated.resources.inventory_no_products_found
 import vibely_pos.composeapp.generated.resources.inventory_search_by_name_sku
 
 @Composable
-fun InventoryScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: InventoryViewModel = koinInject()) {
+fun InventoryScreen(modifier: Modifier = Modifier, viewModel: InventoryViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -200,7 +200,7 @@ private fun InventoryHeader(searchQuery: String, onSearchQueryChange: (String) -
                 if (searchQuery.isNotEmpty()) {
                     IconButton(onClick = onClearSearch) {
                         Icon(
-                            imageVector = FontAwesomeIcons.Solid.Boxes,
+                            imageVector = FontAwesomeIcons.Solid.Times,
                             contentDescription = "Clear",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -436,7 +436,7 @@ private fun TableRow(product: Product, onEdit: () -> Unit, onDelete: () -> Unit)
             modifier = Modifier.width(80.dp),
             textAlign = TextAlign.End,
         )
-        TableCell("MNX", modifier = Modifier.width(80.dp))
+        TableCell(product.costCurrencyCode, modifier = Modifier.width(80.dp))
         TableCell(product.currentStock.toString(), modifier = Modifier.width(60.dp), textAlign = TextAlign.End)
         TableCell(product.unit, modifier = Modifier.width(80.dp))
 

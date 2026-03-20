@@ -57,6 +57,7 @@ import compose.icons.fontawesomeicons.solid.Folder
 import compose.icons.fontawesomeicons.solid.Plus
 import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Tags
+import compose.icons.fontawesomeicons.solid.Times
 import compose.icons.fontawesomeicons.solid.Trash
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -75,11 +76,7 @@ import vibely_pos.composeapp.generated.resources.inventory_no_categories_display
 import vibely_pos.composeapp.generated.resources.inventory_no_categories_found
 
 @Composable
-fun CategoriesScreen(
-    onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: CategoriesViewModel = koinInject(),
-) {
+fun CategoriesScreen(modifier: Modifier = Modifier, viewModel: CategoriesViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -200,7 +197,7 @@ private fun CategoriesHeader(searchQuery: String, onSearchQueryChange: (String) 
                 if (searchQuery.isNotEmpty()) {
                     IconButton(onClick = onClearSearch) {
                         Icon(
-                            imageVector = FontAwesomeIcons.Solid.Search,
+                            imageVector = FontAwesomeIcons.Solid.Times,
                             contentDescription = stringResource(Res.string.common_clear),
                             modifier = Modifier.size(20.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,

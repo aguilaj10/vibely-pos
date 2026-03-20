@@ -59,8 +59,6 @@ kotlin {
             implementation(libs.androidx.ui.tooling.preview)
         }
         commonMain.dependencies {
-            implementation(libs.compose.ui.tooling)
-            implementation(libs.androidx.ui.tooling.preview)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)

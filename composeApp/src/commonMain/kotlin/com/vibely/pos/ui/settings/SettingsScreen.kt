@@ -27,13 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.vibely.pos.shared.domain.settings.entity.ReceiptSettings
-import com.vibely.pos.shared.domain.settings.entity.StoreSettings
-import com.vibely.pos.shared.domain.settings.entity.TaxSettings
-import com.vibely.pos.shared.domain.settings.entity.UserPreferences
-import com.vibely.pos.shared.util.TimeUtil
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.EmptyState
@@ -43,7 +37,6 @@ import com.vibely.pos.ui.settings.components.StoreInfoTab
 import com.vibely.pos.ui.settings.components.TaxCurrencyTab
 import com.vibely.pos.ui.settings.components.UserPreferencesTab
 import com.vibely.pos.ui.theme.AppColors
-import com.vibely.pos.ui.theme.AppTheme
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Cog
@@ -65,13 +58,11 @@ import vibely_pos.composeapp.generated.resources.settings_save
 import vibely_pos.composeapp.generated.resources.settings_store_info
 import vibely_pos.composeapp.generated.resources.settings_tax_currency
 import vibely_pos.composeapp.generated.resources.settings_title
-import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinInject(),
 ) {
@@ -349,65 +340,3 @@ private fun ErrorState(message: String, onRetry: () -> Unit) {
 }
 
 private data class TabItem(val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
-
-@Preview
-@Composable
-private fun SettingsScreenPreview() {
-    val mockStore =
-        StoreSettings(
-            id = "1",
-            storeName = "Vibely Coffee",
-            address = "123 Main St, City",
-            phone = "123-456-7890",
-            email = "contact@vibely.coffee",
-            createdAt = TimeUtil.now(),
-            updatedAt = TimeUtil.now(),
-        )
-    val mockReceipt =
-        ReceiptSettings(
-            id = "1",
-            header = "Thanks for visiting!",
-            footer = "See you soon!",
-            logoUrl = null,
-            showTax = true,
-            createdAt = TimeUtil.now(),
-            updatedAt = TimeUtil.now(),
-        )
-    val mockTax =
-        TaxSettings(
-            id = "1",
-            taxRate = 16.0,
-            currency = "USD",
-            createdAt = TimeUtil.now(),
-            updatedAt = TimeUtil.now(),
-        )
-    val mockPrefs =
-        UserPreferences(
-            id = "1",
-            language = "en",
-            theme = "system",
-            enableNotifications = true,
-            autoLogoutTimeout = 30.minutes,
-            createdAt = TimeUtil.now(),
-            updatedAt = TimeUtil.now(),
-        )
-
-    val state =
-        SettingsUiState.Success(
-            storeSettings = mockStore,
-            receiptSettings = mockReceipt,
-            taxSettings = mockTax,
-            userPreferences = mockPrefs,
-        )
-
-    AppTheme {
-        SettingsScreenContent(
-            state = state,
-            onUpdateStoreInfo = { _, _, _, _ -> },
-            onUpdateReceiptSettings = { _, _, _, _ -> },
-            onUpdateTaxSettings = { _, _ -> },
-            onUpdateUserPreferences = { _, _, _, _ -> },
-            onLoadSettings = {},
-        )
-    }
-}

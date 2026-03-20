@@ -113,6 +113,7 @@ fun CheckoutScreen(
         if (state.checkoutSuccess) {
             snackbarHostState.showSnackbar(checkoutCompleteSaleText)
             viewModel.onCheckoutSuccessDismiss()
+            onNavigate(Screen.Sales)
         }
     }
 

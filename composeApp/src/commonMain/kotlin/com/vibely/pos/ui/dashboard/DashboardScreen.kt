@@ -59,7 +59,6 @@ import vibely_pos.composeapp.generated.resources.dashboard_title
 @Composable
 fun DashboardScreen(
     onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = koinInject(),
 ) {

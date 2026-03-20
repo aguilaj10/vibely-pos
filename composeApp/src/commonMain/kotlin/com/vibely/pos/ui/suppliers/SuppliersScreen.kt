@@ -64,11 +64,7 @@ import vibely_pos.composeapp.generated.resources.suppliers_no_suppliers_found
 import vibely_pos.composeapp.generated.resources.suppliers_search_placeholder
 
 @Composable
-fun SuppliersScreen(
-    onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: SuppliersViewModel = koinInject(),
-) {
+fun SuppliersScreen(modifier: Modifier = Modifier, viewModel: SuppliersViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 

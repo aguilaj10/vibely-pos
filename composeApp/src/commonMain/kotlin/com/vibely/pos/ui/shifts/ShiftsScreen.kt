@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.shift.entity.Shift
 import com.vibely.pos.shared.util.FormatUtils
+import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -47,7 +48,6 @@ import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.CloseShiftDialog
 import com.vibely.pos.ui.dialogs.OpenShiftDialog
-import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import com.vibely.pos.ui.utils.formatCurrency
 import com.vibely.pos.ui.utils.formatDecimal
@@ -78,7 +78,7 @@ import vibely_pos.composeapp.generated.resources.shifts_title
 import kotlin.math.abs
 
 @Composable
-fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: ShiftsViewModel = koinInject()) {
+fun ShiftsScreen(modifier: Modifier = Modifier, viewModel: ShiftsViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -132,8 +132,9 @@ fun ShiftsScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vi
             } else {
                 ShiftsTable(
                     shifts = state.shifts,
-                    state = state,
-                    viewModel = viewModel,
+                    paginationState = state.pagination,
+                    onPreviousPage = viewModel::onPreviousPage,
+                    onNextPage = viewModel::onNextPage,
                     onViewShift = viewModel::onViewShiftDetails,
                     modifier =
                     Modifier
@@ -362,8 +363,9 @@ private fun KpiCard(icon: ImageVector, label: String, value: String, valueColor:
 @Composable
 private fun ShiftsTable(
     shifts: List<Shift>,
-    state: ShiftsState,
-    viewModel: ShiftsViewModel,
+    paginationState: PaginationState,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
     onViewShift: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -412,9 +414,9 @@ private fun ShiftsTable(
                 }
 
                 PaginationControls(
-                    paginationState = state.pagination,
-                    onPreviousPage = viewModel::onPreviousPage,
-                    onNextPage = viewModel::onNextPage,
+                    paginationState = paginationState,
+                    onPreviousPage = onPreviousPage,
+                    onNextPage = onNextPage,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

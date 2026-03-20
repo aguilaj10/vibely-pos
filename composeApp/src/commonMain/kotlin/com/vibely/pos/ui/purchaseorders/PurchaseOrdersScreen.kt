@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.purchaseorder.entity.PurchaseOrder
 import com.vibely.pos.shared.domain.purchaseorder.valueobject.PurchaseOrderStatus
 import com.vibely.pos.shared.util.FormatUtils
+import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -58,6 +59,7 @@ import compose.icons.fontawesomeicons.solid.Calculator
 import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.Eye
 import compose.icons.fontawesomeicons.solid.Search
+import compose.icons.fontawesomeicons.solid.Times
 import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.Truck
 import compose.icons.fontawesomeicons.solid.TruckLoading
@@ -72,11 +74,7 @@ import vibely_pos.composeapp.generated.resources.purchase_orders_no_orders_found
 import vibely_pos.composeapp.generated.resources.purchase_orders_search_placeholder
 
 @Composable
-fun PurchaseOrdersScreen(
-    onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: PurchaseOrdersViewModel = koinInject(),
-) {
+fun PurchaseOrdersScreen(modifier: Modifier = Modifier, viewModel: PurchaseOrdersViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -126,8 +124,9 @@ fun PurchaseOrdersScreen(
             } else {
                 PurchaseOrdersTable(
                     purchaseOrders = state.purchaseOrders,
-                    state = state,
-                    viewModel = viewModel,
+                    paginationState = state.pagination,
+                    onPreviousPage = viewModel::onPreviousPage,
+                    onNextPage = viewModel::onNextPage,
                     onViewPurchaseOrder = viewModel::onViewPurchaseOrder,
                     onEditPurchaseOrder = viewModel::onEditPurchaseOrder,
                     onDeletePurchaseOrder = viewModel::onDeletePurchaseOrder,
@@ -219,7 +218,7 @@ private fun PurchaseOrdersHeader(
                 if (searchQuery.isNotEmpty()) {
                     IconButton(onClick = onClearSearch) {
                         Icon(
-                            imageVector = FontAwesomeIcons.Solid.Truck,
+                            imageVector = FontAwesomeIcons.Solid.Times,
                             contentDescription = "Clear",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -325,8 +324,9 @@ private fun KpiCard(
 @Composable
 private fun PurchaseOrdersTable(
     purchaseOrders: List<PurchaseOrder>,
-    state: PurchaseOrdersState,
-    viewModel: PurchaseOrdersViewModel,
+    paginationState: PaginationState,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
     onViewPurchaseOrder: (String) -> Unit,
     onEditPurchaseOrder: (String) -> Unit,
     onDeletePurchaseOrder: (String) -> Unit,
@@ -379,9 +379,9 @@ private fun PurchaseOrdersTable(
                 }
 
                 PaginationControls(
-                    paginationState = state.pagination,
-                    onPreviousPage = viewModel::onPreviousPage,
-                    onNextPage = viewModel::onNextPage,
+                    paginationState = paginationState,
+                    onPreviousPage = onPreviousPage,
+                    onNextPage = onNextPage,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

@@ -43,6 +43,7 @@ import com.vibely.pos.shared.domain.auth.entity.User
 import com.vibely.pos.shared.domain.auth.valueobject.UserRole
 import com.vibely.pos.shared.domain.auth.valueobject.UserStatus
 import com.vibely.pos.shared.util.FormatUtils
+import com.vibely.pos.ui.common.PaginationState
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
 import com.vibely.pos.ui.components.AppCard
@@ -53,7 +54,6 @@ import com.vibely.pos.ui.components.PaginationControls
 import com.vibely.pos.ui.dialogs.ConfirmationDialog
 import com.vibely.pos.ui.dialogs.UserFormData
 import com.vibely.pos.ui.dialogs.UserFormDialog
-import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -78,7 +78,7 @@ import vibely_pos.composeapp.generated.resources.users_no_users_found
 import vibely_pos.composeapp.generated.resources.users_search_placeholder
 
 @Composable
-fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, viewModel: UsersViewModel = koinInject()) {
+fun UsersScreen(modifier: Modifier = Modifier, viewModel: UsersViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -132,8 +132,9 @@ fun UsersScreen(onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier, vie
             } else {
                 UsersTable(
                     users = state.users,
-                    state = state,
-                    viewModel = viewModel,
+                    paginationState = state.pagination,
+                    onPreviousPage = viewModel::onPreviousPage,
+                    onNextPage = viewModel::onNextPage,
                     onEditUser = viewModel::onEditUser,
                     onDeleteUser = viewModel::onDeleteUser,
                     modifier =
@@ -466,8 +467,9 @@ private fun KpiCard(
 @Composable
 private fun UsersTable(
     users: List<User>,
-    state: UsersState,
-    viewModel: UsersViewModel,
+    paginationState: PaginationState,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
     onEditUser: (String) -> Unit,
     onDeleteUser: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -518,9 +520,9 @@ private fun UsersTable(
                 }
 
                 PaginationControls(
-                    paginationState = state.pagination,
-                    onPreviousPage = viewModel::onPreviousPage,
-                    onNextPage = viewModel::onNextPage,
+                    paginationState = paginationState,
+                    onPreviousPage = onPreviousPage,
+                    onNextPage = onNextPage,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

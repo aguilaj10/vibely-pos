@@ -51,6 +51,7 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.Search
 import compose.icons.fontawesomeicons.solid.Store
+import compose.icons.fontawesomeicons.solid.Times
 import compose.icons.fontawesomeicons.solid.Trash
 import compose.icons.fontawesomeicons.solid.User
 import compose.icons.fontawesomeicons.solid.UserPlus
@@ -65,11 +66,7 @@ import vibely_pos.composeapp.generated.resources.customers_no_customers_found
 import vibely_pos.composeapp.generated.resources.customers_search_placeholder
 
 @Composable
-fun CustomersScreen(
-    onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: CustomersViewModel = koinInject(),
-) {
+fun CustomersScreen(modifier: Modifier = Modifier, viewModel: CustomersViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -204,7 +201,7 @@ private fun CustomersHeader(searchQuery: String, onSearchQueryChange: (String) -
                 if (searchQuery.isNotEmpty()) {
                     IconButton(onClick = onClearSearch) {
                         Icon(
-                            imageVector = FontAwesomeIcons.Solid.User,
+                            imageVector = FontAwesomeIcons.Solid.Times,
                             contentDescription = "Clear",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

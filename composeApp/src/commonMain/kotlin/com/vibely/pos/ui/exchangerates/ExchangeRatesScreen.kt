@@ -57,11 +57,7 @@ import vibely_pos.composeapp.generated.resources.exchange_rates_no_rates_found
 import vibely_pos.composeapp.generated.resources.exchange_rates_title
 
 @Composable
-fun ExchangeRatesScreen(
-    onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: ExchangeRatesViewModel = koinInject(),
-) {
+fun ExchangeRatesScreen(modifier: Modifier = Modifier, viewModel: ExchangeRatesViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 

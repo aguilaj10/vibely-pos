@@ -61,14 +61,12 @@ import vibely_pos.composeapp.generated.resources.reports_top_products
  * top products, and customer analytics for selected time periods.
  *
  * @param onNavigate Navigation callback for screen transitions.
- * @param onLogout Callback for logout action.
  * @param modifier Optional modifier for customization.
  * @param viewModel ViewModel for managing report state and data loading.
  */
 @Composable
 fun ReportsScreen(
     onNavigate: (com.vibely.pos.ui.navigation.Screen) -> Unit,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReportsViewModel = koinInject(),
 ) {

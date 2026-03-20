@@ -76,11 +76,6 @@ fun AppNavigation(startDestination: Screen = if (DebugConfig.isDebugMode) Screen
             isAuthenticated -> {
                 AuthenticatedScreenLayout(
                     backStack = backStack,
-                    onLogout = {
-                        isAuthenticated = false
-                        backStack.clear()
-                        backStack.add(Screen.Login)
-                    },
                 )
             }
 
@@ -105,10 +100,9 @@ fun AppNavigation(startDestination: Screen = if (DebugConfig.isDebugMode) Screen
  * Uses left sidebar for desktop/tablet layouts.
  *
  * @param backStack The navigation back stack.
- * @param onLogout Callback when user logs out.
  */
 @Composable
-private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: () -> Unit) {
+private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>) {
     val currentScreen = backStack.lastOrNull() ?: Screen.Dashboard
 
     Row(modifier = Modifier.fillMaxSize()) {
@@ -128,7 +122,6 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                             NavEntry(key) {
                                 DashboardScreen(
                                     onNavigate = { screen -> backStack.add(screen) },
-                                    onLogout = onLogout,
                                 )
                             }
                         }
@@ -160,57 +153,43 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
 
                         is Screen.Inventory -> {
                             NavEntry(key) {
-                                InventoryScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
+                                InventoryScreen()
                             }
                         }
 
                         is Screen.Categories -> {
                             NavEntry(key) {
-                                CategoriesScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
+                                CategoriesScreen()
                             }
                         }
 
                         is Screen.Suppliers -> {
                             NavEntry(key) {
-                                SuppliersScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
+                                SuppliersScreen()
                             }
                         }
 
                         is Screen.PurchaseOrders -> {
                             NavEntry(key) {
-                                PurchaseOrdersScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
+                                PurchaseOrdersScreen()
                             }
                         }
 
                         is Screen.Customers -> {
                             NavEntry(key) {
-                                CustomersScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
+                                CustomersScreen()
                             }
                         }
 
                         is Screen.Users -> {
                             NavEntry(key) {
-                                UsersScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
+                                UsersScreen()
                             }
                         }
 
                         is Screen.Shifts -> {
                             NavEntry(key) {
-                                ShiftsScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
+                                ShiftsScreen()
                             }
                         }
 
@@ -218,7 +197,6 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                             NavEntry(key) {
                                 ReportsScreen(
                                     onNavigate = { screen -> backStack.add(screen) },
-                                    onLogout = onLogout,
                                 )
                             }
                         }
@@ -227,16 +205,13 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>, onLogout: 
                             NavEntry(key) {
                                 SettingsScreen(
                                     onNavigate = { screen -> backStack.add(screen) },
-                                    onLogout = onLogout,
                                 )
                             }
                         }
 
                         is Screen.ExchangeRates -> {
                             NavEntry(key) {
-                                ExchangeRatesScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
+                                ExchangeRatesScreen()
                             }
                         }
 
