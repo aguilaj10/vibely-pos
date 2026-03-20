@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.TimePeriodRequest
 import com.vibely.pos.backend.dto.request.TopProductsRequest
 import com.vibely.pos.backend.dto.request.CategoryBreakdownRequest
@@ -9,7 +10,6 @@ import com.vibely.pos.backend.services.ReportService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -43,19 +43,14 @@ private val VALID_GRANULARITIES = listOf("daily", "weekly", "monthly", "yearly")
  * - POST /api/reports/sales-trend - Get sales trend data
  *
  * All endpoints require JWT authentication.
+ *
+ * @param reportService Service handling report business logic
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.reportRoutes(reportService: ReportService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.reportRoutes(reportService: ReportService, authProvider: RouteAuthProvider) {
     route("/api/reports") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(reportService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(reportService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(reportService) }
         }
     }
 }

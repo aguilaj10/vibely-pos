@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.common.ErrorKeys
 import com.vibely.pos.backend.common.ErrorMessages
 import com.vibely.pos.backend.services.AuthService
@@ -7,7 +8,6 @@ import com.vibely.pos.shared.data.auth.dto.LoginRequestDTO
 import com.vibely.pos.shared.data.auth.dto.RefreshTokenRequestDTO
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -35,13 +35,18 @@ private const val REFRESH_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7
  * - POST /api/auth/logout - Invalidate session
  * - GET /api/auth/me - Get current authenticated user
  * - POST /api/auth/refresh - Refresh access token
+ *
+ * @param authService Service handling authentication business logic
+ * @param authProvider Environment-specific authentication provider for protected endpoints
  */
-fun Route.authRoutes(authService: AuthService) {
+fun Route.authRoutes(authService: AuthService, authProvider: RouteAuthProvider) {
     route("/api/auth") {
         post("/login") { call.handleLogin(authService) }
-        authenticate("auth-jwt") {
-            post("/logout") { call.handleLogout(authService) }
-            get("/me") { call.handleGetCurrentUser(authService) }
+        with(authProvider) {
+            withAuth {
+                post("/logout") { call.handleLogout(authService) }
+                get("/me") { call.handleGetCurrentUser(authService) }
+            }
         }
         post("/refresh") { call.handleRefreshToken(authService) }
     }

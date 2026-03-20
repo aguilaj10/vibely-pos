@@ -16,10 +16,10 @@ private const val STANDARD_HTTPS_PORT = 443
  * @property httpsPort The HTTPS port to redirect to (default: 443)
  * @property excludePaths Paths excluded from HTTPS enforcement (e.g., health checks)
  */
-data class HttpsEnforcementConfig(
-    val enabled: Boolean = System.getenv("ENFORCE_HTTPS")?.toBoolean() ?: false,
-    val httpsPort: Int = STANDARD_HTTPS_PORT,
-    val excludePaths: List<String> = listOf("/health", "/")
+class HttpsEnforcementConfig(
+    var enabled: Boolean = false,
+    var httpsPort: Int = STANDARD_HTTPS_PORT,
+    var excludePaths: List<String> = listOf("/health", "/")
 )
 
 /**

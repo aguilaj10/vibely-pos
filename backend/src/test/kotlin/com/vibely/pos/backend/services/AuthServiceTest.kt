@@ -18,7 +18,7 @@ class AuthServiceTest {
 
     private val mockSupabaseClient = mockk<SupabaseClient>(relaxed = true)
     private val userRepository = UserRepository(mockSupabaseClient)
-    private val tokenService = TokenService(mockSupabaseClient)
+    private val tokenService = TokenService(mockSupabaseClient, "test-secret-key")
     private val authService = AuthService(userRepository, tokenService)
 
     @Test

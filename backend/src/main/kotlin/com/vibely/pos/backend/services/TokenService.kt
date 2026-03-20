@@ -33,8 +33,8 @@ private const val SECONDS_PER_MILLISECOND = 1000
  */
 class TokenService(
     private val supabaseClient: SupabaseClient,
+    jwtSecret: String,
 ) {
-    private val jwtSecret = System.getenv("JWT_SECRET") ?: "default-secret-key-change-in-production"
     private val algorithm = Algorithm.HMAC256(jwtSecret)
 
     // Token expiration durations

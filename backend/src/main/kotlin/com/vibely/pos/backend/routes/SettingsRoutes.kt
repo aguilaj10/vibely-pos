@@ -1,6 +1,7 @@
 @file:Suppress("TooManyFunctions")
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.UpdateReceiptSettingsRequest
 import com.vibely.pos.backend.dto.request.UpdateStoreInfoRequest
 import com.vibely.pos.backend.dto.request.UpdateTaxSettingsRequest
@@ -10,7 +11,6 @@ import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
@@ -39,19 +39,14 @@ private const val ERROR_UNAUTHORIZED = "User not authenticated"
 /**
  * Registers settings management routes.
  * Provides endpoints for retrieving and updating store, receipt, tax, and user preference settings.
+ *
+ * @param settingsService Service handling settings business logic
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.settingsRoutes(settingsService: SettingsService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.settingsRoutes(settingsService: SettingsService, authProvider: RouteAuthProvider) {
     route("/api/settings") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(settingsService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(settingsService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(settingsService) }
         }
     }
 }

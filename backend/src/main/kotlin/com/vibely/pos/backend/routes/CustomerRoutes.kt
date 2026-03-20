@@ -2,6 +2,7 @@
 
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.AddLoyaltyPointsRequest
 import com.vibely.pos.backend.dto.request.CreateCustomerRequest
 import com.vibely.pos.backend.dto.request.UpdateCustomerRequest
@@ -9,7 +10,6 @@ import com.vibely.pos.backend.services.CustomerService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -32,18 +32,16 @@ private const val PATH_LOYALTY_POINTS = "/{id}/loyalty-points"
 private const val PATH_PURCHASE_HISTORY = "/{id}/purchase-history"
 private const val CLAIM_USER_ID = "userId"
 
-fun Route.customerRoutes(customerService: CustomerService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+/**
+ * Configures customer-related routes with JWT authentication.
+ *
+ * @param customerService Service handling customer business logic
+ * @param authProvider Environment-specific authentication provider
+ */
+fun Route.customerRoutes(customerService: CustomerService, authProvider: RouteAuthProvider) {
     route("/api/customers") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(customerService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(customerService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(customerService) }
         }
     }
 }

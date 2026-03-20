@@ -1,6 +1,6 @@
 package com.vibely.pos.backend
 
-import com.vibely.pos.backend.config.SupabaseConfig
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.config.configureAuthentication
 import com.vibely.pos.backend.config.configureCORS
 import com.vibely.pos.backend.config.configureCallLogging
@@ -73,8 +73,6 @@ fun main() {
  * Configures the Ktor application with plugins, authentication, and routing.
  */
 fun Application.module() {
-    val supabaseClient = SupabaseConfig.client
-
     configureKoin()
     configureContentNegotiation()
     configureCORS()
@@ -83,7 +81,8 @@ fun Application.module() {
     configureSecurity()
     configureAuthentication()
 
-    configureRouting(supabaseClient)
+    val supabaseClient: Lazy<SupabaseClient> = inject()
+    configureRouting(supabaseClient.value)
 }
 
 private fun Application.configureRouting(supabaseClient: SupabaseClient) {
@@ -116,6 +115,7 @@ private fun Application.configureHealthRoutes(supabaseClient: SupabaseClient) =
     }
 
 private fun Application.configureApiRoutes() {
+    val authProvider: Lazy<RouteAuthProvider> = inject()
     val authService: Lazy<AuthService> = inject()
     val dashboardService: Lazy<DashboardService> = inject()
     val productService: Lazy<ProductService> = inject()
@@ -133,21 +133,21 @@ private fun Application.configureApiRoutes() {
     val currencyService: Lazy<CurrencyService> = inject()
 
     routing {
-        authRoutes(authService.value)
-        dashboardRoutes(dashboardService.value)
-        productRoutes(productService.value)
-        salesRoutes(saleService.value)
-        paymentsRoutes(paymentService.value)
-        categoryRoutes(categoryService.value)
-        inventoryRoutes(inventoryService.value)
-        customerRoutes(customerService.value)
-        supplierRoutes(supplierService.value)
-        purchaseOrderRoutes(purchaseOrderService.value)
-        shiftRoutes(shiftService.value)
-        userManagementRoutes(userManagementService.value)
-        reportRoutes(reportService.value)
-        settingsRoutes(settingsService.value)
-        currencyRoutes(currencyService.value)
+        authRoutes(authService.value, authProvider.value)
+        dashboardRoutes(dashboardService.value, authProvider.value)
+        productRoutes(productService.value, authProvider.value)
+        salesRoutes(saleService.value, authProvider.value)
+        paymentsRoutes(paymentService.value, authProvider.value)
+        categoryRoutes(categoryService.value, authProvider.value)
+        inventoryRoutes(inventoryService.value, authProvider.value)
+        customerRoutes(customerService.value, authProvider.value)
+        supplierRoutes(supplierService.value, authProvider.value)
+        purchaseOrderRoutes(purchaseOrderService.value, authProvider.value)
+        shiftRoutes(shiftService.value, authProvider.value)
+        userManagementRoutes(userManagementService.value, authProvider.value)
+        reportRoutes(reportService.value, authProvider.value)
+        settingsRoutes(settingsService.value, authProvider.value)
+        currencyRoutes(currencyService.value, authProvider.value)
     }
 }
 

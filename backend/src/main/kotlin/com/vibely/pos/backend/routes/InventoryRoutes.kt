@@ -1,12 +1,12 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.GetTransactionsRequest
 import com.vibely.pos.backend.services.InventoryService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -28,19 +28,12 @@ private const val DEFAULT_PAGE_SIZE = 50
  * Configures inventory-related routes with JWT authentication.
  *
  * @param inventoryService Service handling inventory business logic
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.inventoryRoutes(inventoryService: InventoryService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.inventoryRoutes(inventoryService: InventoryService, authProvider: RouteAuthProvider) {
     route("/api/inventory") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(inventoryService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(inventoryService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(inventoryService) }
         }
     }
 }

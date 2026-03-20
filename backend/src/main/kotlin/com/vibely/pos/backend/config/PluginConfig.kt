@@ -2,6 +2,7 @@ package com.vibely.pos.backend.config
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.di.backendModule
 import com.vibely.pos.backend.security.CsrfProtectionConfig
 import com.vibely.pos.backend.security.CsrfProtectionPlugin
@@ -53,8 +54,6 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.AuthenticationConfig
-import io.ktor.server.auth.bearer
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.calllogging.CallLogging
@@ -240,14 +239,14 @@ fun Application.configureStatusPages() {
  * Configures JWT authentication.
  */
 fun Application.configureAuthentication() {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-    val jwtSecret = System.getenv("JWT_SECRET") ?: "default-secret-key-change-in-production"
+    val authProvider: Lazy<RouteAuthProvider> = inject()
+    val appConfig: Lazy<AppConfig> = inject()
 
     install(Authentication) {
         jwt("auth-jwt") {
             verifier(
                 JWT
-                    .require(Algorithm.HMAC256(jwtSecret))
+                    .require(Algorithm.HMAC256(appConfig.value.jwtSecret))
                     .build()
             )
 
@@ -260,10 +259,7 @@ fun Application.configureAuthentication() {
             }
         }
 
-        // Debug auth - simple bearer that accepts debug token
-        if (isDebugMode) {
-            runDebugMode()
-        }
+        with(authProvider.value) { configure() }
     }
 }
 
@@ -273,31 +269,16 @@ fun Application.configureAuthentication() {
 fun Application.configureSecurity() {
     val rateLimiter: Lazy<RateLimiter> = inject()
     val csrfTokenManager: Lazy<CsrfTokenManager> = inject()
+    val appConfig: Lazy<AppConfig> = inject()
 
     install(SecurityHeadersPlugin)
-    install(HttpsEnforcementPlugin)
+    install(HttpsEnforcementPlugin) {
+        enabled = appConfig.value.enforceHttps
+    }
     install(RateLimitingPlugin) {
         RateLimitingConfig(rateLimiter = rateLimiter.value)
     }
     install(CsrfProtectionPlugin) {
         CsrfProtectionConfig(tokenManager = csrfTokenManager.value)
-    }
-}
-
-private fun AuthenticationConfig.runDebugMode() {
-    println("⚠️ DEBUG MODE ENABLED ON BACKEND - Accepting debug-access-token via debug-bearer auth")
-    bearer("debug-bearer") {
-        authenticate { tokenCredential ->
-            if (tokenCredential.token == "debug-access-token") {
-                val debugPayload = JWT.create()
-                    .withClaim("userId", "a2259bb8-d02d-4384-bf2f-bbfca16bade5")
-                    .withClaim("email", "dev@vibely.pos")
-                    .withClaim("role", "admin")
-                    .sign(Algorithm.none())
-                JWTPrincipal(JWT.decode(debugPayload))
-            } else {
-                null
-            }
-        }
     }
 }

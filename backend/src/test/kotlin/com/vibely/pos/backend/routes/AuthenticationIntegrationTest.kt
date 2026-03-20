@@ -17,7 +17,7 @@ import kotlin.test.assertNull
 class AuthenticationIntegrationTest {
 
     private val mockSupabaseClient = mockk<SupabaseClient>(relaxed = true)
-    private val tokenService = TokenService(mockSupabaseClient)
+    private val tokenService = TokenService(mockSupabaseClient, "test-secret-key")
 
     @Test
     fun `TokenService generates and validates access tokens correctly`() {

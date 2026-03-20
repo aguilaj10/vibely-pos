@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.CreateCategoryRequest
 import com.vibely.pos.backend.dto.request.UpdateCategoryRequest
 import com.vibely.pos.backend.services.CategoryService
@@ -7,7 +8,6 @@ import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -35,19 +35,12 @@ private const val CLAIM_USER_ID = "userId"
  * Configures category-related routes with JWT authentication.
  *
  * @param categoryService Service handling category business logic
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.categoryRoutes(categoryService: CategoryService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.categoryRoutes(categoryService: CategoryService, authProvider: RouteAuthProvider) {
     route("/api/categories") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(categoryService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(categoryService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(categoryService) }
         }
     }
 }

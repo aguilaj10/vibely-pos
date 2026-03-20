@@ -1,13 +1,13 @@
 @file:Suppress("UndocumentedPublicFunction")
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.CreateSupplierRequest
 import com.vibely.pos.backend.dto.request.UpdateSupplierRequest
 import com.vibely.pos.backend.services.SupplierService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -31,18 +31,16 @@ private const val DEFAULT_PAGE_SIZE = 50
 private const val PATH_ID = "/{id}"
 private const val CLAIM_USER_ID = "userId"
 
-fun Route.supplierRoutes(supplierService: SupplierService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+/**
+ * Configures supplier-related routes with JWT authentication.
+ *
+ * @param supplierService Service handling supplier business logic
+ * @param authProvider Environment-specific authentication provider
+ */
+fun Route.supplierRoutes(supplierService: SupplierService, authProvider: RouteAuthProvider) {
     route("/api/suppliers") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(supplierService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(supplierService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(supplierService) }
         }
     }
 }

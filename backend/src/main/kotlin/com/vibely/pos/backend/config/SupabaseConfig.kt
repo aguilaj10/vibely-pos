@@ -17,38 +17,15 @@ import io.ktor.client.plugins.logging.LogLevel as KtorLogLevel
  */
 object SupabaseConfig {
     /**
-     * The Supabase project URL.
-     * Should be set via SUPABASE_URL environment variable.
-     */
-    private val supabaseUrl: String = System.getenv("SUPABASE_URL")
-        ?: error("SUPABASE_URL environment variable is not set")
-
-    /**
-     * The Supabase service role key (for backend server use only).
-     * Should be set via SUPABASE_SERVICE_ROLE_KEY environment variable.
-     */
-    private val supabaseServiceKey: String = System.getenv("SUPABASE_SERVICE_ROLE_KEY")
-        ?: error("SUPABASE_SERVICE_ROLE_KEY environment variable is not set")
-
-    /**
-     * Lazy-initialized singleton Supabase client.
-     */
-    val client: SupabaseClient by lazy { createClient() }
-
-    /**
      * Creates and configures a Supabase client instance.
-     * Uses CIO engine for HTTP client and enables Postgrest module.
      *
-     * In debug mode, enables verbose HTTP logging to see full PostgREST queries.
+     * @param supabaseUrl The Supabase project URL
+     * @param supabaseServiceKey The Supabase service role key
+     * @param isDebugMode When true, enables verbose HTTP logging for PostgREST queries
      */
     @OptIn(SupabaseInternal::class)
-    private fun createClient(): SupabaseClient {
-        val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
-        return createSupabaseClient(
-            supabaseUrl = supabaseUrl,
-            supabaseKey = supabaseServiceKey
-        ) {
+    fun createClient(supabaseUrl: String, supabaseServiceKey: String, isDebugMode: Boolean): SupabaseClient {
+        return createSupabaseClient(supabaseUrl = supabaseUrl, supabaseKey = supabaseServiceKey) {
             if (isDebugMode) {
                 defaultLogLevel = SupabaseLogLevel.DEBUG
 
@@ -59,7 +36,7 @@ object SupabaseConfig {
 
                         sanitizeHeader { header ->
                             header == HttpHeaders.Authorization ||
-                            header.equals("apikey", ignoreCase = true)
+                                header.equals("apikey", ignoreCase = true)
                         }
                     }
                 }

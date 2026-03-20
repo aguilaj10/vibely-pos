@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.GetAllSalesRequest
 import com.vibely.pos.backend.services.SaleService
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
@@ -7,7 +8,6 @@ import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -29,19 +29,12 @@ private const val DEFAULT_PAGE_SIZE = 50
  * Configures sales-related routes with JWT authentication.
  *
  * @param saleService Service handling sales business logic
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.salesRoutes(saleService: SaleService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.salesRoutes(saleService: SaleService, authProvider: RouteAuthProvider) {
     route("/api/sales") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(saleService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(saleService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(saleService) }
         }
     }
 }

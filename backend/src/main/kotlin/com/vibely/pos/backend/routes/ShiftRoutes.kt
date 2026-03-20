@@ -2,6 +2,7 @@
 
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.CloseShiftRequest
 import com.vibely.pos.backend.dto.request.OpenShiftRequest
 import com.vibely.pos.backend.services.ShiftService
@@ -9,7 +10,6 @@ import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -27,18 +27,16 @@ private const val DEFAULT_PAGE_SIZE = 50
 private const val PATH_ID = "/{id}"
 private const val CLAIM_USER_ID = "userId"
 
-fun Route.shiftRoutes(shiftService: ShiftService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+/**
+ * Configures shift management routes with JWT authentication.
+ *
+ * @param shiftService Service handling shift business logic
+ * @param authProvider Environment-specific authentication provider
+ */
+fun Route.shiftRoutes(shiftService: ShiftService, authProvider: RouteAuthProvider) {
     route("/api/shifts") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                configureShiftRoutes(shiftService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                configureShiftRoutes(shiftService)
-            }
+        with(authProvider) {
+            withAuth { configureShiftRoutes(shiftService) }
         }
     }
 }

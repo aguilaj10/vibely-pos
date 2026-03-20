@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.ProdAuthProvider
 import com.vibely.pos.backend.config.configureTestAuthentication
 import com.vibely.pos.backend.dto.request.UpdateReceiptSettingsRequest
 import com.vibely.pos.backend.dto.request.UpdateStoreInfoRequest
@@ -86,7 +87,7 @@ class SettingsRoutesTest {
             })
         }
         routing {
-            settingsRoutes(settingsService)
+            settingsRoutes(settingsService, ProdAuthProvider())
         }
     }
 

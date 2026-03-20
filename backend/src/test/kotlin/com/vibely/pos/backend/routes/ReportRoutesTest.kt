@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.ProdAuthProvider
 import com.vibely.pos.backend.config.configureTestAuthentication
 import com.vibely.pos.backend.services.ReportService
 import com.vibely.pos.backend.dto.request.TimePeriodRequest
@@ -115,7 +116,7 @@ class ReportRoutesTest {
             })
         }
         routing {
-            reportRoutes(reportService)
+            reportRoutes(reportService, ProdAuthProvider())
         }
     }
 

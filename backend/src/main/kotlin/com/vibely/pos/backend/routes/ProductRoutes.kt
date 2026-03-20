@@ -1,6 +1,7 @@
 @file:Suppress("TooManyFunctions")
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.AdjustStockRequest
 import com.vibely.pos.backend.dto.request.CreateProductRequest
 import com.vibely.pos.backend.dto.request.GetAllProductsRequest
@@ -9,7 +10,6 @@ import com.vibely.pos.backend.services.ProductService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -38,19 +38,12 @@ private const val CLAIM_USER_ID = "userId"
  * Configures product-related routes with JWT authentication.
  *
  * @param productService Service handling product business logic
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.productRoutes(productService: ProductService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.productRoutes(productService: ProductService, authProvider: RouteAuthProvider) {
     route("/api/products") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(productService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(productService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(productService) }
         }
     }
 }

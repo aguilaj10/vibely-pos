@@ -1,5 +1,7 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.ProdAuthProvider
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.config.configureTestAuthentication
 import com.vibely.pos.backend.services.AuthService
 import io.ktor.client.HttpClient
@@ -17,7 +19,10 @@ import kotlinx.serialization.json.Json
  *
  * Reduces boilerplate in route tests by providing a standard setup.
  */
-fun Application.configureTestApplication(authService: AuthService) {
+fun Application.configureTestApplication(
+    authService: AuthService,
+    authProvider: RouteAuthProvider = ProdAuthProvider(),
+) {
     configureTestAuthentication()
     install(ContentNegotiation) {
         json(Json {
@@ -25,7 +30,7 @@ fun Application.configureTestApplication(authService: AuthService) {
         })
     }
     routing {
-        authRoutes(authService)
+        authRoutes(authService, authProvider)
     }
 }
 

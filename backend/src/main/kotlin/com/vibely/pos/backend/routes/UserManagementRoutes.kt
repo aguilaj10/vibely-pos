@@ -2,6 +2,7 @@
 
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.AssignRoleRequest
 import com.vibely.pos.backend.dto.request.ChangePasswordRequest
 import com.vibely.pos.backend.dto.request.CreateUserRequest
@@ -12,7 +13,6 @@ import com.vibely.pos.backend.services.UserManagementService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -42,18 +42,16 @@ private const val DEFAULT_PAGE_SIZE = 50
 private const val PATH_ID = "/{id}"
 private const val CLAIM_USER_ID = "userId"
 
-fun Route.userManagementRoutes(userManagementService: UserManagementService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+/**
+ * Configures user management routes with JWT authentication.
+ *
+ * @param userManagementService Service handling user management business logic
+ * @param authProvider Environment-specific authentication provider
+ */
+fun Route.userManagementRoutes(userManagementService: UserManagementService, authProvider: RouteAuthProvider) {
     route("/api/users") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                configureUserRoutes(userManagementService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                configureUserRoutes(userManagementService)
-            }
+        with(authProvider) {
+            withAuth { configureUserRoutes(userManagementService) }
         }
     }
 }

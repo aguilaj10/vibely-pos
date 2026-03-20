@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.ConvertAmountResponse
 import com.vibely.pos.backend.dto.request.CreateExchangeRateRequest
 import com.vibely.pos.backend.dto.request.UpdateExchangeRateRequest
@@ -8,7 +9,6 @@ import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -65,20 +65,14 @@ private suspend fun ApplicationCall.parseConversionParams(): ConversionParams? {
 
 /**
  * Configures currency and exchange rate API routes.
- * Supports both regular JWT auth and debug mode authentication.
+ *
+ * @param currencyService Service handling currency and exchange rate business logic
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.currencyRoutes(currencyService: CurrencyService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.currencyRoutes(currencyService: CurrencyService, authProvider: RouteAuthProvider) {
     route("/api/currencies") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(currencyService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(currencyService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(currencyService) }
         }
     }
 }

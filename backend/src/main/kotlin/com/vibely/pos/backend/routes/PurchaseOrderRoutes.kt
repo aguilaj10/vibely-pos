@@ -5,6 +5,7 @@ package com.vibely.pos.backend.routes
 // Suppress TooManyFunctions - Route files follow a consistent pattern where each
 // endpoint (getAll, getById, create, update, delete) requires its own handler function.
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.dto.request.CreatePurchaseOrderRequest
 import com.vibely.pos.backend.dto.request.ReceivePurchaseOrderRequest
 import com.vibely.pos.backend.dto.request.UpdatePurchaseOrderRequest
@@ -14,7 +15,6 @@ import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -38,18 +38,16 @@ private const val DEFAULT_PAGE_SIZE = 50
 private const val PATH_ID = "/{id}"
 private const val CLAIM_USER_ID = "userId"
 
-fun Route.purchaseOrderRoutes(purchaseOrderService: PurchaseOrderService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+/**
+ * Configures purchase order routes with JWT authentication.
+ *
+ * @param purchaseOrderService Service handling purchase order business logic
+ * @param authProvider Environment-specific authentication provider
+ */
+fun Route.purchaseOrderRoutes(purchaseOrderService: PurchaseOrderService, authProvider: RouteAuthProvider) {
     route("/api/purchase-orders") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                configureRoutes(purchaseOrderService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                configureRoutes(purchaseOrderService)
-            }
+        with(authProvider) {
+            withAuth { configureRoutes(purchaseOrderService) }
         }
     }
 }

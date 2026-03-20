@@ -1,5 +1,6 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.ProdAuthProvider
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.shared.data.dashboard.dto.ActiveShiftInfoDTO
 import com.vibely.pos.shared.data.dashboard.dto.DashboardSummaryDTO
@@ -92,7 +93,7 @@ class DashboardRoutesTest {
             })
         }
         routing {
-            dashboardRoutes(dashboardService)
+            dashboardRoutes(dashboardService, ProdAuthProvider())
         }
     }
 

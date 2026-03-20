@@ -1,10 +1,10 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.services.DashboardService
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -28,19 +28,14 @@ private const val MAX_LIMIT = 100
  * - GET /api/dashboard/low-stock - Get low stock products
  *
  * All endpoints require JWT authentication.
+ *
+ * @param dashboardService Service handling dashboard business logic
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.dashboardRoutes(dashboardService: DashboardService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.dashboardRoutes(dashboardService: DashboardService, authProvider: RouteAuthProvider) {
     route("/api/dashboard") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(dashboardService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(dashboardService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(dashboardService) }
         }
     }
 }

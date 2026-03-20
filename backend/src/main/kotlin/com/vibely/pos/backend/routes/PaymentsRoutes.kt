@@ -1,12 +1,12 @@
 package com.vibely.pos.backend.routes
 
+import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.services.PaymentService
 import com.vibely.pos.shared.data.sales.dto.CreatePaymentRequest
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -27,19 +27,12 @@ private const val ERROR_MISSING_PAYMENT_TYPE = "Missing payment_type field"
  * - GET /api/sales/{id}/payments - Get all payments for a sale
  *
  * @param paymentService Service for managing payment operations
+ * @param authProvider Environment-specific authentication provider
  */
-fun Route.paymentsRoutes(paymentService: PaymentService) {
-    val isDebugMode = System.getenv("DEBUG_MODE")?.toBoolean() == true
-
+fun Route.paymentsRoutes(paymentService: PaymentService, authProvider: RouteAuthProvider) {
     route("/api") {
-        if (isDebugMode) {
-            authenticate("auth-jwt", "debug-bearer", optional = false) {
-                usePaths(paymentService)
-            }
-        } else {
-            authenticate("auth-jwt") {
-                usePaths(paymentService)
-            }
+        with(authProvider) {
+            withAuth { usePaths(paymentService) }
         }
     }
 }
