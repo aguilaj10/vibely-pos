@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -102,10 +103,11 @@ fun StoreInfoTab(
                     label = { Text(stringResource(Res.string.store_info_store_name)) },
                     placeholder = { Text(stringResource(Res.string.store_info_store_name_placeholder)) },
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = FontAwesomeIcons.Solid.Store,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 20.dp),
                         )
                     },
                     isError = storeNameError != null,
@@ -125,10 +127,11 @@ fun StoreInfoTab(
                     label = { Text(stringResource(Res.string.store_info_address)) },
                     placeholder = { Text(stringResource(Res.string.store_info_address_placeholder)) },
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = FontAwesomeIcons.Solid.MapMarkerAlt,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 20.dp),
                         )
                     },
                     isError = addressError != null,
@@ -149,10 +152,11 @@ fun StoreInfoTab(
                     label = { Text(stringResource(Res.string.store_info_phone)) },
                     placeholder = { Text(stringResource(Res.string.store_info_phone_placeholder)) },
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = FontAwesomeIcons.Solid.Phone,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 20.dp),
                         )
                     },
                     isError = phoneError != null,
@@ -183,10 +187,11 @@ fun StoreInfoTab(
                     label = { Text(stringResource(Res.string.store_info_email)) },
                     placeholder = { Text(stringResource(Res.string.store_info_email_placeholder)) },
                     leadingIcon = {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = FontAwesomeIcons.Solid.Envelope,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 20.dp),
                         )
                     },
                     isError = emailError != null,

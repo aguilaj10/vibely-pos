@@ -27,14 +27,6 @@ data class StoreSettings(
     val createdAt: Instant,
     val updatedAt: Instant,
 ) {
-    init {
-        require(storeName.isNotBlank()) { "Store name cannot be blank" }
-        require(address.isNotBlank()) { "Address cannot be blank" }
-        require(phone.isNotBlank()) { "Phone cannot be blank" }
-        require(email.isNotBlank()) { "Email cannot be blank" }
-        require(email.contains("@")) { "Email must contain @" }
-    }
-
     companion object {
         /**
          * Creates a new StoreSettings instance with validation.

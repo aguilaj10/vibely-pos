@@ -27,6 +27,8 @@ import com.vibely.pos.shared.data.sales.datasource.RemoteSaleDataSource
 import com.vibely.pos.shared.data.sales.repository.PaymentRepositoryImpl
 import com.vibely.pos.shared.data.sales.repository.ProductRepositoryImpl
 import com.vibely.pos.shared.data.sales.repository.SaleRepositoryImpl
+import com.vibely.pos.shared.data.settings.datasource.RemoteSettingsDataSource
+import com.vibely.pos.shared.data.settings.repository.SettingsRepositoryImpl
 import com.vibely.pos.shared.data.shift.datasource.RemoteShiftDataSource
 import com.vibely.pos.shared.data.shift.repository.ShiftRepositoryImpl
 import com.vibely.pos.shared.data.supplier.datasource.RemoteSupplierDataSource
@@ -44,6 +46,7 @@ import com.vibely.pos.shared.domain.reports.repository.ReportsRepository
 import com.vibely.pos.shared.domain.sales.repository.PaymentRepository
 import com.vibely.pos.shared.domain.sales.repository.ProductRepository
 import com.vibely.pos.shared.domain.sales.repository.SaleRepository
+import com.vibely.pos.shared.domain.settings.repository.SettingsRepository
 import com.vibely.pos.shared.domain.shift.repository.ShiftRepository
 import com.vibely.pos.shared.domain.supplier.repository.SupplierRepository
 import com.vibely.pos.shared.domain.user.repository.UserRepository
@@ -306,4 +309,12 @@ val dataModule =
 
         // Currency repositories
         singleOf(::CurrencyRepositoryImpl) { bind<CurrencyRepository>() }
+
+        single {
+            RemoteSettingsDataSource(
+                httpClient = get(),
+                baseUrl = BuildKonfig.API_BASE_URL,
+            )
+        }
+        singleOf(::SettingsRepositoryImpl) { bind<SettingsRepository>() }
     }

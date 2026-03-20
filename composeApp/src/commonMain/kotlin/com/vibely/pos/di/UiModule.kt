@@ -34,4 +34,5 @@ val uiModule =
         factory { ReportsViewModel(get(), get(), get(), get(), get()) }
         factory { SettingsViewModel(get(), get(), get(), get(), get()) }
         factory { ExchangeRatesViewModel(get(), get(), get(), get(), get()) }
+        factory { SettingsViewModel(get(), get(), get(), get(), get()) }
     }

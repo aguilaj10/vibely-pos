@@ -54,8 +54,12 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+            // Added for Compose Preview support on Android
+            implementation(libs.compose.ui.tooling)
+            implementation(libs.androidx.ui.tooling.preview)
         }
         commonMain.dependencies {
+            implementation(libs.compose.ui.tooling)
             implementation(libs.androidx.ui.tooling.preview)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

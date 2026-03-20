@@ -238,22 +238,22 @@ private fun SettingsScreenContent(
                     .fillMaxSize()
                     .padding(16.dp),
             ) {
-                when (val currentState = state) {
+                when (state) {
                     is SettingsUiState.Loading -> {
                         LoadingState()
                     }
 
                     is SettingsUiState.Error -> {
                         ErrorState(
-                            message = currentState.message,
+                            message = state.message,
                             onRetry = onLoadSettings,
                         )
                     }
 
                     is SettingsUiState.Success -> {
-                        if (currentState.isLoading) {
+                        if (state.isLoading) {
                             LoadingState()
-                        } else if (currentState.storeSettings == null) {
+                        } else if (state.storeSettings == null) {
                             EmptyState(
                                 icon = FontAwesomeIcons.Solid.Cog,
                                 title = stringResource(Res.string.settings_no_settings),
@@ -272,33 +272,33 @@ private fun SettingsScreenContent(
                             when (selectedTabIndex) {
                                 0 -> {
                                     StoreInfoTab(
-                                        storeSettings = currentState.storeSettings,
+                                        storeSettings = state.storeSettings,
                                         onStoreInfoChange = onUpdateStoreInfo,
-                                        isSaving = currentState.isSaving,
+                                        isSaving = state.isSaving,
                                     )
                                 }
 
                                 1 -> {
                                     ReceiptConfigTab(
-                                        receiptSettings = currentState.receiptSettings,
+                                        receiptSettings = state.receiptSettings,
                                         onReceiptSettingsChange = onUpdateReceiptSettings,
-                                        isSaving = currentState.isSaving,
+                                        isSaving = state.isSaving,
                                     )
                                 }
 
                                 2 -> {
                                     TaxCurrencyTab(
-                                        taxSettings = currentState.taxSettings,
+                                        taxSettings = state.taxSettings,
                                         onTaxSettingsChange = onUpdateTaxSettings,
-                                        isSaving = currentState.isSaving,
+                                        isSaving = state.isSaving,
                                     )
                                 }
 
                                 3 -> {
                                     UserPreferencesTab(
-                                        userPreferences = currentState.userPreferences,
+                                        userPreferences = state.userPreferences,
                                         onPreferencesChange = onUpdateUserPreferences,
-                                        isSaving = currentState.isSaving,
+                                        isSaving = state.isSaving,
                                     )
                                 }
                             }

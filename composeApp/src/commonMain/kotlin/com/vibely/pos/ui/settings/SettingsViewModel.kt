@@ -107,9 +107,7 @@ class SettingsViewModel(
                 updatedAt = currentStore.updatedAt,
             )
 
-            val result = updateStoreInfoUseCase(newStoreSettings)
-
-            when (result) {
+            when (val result = updateStoreInfoUseCase(newStoreSettings)) {
                 is Result.Success -> {
                     _state.update {
                         when (it) {
