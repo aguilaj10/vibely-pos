@@ -133,14 +133,7 @@ fun PurchaseOrderFormDialog(
                             label = stringResource(Res.string.form_label_supplier),
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierExpanded) },
                             variant = AppTextFieldVariant.Outlined,
-                            validationState =
-                            if (validationErrors["supplierId"] !=
-                                null
-                            ) {
-                                ValidationState.Error(validationErrors["supplierId"]!!)
-                            } else {
-                                ValidationState.None
-                            },
+                            validationState = validationErrors["supplierId"] ?: ValidationState.None,
                             modifier =
                             Modifier
                                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)

@@ -31,6 +31,7 @@ import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.theme.PosShapes
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Edit

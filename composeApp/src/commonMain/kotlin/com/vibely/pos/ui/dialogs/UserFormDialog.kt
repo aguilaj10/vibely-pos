@@ -123,14 +123,7 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                         label = stringResource(Res.string.form_label_role),
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = roleExpanded) },
                         variant = AppTextFieldVariant.Outlined,
-                        validationState =
-                        if (validationErrors["role"] !=
-                            null
-                        ) {
-                            ValidationState.Error(validationErrors["role"]!!)
-                        } else {
-                            ValidationState.None
-                        },
+                        validationState = validationErrors["role"] ?: ValidationState.None,
                         modifier =
                         Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
