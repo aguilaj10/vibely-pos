@@ -2,11 +2,11 @@
 -- Vibely POS - Complete Database Schema
 -- ============================================================================
 -- Exported from Supabase Project: jewqhojchyrmozxsrkoq
--- Export Date: 2026-03-12
+-- Export Date: 2026-03-20
 --
 -- This file contains the complete production database schema including:
 -- - 8 ENUM types
--- - 17 tables with constraints
+-- - 20 tables with constraints
 -- - All indexes
 -- - 3 views
 -- - Functions and triggers
@@ -131,6 +131,39 @@ CREATE TABLE public.users (
 );
 
 -- ----------------------------------------------------------------------------
+-- Currencies Table
+-- Stores available currencies for product cost pricing (USD, EUR, MXN).
+-- Selling prices are always in MXN.
+-- ----------------------------------------------------------------------------
+CREATE TABLE public.currencies (
+    code VARCHAR(3) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    symbol VARCHAR(10) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE public.currencies IS 'Stores available currencies for product cost pricing (USD, EUR, MXN). Selling prices are always in MXN.';
+
+-- ----------------------------------------------------------------------------
+-- Currency Exchange Rates Table
+-- Stores exchange rates between currencies. Rates are applied when purchase
+-- orders are completed.
+-- ----------------------------------------------------------------------------
+CREATE TABLE public.currency_exchange_rates (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    currency_code_from VARCHAR(3) NOT NULL REFERENCES public.currencies(code),
+    currency_code_to VARCHAR(3) NOT NULL REFERENCES public.currencies(code),
+    rate NUMERIC NOT NULL,
+    effective_date DATE NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT currency_exchange_rates_rate_check CHECK (rate > 0)
+);
+
+COMMENT ON TABLE public.currency_exchange_rates IS 'Stores exchange rates between currencies. Rates are applied when purchase orders are completed.';
+
+-- ----------------------------------------------------------------------------
 -- Categories Table
 -- ----------------------------------------------------------------------------
 CREATE TABLE public.categories (
@@ -143,6 +176,7 @@ CREATE TABLE public.categories (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    user_id UUID REFERENCES public.users(id),
     CONSTRAINT categories_color_hex_check CHECK (color_hex ~* '^#[0-9A-Fa-f]{6}$')
 );
 
@@ -164,8 +198,12 @@ CREATE TABLE public.products (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     image_url TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    user_id UUID REFERENCES public.users(id),
+    cost_currency_code VARCHAR(3) REFERENCES public.currencies(code)
 );
+
+COMMENT ON COLUMN public.products.cost_currency_code IS 'Currency code for the cost price. Defaults to USD. Selling prices are always in MXN.';
 
 -- ----------------------------------------------------------------------------
 -- Customers Table
@@ -185,6 +223,7 @@ CREATE TABLE public.customers (
     notes TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    user_id UUID REFERENCES public.users(id),
     CONSTRAINT customers_email_check CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     CONSTRAINT customers_loyalty_points_check CHECK (loyalty_points >= 0)
 );
@@ -204,6 +243,7 @@ CREATE TABLE public.suppliers (
     notes TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    user_id UUID REFERENCES public.users(id),
     CONSTRAINT suppliers_email_check CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
@@ -289,8 +329,11 @@ CREATE TABLE public.purchase_order_items (
     unit_cost NUMERIC(12, 2) NOT NULL,
     subtotal NUMERIC(12, 2) NOT NULL,
     received_quantity INTEGER NOT NULL DEFAULT 0,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    cost_currency_code VARCHAR(3) NOT NULL DEFAULT 'USD' REFERENCES public.currencies(code)
 );
+
+COMMENT ON COLUMN public.purchase_order_items.cost_currency_code IS 'Currency code (ISO 4217) for the unit_cost field. Locked when PO is completed and used for currency conversion to MXN.';
 
 -- ----------------------------------------------------------------------------
 -- Inventory Transactions Table
@@ -393,6 +436,42 @@ CREATE TABLE public.notifications (
     read_at TIMESTAMPTZ
 );
 
+-- ----------------------------------------------------------------------------
+-- Refresh Tokens Table
+-- Stores refresh tokens for JWT authentication.
+-- ----------------------------------------------------------------------------
+CREATE TABLE public.refresh_tokens (
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
+    user_id UUID NOT NULL,
+    token TEXT NOT NULL UNIQUE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_refresh_tokens_user
+        FOREIGN KEY (user_id)
+        REFERENCES public.users(id)
+        ON DELETE CASCADE
+);
+
+COMMENT ON TABLE public.refresh_tokens IS 'Stores refresh tokens for JWT authentication. Tokens are used to generate new access tokens without re-authentication.';
+
+-- ----------------------------------------------------------------------------
+-- Token Blacklist Table
+-- Stores blacklisted JWT access tokens (logout).
+-- ----------------------------------------------------------------------------
+CREATE TABLE public.token_blacklist (
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
+    token TEXT NOT NULL UNIQUE,
+    user_id UUID NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    blacklisted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_token_blacklist_user
+        FOREIGN KEY (user_id)
+        REFERENCES public.users(id)
+        ON DELETE CASCADE
+);
+
+COMMENT ON TABLE public.token_blacklist IS 'Stores blacklisted JWT access tokens (logout). Prevents revoked tokens from being used until they naturally expire.';
+
 -- ============================================================================
 -- INDEXES
 -- ============================================================================
@@ -402,15 +481,25 @@ CREATE INDEX idx_users_email ON public.users USING btree (email);
 CREATE INDEX idx_users_role ON public.users USING btree (role);
 CREATE INDEX idx_users_status ON public.users USING btree (status);
 
+-- Currencies indexes
+-- (primary key on code is already indexed)
+
+-- Currency Exchange Rates indexes
+CREATE INDEX idx_currency_exchange_rates_from ON public.currency_exchange_rates USING btree (currency_code_from);
+CREATE INDEX idx_currency_exchange_rates_to ON public.currency_exchange_rates USING btree (currency_code_to);
+CREATE INDEX idx_currency_exchange_rates_date ON public.currency_exchange_rates USING btree (effective_date DESC);
+
 -- Categories indexes
 CREATE INDEX idx_categories_display_order ON public.categories USING btree (display_order);
 CREATE INDEX idx_categories_is_active ON public.categories USING btree (is_active);
+CREATE INDEX idx_categories_user_id ON public.categories USING btree (user_id);
 
 -- Products indexes
 CREATE INDEX idx_products_sku ON public.products USING btree (sku);
 CREATE INDEX idx_products_category_id ON public.products USING btree (category_id);
 CREATE INDEX idx_products_barcode ON public.products USING btree (barcode);
 CREATE INDEX idx_products_is_active ON public.products USING btree (is_active);
+CREATE INDEX idx_products_user_id ON public.products USING btree (user_id);
 CREATE INDEX idx_products_name_trgm ON public.products USING gin (name gin_trgm_ops);
 
 -- Customers indexes
@@ -418,10 +507,12 @@ CREATE INDEX idx_customers_customer_code ON public.customers USING btree (custom
 CREATE INDEX idx_customers_email ON public.customers USING btree (email);
 CREATE INDEX idx_customers_phone ON public.customers USING btree (phone);
 CREATE INDEX idx_customers_is_active ON public.customers USING btree (is_active);
+CREATE INDEX idx_customers_user_id ON public.customers USING btree (user_id);
 
 -- Suppliers indexes
 CREATE INDEX idx_suppliers_supplier_code ON public.suppliers USING btree (supplier_code);
 CREATE INDEX idx_suppliers_is_active ON public.suppliers USING btree (is_active);
+CREATE INDEX idx_suppliers_user_id ON public.suppliers USING btree (user_id);
 
 -- Sales indexes
 CREATE INDEX idx_sales_invoice_number ON public.sales USING btree (invoice_number);
@@ -449,6 +540,7 @@ CREATE INDEX idx_purchase_orders_order_date ON public.purchase_orders USING btre
 -- Purchase Order Items indexes
 CREATE INDEX idx_po_items_purchase_order_id ON public.purchase_order_items USING btree (purchase_order_id);
 CREATE INDEX idx_po_items_product_id ON public.purchase_order_items USING btree (product_id);
+CREATE INDEX idx_po_items_currency ON public.purchase_order_items USING btree (cost_currency_code);
 
 -- Inventory Transactions indexes
 CREATE INDEX idx_inventory_transactions_product_id ON public.inventory_transactions USING btree (product_id);
@@ -480,6 +572,16 @@ CREATE INDEX idx_app_settings_key ON public.app_settings USING btree (setting_ke
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
 CREATE INDEX idx_notifications_is_read ON public.notifications USING btree (is_read);
 CREATE INDEX idx_notifications_created_at ON public.notifications USING btree (created_at DESC);
+
+-- Refresh Tokens indexes
+CREATE INDEX idx_refresh_tokens_user_id ON public.refresh_tokens USING btree (user_id);
+CREATE INDEX idx_refresh_tokens_token ON public.refresh_tokens USING btree (token);
+CREATE INDEX idx_refresh_tokens_expires_at ON public.refresh_tokens USING btree (expires_at);
+
+-- Token Blacklist indexes
+CREATE INDEX idx_token_blacklist_token ON public.token_blacklist USING btree (token);
+CREATE INDEX idx_token_blacklist_user_id ON public.token_blacklist USING btree (user_id);
+CREATE INDEX idx_token_blacklist_expires_at ON public.token_blacklist USING btree (expires_at);
 
 -- ============================================================================
 -- FUNCTIONS
@@ -558,6 +660,22 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+-- ----------------------------------------------------------------------------
+-- Cleanup Expired Tokens Function
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.cleanup_expired_tokens()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    DELETE FROM public.refresh_tokens WHERE expires_at < NOW();
+    DELETE FROM public.token_blacklist WHERE expires_at < NOW();
+END;
+$$;
+
+COMMENT ON FUNCTION public.cleanup_expired_tokens() IS 'Removes expired tokens from refresh_tokens and token_blacklist tables. Should be run periodically via cron job.';
 
 -- ============================================================================
 -- TRIGGERS
@@ -711,6 +829,8 @@ GROUP BY
 
 -- Enable RLS on all tables
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.currencies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.currency_exchange_rates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
@@ -726,6 +846,8 @@ ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.refresh_tokens ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.token_blacklist ENABLE ROW LEVEL SECURITY;
 
 -- Users policies
 CREATE POLICY "Users can view all users"
@@ -736,45 +858,63 @@ CREATE POLICY "Users can update own profile"
     ON public.users FOR UPDATE
     USING (auth.uid()::TEXT = id::TEXT);
 
--- Categories policies
-CREATE POLICY "Anyone can view categories"
-    ON public.categories FOR SELECT
+-- Currencies policies
+CREATE POLICY "Anyone can view currencies"
+    ON public.currencies FOR SELECT
     USING (TRUE);
 
-CREATE POLICY "Admins can manage categories"
-    ON public.categories FOR ALL
+CREATE POLICY "Admins can manage currencies"
+    ON public.currencies FOR ALL
     USING (TRUE);
+
+-- Currency Exchange Rates policies
+CREATE POLICY "Anyone can view exchange rates"
+    ON public.currency_exchange_rates FOR SELECT
+    USING (TRUE);
+
+CREATE POLICY "Admins can manage exchange rates"
+    ON public.currency_exchange_rates FOR ALL
+    USING (TRUE);
+
+-- Categories policies
+CREATE POLICY "Users can view own categories"
+    ON public.categories FOR SELECT
+    USING (user_id IS NULL OR user_id = auth.uid()::UUID);
+
+CREATE POLICY "Users can manage own categories"
+    ON public.categories FOR ALL
+    USING (user_id IS NULL OR user_id = auth.uid()::UUID);
 
 -- Products policies
-CREATE POLICY "Anyone can view products"
+CREATE POLICY "Users can view own products"
     ON public.products FOR SELECT
-    USING (TRUE);
+    USING (user_id IS NULL OR user_id = auth.uid()::UUID);
 
-CREATE POLICY "Admins can manage products"
+CREATE POLICY "Users can manage own products"
     ON public.products FOR ALL
-    USING (TRUE);
+    USING (user_id IS NULL OR user_id = auth.uid()::UUID);
 
 -- Customers policies
-CREATE POLICY "Anyone can view customers"
+CREATE POLICY "Users can view own customers"
     ON public.customers FOR SELECT
-    USING (TRUE);
+    USING (user_id IS NULL OR user_id = auth.uid()::UUID);
 
-CREATE POLICY "Anyone can create customers"
+CREATE POLICY "Users can create own customers"
     ON public.customers FOR INSERT
-    WITH CHECK (TRUE);
+    WITH CHECK (user_id IS NULL OR user_id = auth.uid()::UUID);
 
-CREATE POLICY "Anyone can update customers"
+CREATE POLICY "Users can update own customers"
     ON public.customers FOR UPDATE
-    USING (TRUE);
+    USING (user_id IS NULL OR user_id = auth.uid()::UUID);
 
 -- Suppliers policies
-CREATE POLICY "Anyone can view suppliers"
+CREATE POLICY "Users can view own suppliers"
     ON public.suppliers FOR SELECT
-    USING (TRUE);
+    USING (user_id IS NULL OR user_id = auth.uid()::UUID);
 
-CREATE POLICY "Admins can manage suppliers"
+CREATE POLICY "Users can manage own suppliers"
     ON public.suppliers FOR ALL
-    USING (TRUE);
+    USING (user_id IS NULL OR user_id = auth.uid()::UUID);
 
 -- Sales policies
 CREATE POLICY "Anyone can view sales"
@@ -891,9 +1031,47 @@ CREATE POLICY "Users can update own notifications"
     ON public.notifications FOR UPDATE
     USING (TRUE);
 
+-- Refresh Tokens policies
+CREATE POLICY refresh_tokens_select_own
+    ON public.refresh_tokens FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY refresh_tokens_service_role_all
+    ON public.refresh_tokens FOR ALL
+    USING (auth.role() = 'service_role')
+    WITH CHECK (auth.role() = 'service_role');
+
+-- Token Blacklist policies
+CREATE POLICY token_blacklist_select_own
+    ON public.token_blacklist FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY token_blacklist_service_role_all
+    ON public.token_blacklist FOR ALL
+    USING (auth.role() = 'service_role')
+    WITH CHECK (auth.role() = 'service_role');
+
+-- ============================================================================
+-- GRANT PERMISSIONS
+-- ============================================================================
+
+GRANT SELECT ON public.refresh_tokens TO authenticated;
+GRANT SELECT ON public.token_blacklist TO authenticated;
+GRANT ALL ON public.refresh_tokens TO service_role;
+GRANT ALL ON public.token_blacklist TO service_role;
+
 -- ============================================================================
 -- SEED DATA (DEVELOPMENT ONLY)
 -- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- Currencies Seed Data
+-- ----------------------------------------------------------------------------
+INSERT INTO public.currencies (code, name, symbol) VALUES
+    ('MXN', 'Mexican Peso', '$'),
+    ('USD', 'US Dollar', '$'),
+    ('EUR', 'Euro', '€')
+ON CONFLICT (code) DO NOTHING;
 
 -- ----------------------------------------------------------------------------
 -- Debug User
