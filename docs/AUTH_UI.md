@@ -2,22 +2,24 @@
 
 ## Overview
 
-This directory contains the UI layer implementation for the authentication system in the Vibely POS application.
+This document describes the UI layer implementation for the authentication system in the Vibely POS application.
 
 ## Components
 
 ### LoginViewModel
-- **Location**: `LoginViewModel.kt`
+
+- **Location**: `composeApp/src/commonMain/kotlin/com/vibely/pos/ui/auth/LoginViewModel.kt`
 - **Purpose**: Manages the state and business logic for the login screen
 - **Key Features**:
   - StateFlow-based reactive state management
   - Form validation (email and password)
   - Error handling
   - Loading state management
-  - Integration with LoginUseCase from domain layer
+  - Integration with `LoginUseCase` from the domain layer
 
 ### LoginScreen
-- **Location**: `LoginScreen.kt`
+
+- **Location**: `composeApp/src/commonMain/kotlin/com/vibely/pos/ui/auth/LoginScreen.kt`
 - **Purpose**: Composable UI for user authentication
 - **Key Features**:
   - Email input field with validation
@@ -31,15 +33,18 @@ This directory contains the UI layer implementation for the authentication syste
 ## State Management
 
 The `LoginState` data class contains:
-- `email`: Current email input
-- `password`: Current password input
-- `isPasswordVisible`: Toggle for password visibility
-- `rememberMe`: Remember me checkbox state
-- `isLoading`: Loading state during authentication
-- `isLoginSuccessful`: Success flag for navigation
-- `emailError`: Email validation error message
-- `passwordError`: Password validation error message
-- `errorMessage`: General error message
+
+| Field | Description |
+|-------|-------------|
+| `email` | Current email input |
+| `password` | Current password input |
+| `isPasswordVisible` | Toggle for password visibility |
+| `rememberMe` | Remember me checkbox state |
+| `isLoading` | Loading state during authentication |
+| `isLoginSuccessful` | Success flag for navigation |
+| `emailError` | Email validation error message |
+| `passwordError` | Password validation error message |
+| `errorMessage` | General error message |
 
 ## Usage
 
@@ -49,9 +54,9 @@ LoginScreen(
 )
 ```
 
-## Integration
+## Dependency Injection
 
-The LoginViewModel is registered in the DI container via `UiModule.kt` and can be injected using Koin:
+`LoginViewModel` is registered in the DI container via `UiModule.kt` and injected using Koin:
 
 ```kotlin
 @Composable
@@ -64,13 +69,15 @@ fun LoginScreen(
 
 ## Testing
 
-To test the login screen:
+To manually test the login screen:
 
 1. Run the desktop application: `./gradlew :composeApp:desktopRun`
 2. Enter valid credentials:
-   - Email: Must be a valid email format
-   - Password: Must meet security requirements (8+ chars, uppercase, lowercase, digit, special char)
+   - Email: must be a valid email format
+   - Password: must meet security requirements (8+ characters, uppercase, lowercase, digit, special character)
 3. Click "Sign In"
+
+For automated backend authentication tests, see [backend/README.md](../backend/README.md#testing).
 
 ## Future Enhancements
 

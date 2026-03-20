@@ -44,17 +44,16 @@ We use **Git Flow** branching strategy:
 
 ### Branches
 
-- **`main`** - Production-ready code (protected)
-- **`develop`** - Integration branch for features
+- **`main`** - Integration branch and production-ready code (protected)
 - **`feature/*`** - Feature branches
 - **`hotfix/*`** - Urgent production fixes
 
 ### Starting a Feature
 
 ```bash
-# Update develop branch
-git checkout develop
-git pull origin develop
+# Update main branch
+git checkout main
+git pull origin main
 
 # Create feature branch
 git checkout -b feature/your-feature-name
@@ -70,7 +69,7 @@ git push origin feature/your-feature-name
 ### Creating a Pull Request
 
 1. Push your feature branch to your fork
-2. Open a PR from `feature/your-feature-name` → `develop`
+2. Open a PR from `feature/your-feature-name` → `main`
 3. Fill out the PR template with:
    - Clear description of changes
    - Related issue numbers
@@ -82,9 +81,9 @@ git push origin feature/your-feature-name
 ### After PR is Merged
 
 ```bash
-# Update your local develop
-git checkout develop
-git pull origin develop
+# Update your local main
+git checkout main
+git pull origin main
 
 # Delete feature branch
 git branch -d feature/your-feature-name
@@ -212,7 +211,7 @@ fun `repository fetches and maps data correctly`() {
 2. ✅ Code is formatted: `./gradlew spotlessApply`
 3. ✅ No static analysis issues: `./gradlew detekt`
 4. ✅ Build succeeds: `./gradlew build`
-5. ✅ PR is based on latest `develop`
+5. ✅ PR is based on latest `main`
 
 ### PR Title Format
 

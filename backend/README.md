@@ -215,13 +215,93 @@ Key dependencies (see `build.gradle.kts` for versions):
 
 ## Testing
 
+### Running Tests
+
 ```bash
-# Run tests
+# Run all backend tests
 ./gradlew :backend:test
+
+# Run a specific test class
+./gradlew :backend:test --tests "AuthServiceTest"
 
 # Run with coverage
 ./gradlew :backend:koverHtmlReport
 ```
+
+### Test Structure
+
+**AuthServiceTest** — unit tests for the `AuthService` class:
+- Password hashing with BCrypt
+- Hash verification
+- Special character handling
+- Unicode support
+
+**AuthRoutesTest** — integration tests for authentication endpoints:
+- `POST /api/auth/login` — user authentication
+- `POST /api/auth/logout` — session termination
+- `GET /api/auth/me` — current user retrieval
+- `POST /api/auth/refresh` — token refresh
+
+### Test Database Setup
+
+Integration tests that require database access need the following setup:
+
+1. Set up a test Supabase project or use a local PostgreSQL instance
+2. Run the migration script: `migrations/001_create_auth_tables.sql`
+3. Create test users with proper password hashes
+4. Configure environment variables:
+   ```
+   SUPABASE_URL=your-test-supabase-url
+   SUPABASE_KEY=your-test-supabase-key
+   JWT_SECRET=test-secret-key
+   ```
+
+### Manual API Testing
+
+Test the authentication endpoints directly with curl:
+
+```bash
+# Login
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "Password123!"}'
+
+# Get current user
+curl -X GET http://localhost:8080/api/auth/me \
+  -H "Authorization: Bearer <access_token>"
+
+# Refresh token
+curl -X POST http://localhost:8080/api/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refresh_token": "<refresh_token>"}'
+
+# Logout
+curl -X POST http://localhost:8080/api/auth/logout \
+  -H "Authorization: Bearer <access_token>"
+```
+
+### Test Data
+
+Create a test user directly in the database:
+
+```sql
+INSERT INTO users (id, email, full_name, role, status, password_hash, created_at)
+VALUES (
+  gen_random_uuid(),
+  'test@example.com',
+  'Test User',
+  'CASHIER',
+  'ACTIVE',
+  '$2a$12$hash_here', -- Use AuthService.hashPassword() to generate
+  NOW()
+);
+```
+
+**Notes:**
+- Tests use MockK for mocking dependencies
+- Integration tests require a running database
+- JWT access tokens expire after 15 minutes; refresh tokens expire after 7 days
+- Blacklisted tokens are automatically cleaned up when expired
 
 ## Troubleshooting
 

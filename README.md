@@ -74,7 +74,7 @@ A modern, cross-platform Point of Sale system built with Kotlin Multiplatform an
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/vibely-pos.git
+git clone https://github.com/vibely-pos/vibely-pos.git
 cd vibely-pos
 
 # Set up environment variables
@@ -283,4 +283,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Status**: 🚧 Active Development - Desktop platform production-ready, mobile/web in progress
 
-For questions or support, please [open an issue](https://github.com/your-username/vibely-pos/issues).
+For questions or support, please [open an issue](https://github.com/vibely-pos/vibely-pos/issues).
