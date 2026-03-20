@@ -25,7 +25,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -127,17 +126,25 @@ fun PurchaseOrderFormDialog(
                         onExpandedChange = { supplierExpanded = it },
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        OutlinedTextField(
+                        AppTextField(
                             value = suppliers.find { it.id == formData.supplierId }?.name ?: "Select Supplier",
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text(stringResource(Res.string.form_label_supplier)) },
+                            label = stringResource(Res.string.form_label_supplier),
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = supplierExpanded) },
+                            variant = AppTextFieldVariant.Outlined,
+                            validationState =
+                            if (validationErrors["supplierId"] !=
+                                null
+                            ) {
+                                ValidationState.Error(validationErrors["supplierId"]!!)
+                            } else {
+                                ValidationState.None
+                            },
                             modifier =
                             Modifier
                                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                                 .fillMaxWidth(),
-                            isError = validationErrors["supplierId"] != null,
                         )
 
                         ExposedDropdownMenu(
@@ -327,12 +334,13 @@ private fun LineItemRow(
                 onExpandedChange = { productExpanded = it },
                 modifier = Modifier.weight(1.5f),
             ) {
-                OutlinedTextField(
+                AppTextField(
                     value = products.find { it.id == lineItem.productId }?.name ?: "Select Product",
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text(stringResource(Res.string.form_label_product)) },
+                    label = stringResource(Res.string.form_label_product),
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = productExpanded) },
+                    variant = AppTextFieldVariant.Outlined,
                     modifier =
                     Modifier
                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
@@ -384,11 +392,12 @@ private fun LineItemRow(
                     onExpandedChange = { currencyExpanded = it },
                     modifier = Modifier.width(80.dp),
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = currencies.find { it.code == lineItem.costCurrencyCode }?.symbol ?: "USD",
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
+                        variant = AppTextFieldVariant.Outlined,
                         modifier =
                         Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)

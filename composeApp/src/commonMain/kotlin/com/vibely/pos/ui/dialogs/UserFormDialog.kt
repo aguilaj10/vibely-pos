@@ -19,7 +19,6 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -117,17 +116,25 @@ fun UserFormDialog(isEdit: Boolean, initialData: UserFormData? = null, onSave: (
                     onExpandedChange = { roleExpanded = it },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = formData.role.displayName(),
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(stringResource(Res.string.form_label_role)) },
+                        label = stringResource(Res.string.form_label_role),
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = roleExpanded) },
+                        variant = AppTextFieldVariant.Outlined,
+                        validationState =
+                        if (validationErrors["role"] !=
+                            null
+                        ) {
+                            ValidationState.Error(validationErrors["role"]!!)
+                        } else {
+                            ValidationState.None
+                        },
                         modifier =
                         Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth(),
-                        isError = validationErrors["role"] != null,
                     )
 
                     ExposedDropdownMenu(

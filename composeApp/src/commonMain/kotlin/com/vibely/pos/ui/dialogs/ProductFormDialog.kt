@@ -19,7 +19,6 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -150,12 +149,13 @@ fun ProductFormDialog(
                     onExpandedChange = { categoryExpanded = it },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = categories.find { it.id == formData.categoryId }?.name ?: "Select Category",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(stringResource(Res.string.form_label_category)) },
+                        label = stringResource(Res.string.form_label_category),
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                        variant = AppTextFieldVariant.Outlined,
                         modifier =
                         Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
@@ -217,16 +217,17 @@ fun ProductFormDialog(
                             onExpandedChange = { currencyExpanded = it },
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            OutlinedTextField(
+                            AppTextField(
                                 value = currencies.find { it.code == formData.costCurrencyCode }?.symbol ?: "USD",
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text(stringResource(Res.string.form_label_currency)) },
+                                label = stringResource(Res.string.form_label_currency),
                                 trailingIcon = {
                                     ExposedDropdownMenuDefaults.TrailingIcon(
                                         expanded = currencyExpanded,
                                     )
                                 },
+                                variant = AppTextFieldVariant.Outlined,
                                 modifier =
                                 Modifier
                                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)

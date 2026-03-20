@@ -16,7 +16,6 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,8 +28,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
+import com.vibely.pos.ui.components.AppTextField
+import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.ValidationState
 import com.vibely.pos.ui.theme.AppColors
-import com.vibely.pos.ui.theme.PosShapes
 import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -102,7 +103,7 @@ fun TaxCurrencyTab(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
 
-                OutlinedTextField(
+                AppTextField(
                     value = taxRate,
                     onValueChange = { newValue ->
                         taxRate = newValue
@@ -115,8 +116,8 @@ fun TaxCurrencyTab(
                                 else -> null
                             }
                     },
-                    label = { Text(stringResource(Res.string.tax_currency_label)) },
-                    placeholder = { Text(stringResource(Res.string.tax_currency_placeholder)) },
+                    label = stringResource(Res.string.tax_currency_label),
+                    placeholder = stringResource(Res.string.tax_currency_placeholder),
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Percent,
@@ -124,12 +125,18 @@ fun TaxCurrencyTab(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
-                    isError = taxRateError != null,
-                    supportingText = taxRateError?.let { { Text(it) } },
+                    validationState =
+                    if (taxRateError !=
+                        null
+                    ) {
+                        ValidationState.Error(taxRateError!!)
+                    } else {
+                        ValidationState.None
+                    },
                     enabled = !isSaving,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    shape = PosShapes.InputField,
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
@@ -139,11 +146,11 @@ fun TaxCurrencyTab(
                     onExpandedChange = { currencyExpanded = it },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = currencyLabels[currency] ?: currency,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(stringResource(Res.string.tax_currency_currency_label)) },
+                        label = stringResource(Res.string.tax_currency_currency_label),
                         leadingIcon = {
                             androidx.compose.material3.Icon(
                                 imageVector = FontAwesomeIcons.Solid.DollarSign,
@@ -156,7 +163,7 @@ fun TaxCurrencyTab(
                         },
                         enabled = !isSaving,
                         singleLine = true,
-                        shape = PosShapes.InputField,
+                        variant = AppTextFieldVariant.Outlined,
                         modifier =
                         Modifier
                             .fillMaxWidth()

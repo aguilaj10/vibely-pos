@@ -30,7 +30,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -51,6 +50,8 @@ import com.vibely.pos.shared.domain.sales.entity.Product
 import com.vibely.pos.shared.domain.sales.valueobject.CartItem
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
+import com.vibely.pos.ui.components.AppTextField
+import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.customers.CustomersViewModel
 import com.vibely.pos.ui.dialogs.PaymentDialog
 import com.vibely.pos.ui.navigation.Screen
@@ -129,12 +130,13 @@ fun CheckoutScreen(
                 onExpandedChange = { customerExpanded = it },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                OutlinedTextField(
+                AppTextField(
                     value = selectedCustomer?.fullName ?: stringResource(Res.string.checkout_walkin_customer),
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text(stringResource(Res.string.checkout_select_customer)) },
+                    label = stringResource(Res.string.checkout_select_customer),
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = customerExpanded) },
+                    variant = AppTextFieldVariant.Outlined,
                     modifier =
                     Modifier
                         .fillMaxWidth()

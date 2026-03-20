@@ -18,7 +18,6 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +31,9 @@ import androidx.compose.ui.window.Dialog
 import com.vibely.pos.shared.data.currency.dto.CurrencyDTO
 import com.vibely.pos.ui.components.AppButton
 import com.vibely.pos.ui.components.AppButtonStyle
+import com.vibely.pos.ui.components.AppTextField
+import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.ValidationState
 import com.vibely.pos.ui.utils.formatCurrency
 import org.jetbrains.compose.resources.stringResource
 import vibely_pos.composeapp.generated.resources.Res
@@ -94,14 +96,21 @@ fun ExchangeRateFormDialog(
                     onExpandedChange = { fromCurrencyExpanded = !fromCurrencyExpanded },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = formData.currencyFrom,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(stringResource(Res.string.form_label_from_currency)) },
+                        label = stringResource(Res.string.form_label_from_currency),
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = fromCurrencyExpanded) },
-                        isError = validationErrors["currencyFrom"] != null,
-                        supportingText = validationErrors["currencyFrom"]?.let { { Text(it) } },
+                        validationState =
+                        if (validationErrors["currencyFrom"] !=
+                            null
+                        ) {
+                            ValidationState.Error(validationErrors["currencyFrom"]!!)
+                        } else {
+                            ValidationState.None
+                        },
+                        variant = AppTextFieldVariant.Outlined,
                         modifier =
                         Modifier
                             .fillMaxWidth()
@@ -134,14 +143,21 @@ fun ExchangeRateFormDialog(
                     onExpandedChange = { toCurrencyExpanded = !toCurrencyExpanded },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = formData.currencyTo,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(stringResource(Res.string.form_label_to_currency)) },
+                        label = stringResource(Res.string.form_label_to_currency),
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = toCurrencyExpanded) },
-                        isError = validationErrors["currencyTo"] != null,
-                        supportingText = validationErrors["currencyTo"]?.let { { Text(it) } },
+                        validationState =
+                        if (validationErrors["currencyTo"] !=
+                            null
+                        ) {
+                            ValidationState.Error(validationErrors["currencyTo"]!!)
+                        } else {
+                            ValidationState.None
+                        },
+                        variant = AppTextFieldVariant.Outlined,
                         modifier =
                         Modifier
                             .fillMaxWidth()
@@ -169,7 +185,7 @@ fun ExchangeRateFormDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                OutlinedTextField(
+                AppTextField(
                     value = formData.rate.formatCurrency(formData.currencyTo),
                     onValueChange = { newValue ->
                         val rate = newValue.toDoubleOrNull()
@@ -177,22 +193,36 @@ fun ExchangeRateFormDialog(
                             formData = formData.copy(rate = rate ?: 0.0)
                         }
                     },
-                    label = { Text(stringResource(Res.string.form_label_rate)) },
-                    isError = validationErrors["rate"] != null,
-                    supportingText = validationErrors["rate"]?.let { { Text(it) } },
+                    label = stringResource(Res.string.form_label_rate),
+                    validationState =
+                    if (validationErrors["rate"] !=
+                        null
+                    ) {
+                        ValidationState.Error(validationErrors["rate"]!!)
+                    } else {
+                        ValidationState.None
+                    },
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                OutlinedTextField(
+                AppTextField(
                     value = formData.effectiveDate,
                     onValueChange = { formData = formData.copy(effectiveDate = it) },
-                    label = { Text(stringResource(Res.string.form_label_effective_date)) },
-                    placeholder = { Text(stringResource(Res.string.form_placeholder_date_example)) },
-                    isError = validationErrors["effectiveDate"] != null,
-                    supportingText = validationErrors["effectiveDate"]?.let { { Text(it) } },
+                    label = stringResource(Res.string.form_label_effective_date),
+                    placeholder = stringResource(Res.string.form_placeholder_date_example),
+                    validationState =
+                    if (validationErrors["effectiveDate"] !=
+                        null
+                    ) {
+                        ValidationState.Error(validationErrors["effectiveDate"]!!)
+                    } else {
+                        ValidationState.None
+                    },
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                 )

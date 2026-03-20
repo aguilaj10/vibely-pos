@@ -14,7 +14,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -29,8 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
+import com.vibely.pos.ui.components.AppTextField
+import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.theme.AppColors
-import com.vibely.pos.ui.theme.PosShapes
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Edit
@@ -92,11 +92,11 @@ fun ReceiptConfigTab(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
 
-                OutlinedTextField(
+                AppTextField(
                     value = header,
                     onValueChange = { header = it },
-                    label = { Text(stringResource(Res.string.receipt_header_label)) },
-                    placeholder = { Text(stringResource(Res.string.receipt_header_placeholder)) },
+                    label = stringResource(Res.string.receipt_header_label),
+                    placeholder = stringResource(Res.string.receipt_header_placeholder),
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Edit,
@@ -107,15 +107,15 @@ fun ReceiptConfigTab(
                     enabled = !isSaving,
                     singleLine = false,
                     maxLines = 3,
-                    shape = PosShapes.InputField,
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                OutlinedTextField(
+                AppTextField(
                     value = footer,
                     onValueChange = { footer = it },
-                    label = { Text(stringResource(Res.string.receipt_footer_label)) },
-                    placeholder = { Text(stringResource(Res.string.receipt_footer_placeholder)) },
+                    label = stringResource(Res.string.receipt_footer_label),
+                    placeholder = stringResource(Res.string.receipt_footer_placeholder),
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Edit,
@@ -126,15 +126,15 @@ fun ReceiptConfigTab(
                     enabled = !isSaving,
                     singleLine = false,
                     maxLines = 3,
-                    shape = PosShapes.InputField,
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                OutlinedTextField(
+                AppTextField(
                     value = logoUrl,
                     onValueChange = { logoUrl = it },
-                    label = { Text(stringResource(Res.string.receipt_logo_url_label)) },
-                    placeholder = { Text("https://example.com/logo.png") },
+                    label = stringResource(Res.string.receipt_logo_url_label),
+                    placeholder = "https://example.com/logo.png",
                     leadingIcon = {
                         androidx.compose.material3.Icon(
                             imageVector = FontAwesomeIcons.Solid.Image,
@@ -144,7 +144,7 @@ fun ReceiptConfigTab(
                     },
                     enabled = !isSaving,
                     singleLine = true,
-                    shape = PosShapes.InputField,
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
 

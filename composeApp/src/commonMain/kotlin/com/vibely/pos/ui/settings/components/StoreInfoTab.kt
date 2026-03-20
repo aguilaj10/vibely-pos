@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,8 +21,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
+import com.vibely.pos.ui.components.AppTextField
+import com.vibely.pos.ui.components.AppTextFieldVariant
+import com.vibely.pos.ui.components.ValidationState
 import com.vibely.pos.ui.theme.AppColors
-import com.vibely.pos.ui.theme.PosShapes
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Envelope
@@ -94,14 +95,14 @@ fun StoreInfoTab(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
 
-                OutlinedTextField(
+                AppTextField(
                     value = storeName,
                     onValueChange = { newValue ->
                         storeName = newValue
                         storeNameError = if (newValue.isBlank()) errorStoreNameRequired else null
                     },
-                    label = { Text(stringResource(Res.string.store_info_store_name)) },
-                    placeholder = { Text(stringResource(Res.string.store_info_store_name_placeholder)) },
+                    label = stringResource(Res.string.store_info_store_name),
+                    placeholder = stringResource(Res.string.store_info_store_name_placeholder),
                     leadingIcon = {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Store,
@@ -110,22 +111,28 @@ fun StoreInfoTab(
                             modifier = Modifier.padding(end = 20.dp),
                         )
                     },
-                    isError = storeNameError != null,
-                    supportingText = storeNameError?.let { { Text(it) } },
+                    validationState =
+                    if (storeNameError !=
+                        null
+                    ) {
+                        ValidationState.Error(storeNameError!!)
+                    } else {
+                        ValidationState.None
+                    },
                     enabled = !isSaving,
                     singleLine = true,
-                    shape = PosShapes.InputField,
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                OutlinedTextField(
+                AppTextField(
                     value = address,
                     onValueChange = { newValue ->
                         address = newValue
                         addressError = if (newValue.isBlank()) errorAddressRequired else null
                     },
-                    label = { Text(stringResource(Res.string.store_info_address)) },
-                    placeholder = { Text(stringResource(Res.string.store_info_address_placeholder)) },
+                    label = stringResource(Res.string.store_info_address),
+                    placeholder = stringResource(Res.string.store_info_address_placeholder),
                     leadingIcon = {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.MapMarkerAlt,
@@ -134,23 +141,29 @@ fun StoreInfoTab(
                             modifier = Modifier.padding(end = 20.dp),
                         )
                     },
-                    isError = addressError != null,
-                    supportingText = addressError?.let { { Text(it) } },
+                    validationState =
+                    if (addressError !=
+                        null
+                    ) {
+                        ValidationState.Error(addressError!!)
+                    } else {
+                        ValidationState.None
+                    },
                     enabled = !isSaving,
                     singleLine = false,
                     maxLines = 3,
-                    shape = PosShapes.InputField,
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                OutlinedTextField(
+                AppTextField(
                     value = phone,
                     onValueChange = { newValue ->
                         phone = newValue
                         phoneError = if (newValue.isBlank()) errorPhoneRequired else null
                     },
-                    label = { Text(stringResource(Res.string.store_info_phone)) },
-                    placeholder = { Text(stringResource(Res.string.store_info_phone_placeholder)) },
+                    label = stringResource(Res.string.store_info_phone),
+                    placeholder = stringResource(Res.string.store_info_phone_placeholder),
                     leadingIcon = {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Phone,
@@ -159,19 +172,25 @@ fun StoreInfoTab(
                             modifier = Modifier.padding(end = 20.dp),
                         )
                     },
-                    isError = phoneError != null,
-                    supportingText = phoneError?.let { { Text(it) } },
+                    validationState =
+                    if (phoneError !=
+                        null
+                    ) {
+                        ValidationState.Error(phoneError!!)
+                    } else {
+                        ValidationState.None
+                    },
                     enabled = !isSaving,
                     singleLine = true,
                     keyboardOptions =
                     androidx.compose.foundation.text.KeyboardOptions(
                         keyboardType = KeyboardType.Phone,
                     ),
-                    shape = PosShapes.InputField,
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                OutlinedTextField(
+                AppTextField(
                     value = email,
                     onValueChange = { newValue ->
                         email = newValue
@@ -184,8 +203,8 @@ fun StoreInfoTab(
                                 null
                             }
                     },
-                    label = { Text(stringResource(Res.string.store_info_email)) },
-                    placeholder = { Text(stringResource(Res.string.store_info_email_placeholder)) },
+                    label = stringResource(Res.string.store_info_email),
+                    placeholder = stringResource(Res.string.store_info_email_placeholder),
                     leadingIcon = {
                         Icon(
                             imageVector = FontAwesomeIcons.Solid.Envelope,
@@ -194,15 +213,21 @@ fun StoreInfoTab(
                             modifier = Modifier.padding(end = 20.dp),
                         )
                     },
-                    isError = emailError != null,
-                    supportingText = emailError?.let { { Text(it) } },
+                    validationState =
+                    if (emailError !=
+                        null
+                    ) {
+                        ValidationState.Error(emailError!!)
+                    } else {
+                        ValidationState.None
+                    },
                     enabled = !isSaving,
                     singleLine = true,
                     keyboardOptions =
                     androidx.compose.foundation.text.KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                     ),
-                    shape = PosShapes.InputField,
+                    variant = AppTextFieldVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
                 )
 

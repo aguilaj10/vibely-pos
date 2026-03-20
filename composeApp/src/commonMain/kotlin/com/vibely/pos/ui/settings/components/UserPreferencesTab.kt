@@ -15,7 +15,6 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
@@ -32,8 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
+import com.vibely.pos.ui.components.AppTextField
+import com.vibely.pos.ui.components.AppTextFieldVariant
 import com.vibely.pos.ui.theme.AppColors
-import com.vibely.pos.ui.theme.PosShapes
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Bell
@@ -128,11 +128,11 @@ fun UserPreferencesTab(
                     onExpandedChange = { languageExpanded = it },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = languageLabels[language] ?: language,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(stringResource(Res.string.preferences_language)) },
+                        label = stringResource(Res.string.preferences_language),
                         leadingIcon = {
                             androidx.compose.material3.Icon(
                                 imageVector = FontAwesomeIcons.Solid.Language,
@@ -145,7 +145,7 @@ fun UserPreferencesTab(
                         },
                         enabled = !isSaving,
                         singleLine = true,
-                        shape = PosShapes.InputField,
+                        variant = AppTextFieldVariant.Outlined,
                         modifier =
                         Modifier
                             .fillMaxWidth()
@@ -175,11 +175,11 @@ fun UserPreferencesTab(
                     onExpandedChange = { themeExpanded = it },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = themeLabels[theme] ?: theme,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(stringResource(Res.string.preferences_theme)) },
+                        label = stringResource(Res.string.preferences_theme),
                         leadingIcon = {
                             androidx.compose.material3.Icon(
                                 imageVector = FontAwesomeIcons.Solid.Palette,
@@ -192,7 +192,7 @@ fun UserPreferencesTab(
                         },
                         enabled = !isSaving,
                         singleLine = true,
-                        shape = PosShapes.InputField,
+                        variant = AppTextFieldVariant.Outlined,
                         modifier =
                         Modifier
                             .fillMaxWidth()
