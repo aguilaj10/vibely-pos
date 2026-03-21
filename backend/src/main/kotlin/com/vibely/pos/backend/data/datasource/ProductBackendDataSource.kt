@@ -1,6 +1,5 @@
-package com.vibely.pos.backend.services
+package com.vibely.pos.backend.data.datasource
 
-import com.vibely.pos.backend.data.datasource.ProductBackendDataSource
 import com.vibely.pos.backend.dto.request.AdjustStockRequest
 import com.vibely.pos.backend.dto.request.CreateProductRequest
 import com.vibely.pos.backend.dto.request.GetAllProductsRequest
@@ -10,21 +9,18 @@ import com.vibely.pos.shared.domain.result.Result
 import kotlinx.serialization.json.JsonObject
 
 /**
- * Service for managing product operations.
+ * Data source abstraction for product persistence operations.
  *
- * Delegates all persistence to [ProductBackendDataSource], which is either Supabase or
- * Room/SQLite depending on the active [com.vibely.pos.backend.data.DatabaseStrategy].
+ * Implementations provide either Supabase (remote) or Room/SQLite (local) backends.
  */
-class ProductService(
-    private val dataSource: ProductBackendDataSource,
-) : BaseService() {
+interface ProductBackendDataSource {
     /**
      * Searches products by name, SKU, or barcode.
      *
      * @param query Search query string
      * @return Result containing list of matching products
      */
-    suspend fun search(query: String): Result<List<ProductDTO>> = dataSource.search(query)
+    suspend fun search(query: String): Result<List<ProductDTO>>
 
     /**
      * Retrieves a product by its ID.
@@ -32,7 +28,7 @@ class ProductService(
      * @param id Product ID
      * @return Result containing the product or error
      */
-    suspend fun getById(id: String): Result<ProductDTO> = dataSource.getById(id)
+    suspend fun getById(id: String): Result<ProductDTO>
 
     /**
      * Retrieves all products with optional filtering and pagination.
@@ -40,18 +36,16 @@ class ProductService(
      * @param request Request parameters for filtering and pagination
      * @return Result containing list of products
      */
-    suspend fun getAll(request: GetAllProductsRequest): Result<List<ProductDTO>> =
-        dataSource.getAll(request)
+    suspend fun getAll(request: GetAllProductsRequest): Result<List<ProductDTO>>
 
     /**
      * Creates a new product.
      *
      * @param userId ID of the user creating the product
      * @param request Product creation parameters
-     * @return Result containing created product or error
+     * @return Result containing created product data or error
      */
-    suspend fun createProduct(userId: String, request: CreateProductRequest): Result<JsonObject> =
-        dataSource.createProduct(userId, request)
+    suspend fun createProduct(userId: String, request: CreateProductRequest): Result<JsonObject>
 
     /**
      * Updates an existing product.
@@ -59,13 +53,13 @@ class ProductService(
      * @param userId ID of the user updating the product
      * @param productId ID of the product to update
      * @param request Product update parameters
-     * @return Result containing updated product or error
+     * @return Result containing updated product data or error
      */
     suspend fun updateProduct(
         userId: String,
         productId: String,
         request: UpdateProductRequest,
-    ): Result<JsonObject> = dataSource.updateProduct(userId, productId, request)
+    ): Result<JsonObject>
 
     /**
      * Deletes a product.
@@ -74,24 +68,19 @@ class ProductService(
      * @param productId ID of the product to delete
      * @return Result indicating success or error
      */
-    suspend fun deleteProduct(userId: String, productId: String): Result<Unit> =
-        dataSource.deleteProduct(userId, productId)
+    suspend fun deleteProduct(userId: String, productId: String): Result<Unit>
 
     /**
-     * Adjusts product stock and creates an inventory transaction record.
-     *
-     * Uses optimistic locking to prevent race conditions by validating the current stock
-     * during the update operation. Prevents negative stock values to ensure inventory integrity.
+     * Adjusts product stock and records an inventory transaction.
      *
      * @param userId ID of the user performing the adjustment
      * @param productId ID of the product to adjust
      * @param request Stock adjustment parameters
-     * @return Result containing updated product or error
-     * @throws IllegalArgumentException if the adjustment would result in negative stock
+     * @return Result containing updated product data or error
      */
     suspend fun adjustStock(
         userId: String,
         productId: String,
         request: AdjustStockRequest,
-    ): Result<JsonObject> = dataSource.adjustStock(userId, productId, request)
+    ): Result<JsonObject>
 }

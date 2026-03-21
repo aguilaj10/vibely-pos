@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.ktor)
     alias(libs.plugins.kover)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
     application
 }
 
@@ -44,8 +46,17 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.koin.test)
 
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.sqlite.driver.bundled)
+    ksp(libs.room.compiler)
+
     // Detekt Plugins
     detektPlugins(libs.detekt.koin.rules)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 // Detekt configuration

@@ -5,6 +5,24 @@ import com.vibely.pos.backend.auth.ProdAuthProvider
 import com.vibely.pos.backend.auth.RouteAuthProvider
 import com.vibely.pos.backend.config.AppConfig
 import com.vibely.pos.backend.config.SupabaseConfig
+import com.vibely.pos.backend.data.DatabaseStrategy
+import com.vibely.pos.backend.data.datasource.CategoryBackendDataSource
+import com.vibely.pos.backend.data.datasource.CustomerBackendDataSource
+import com.vibely.pos.backend.data.datasource.PaymentBackendDataSource
+import com.vibely.pos.backend.data.datasource.ProductBackendDataSource
+import com.vibely.pos.backend.data.datasource.SaleBackendDataSource
+import com.vibely.pos.backend.data.room.AppDatabase
+import com.vibely.pos.backend.data.room.createDatabase
+import com.vibely.pos.backend.data.room.datasource.RoomCategoryDataSource
+import com.vibely.pos.backend.data.room.datasource.RoomCustomerDataSource
+import com.vibely.pos.backend.data.room.datasource.RoomPaymentDataSource
+import com.vibely.pos.backend.data.room.datasource.RoomProductDataSource
+import com.vibely.pos.backend.data.room.datasource.RoomSaleDataSource
+import com.vibely.pos.backend.data.supabase.SupabaseCategoryDataSource
+import com.vibely.pos.backend.data.supabase.SupabaseCustomerDataSource
+import com.vibely.pos.backend.data.supabase.SupabasePaymentDataSource
+import com.vibely.pos.backend.data.supabase.SupabaseProductDataSource
+import com.vibely.pos.backend.data.supabase.SupabaseSaleDataSource
 import com.vibely.pos.backend.security.CsrfTokenManager
 import com.vibely.pos.backend.security.RateLimiter
 import com.vibely.pos.backend.services.AuthService
@@ -42,17 +60,33 @@ val backendModule =
                 debugMode = System.getenv(ENV_DEBUG_MODE)?.toBoolean() == true,
                 jwtSecret = System.getenv(ENV_JWT_SECRET) ?: DEFAULT_JWT_SECRET,
                 enforceHttps = System.getenv(ENV_ENFORCE_HTTPS)?.toBoolean() ?: false,
-                supabaseUrl = System.getenv(ENV_SUPABASE_URL)
-                    ?: error("$ENV_SUPABASE_URL environment variable is not set"),
-                supabaseServiceKey = System.getenv(ENV_SUPABASE_SERVICE_KEY)
-                    ?: error("$ENV_SUPABASE_SERVICE_KEY environment variable is not set"),
+                supabaseUrl = System.getenv(ENV_SUPABASE_URL),
+                supabaseServiceKey = System.getenv(ENV_SUPABASE_SERVICE_KEY),
             )
         }
 
+        // Register SupabaseClient only when env vars are provided.
+        // Required even in Local mode for out-of-scope services (Auth, Dashboard, etc.).
         single<SupabaseClient> {
             val config: AppConfig = get()
-            SupabaseConfig.createClient(config.supabaseUrl, config.supabaseServiceKey, config.debugMode)
+            SupabaseConfig.createClient(
+                requireNotNull(config.supabaseUrl) {
+                    "SUPABASE_URL is required (needed by Auth/Dashboard services)"
+                },
+                requireNotNull(config.supabaseServiceKey) {
+                    "SUPABASE_SERVICE_ROLE_KEY is required (needed by Auth/Dashboard services)"
+                },
+                config.debugMode,
+            )
         }
+
+        // Single decision point: selects Supabase or Room data sources for the 5 feature services
+        includes(
+            when (DatabaseStrategy.current) {
+                is DatabaseStrategy.Remote -> remoteDataSourceModule
+                is DatabaseStrategy.Local -> localDataSourceModule
+            }
+        )
 
         single<RouteAuthProvider> {
             val config: AppConfig = get()
@@ -96,4 +130,32 @@ val backendModule =
         single { SettingsService(get()) }
 
         single { CurrencyService(get()) }
+    }
+
+/** Koin sub-module wiring Supabase as the data source for all feature services. */
+private val remoteDataSourceModule =
+    module {
+        single<ProductBackendDataSource> { SupabaseProductDataSource(get()) }
+        single<CategoryBackendDataSource> { SupabaseCategoryDataSource(get()) }
+        single<CustomerBackendDataSource> { SupabaseCustomerDataSource(get()) }
+        single<SaleBackendDataSource> { SupabaseSaleDataSource(get()) }
+        single<PaymentBackendDataSource> { SupabasePaymentDataSource(get()) }
+    }
+
+/** Koin sub-module wiring Room/SQLite as the data source for all features. */
+private val localDataSourceModule =
+    module {
+        single<AppDatabase> { createDatabase() }
+
+        single { get<AppDatabase>().productDao() }
+        single { get<AppDatabase>().categoryDao() }
+        single { get<AppDatabase>().customerDao() }
+        single { get<AppDatabase>().saleDao() }
+        single { get<AppDatabase>().paymentDao() }
+
+        single<ProductBackendDataSource> { RoomProductDataSource(get()) }
+        single<CategoryBackendDataSource> { RoomCategoryDataSource(get()) }
+        single<CustomerBackendDataSource> { RoomCustomerDataSource(get()) }
+        single<SaleBackendDataSource> { RoomSaleDataSource(get(), get()) }
+        single<PaymentBackendDataSource> { RoomPaymentDataSource(get(), get()) }
     }

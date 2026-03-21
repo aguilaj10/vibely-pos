@@ -9,13 +9,14 @@ package com.vibely.pos.backend.config
  * @property debugMode Whether the application is running in debug mode (DEBUG_MODE env var)
  * @property jwtSecret Secret used to sign and verify JWT tokens (JWT_SECRET env var)
  * @property enforceHttps Whether HTTP requests should be redirected to HTTPS (ENFORCE_HTTPS env var)
- * @property supabaseUrl Supabase project URL (SUPABASE_URL env var)
- * @property supabaseServiceKey Supabase service role key (SUPABASE_SERVICE_ROLE_KEY env var)
+ * @property supabaseUrl Supabase project URL (SUPABASE_URL env var). Null when DB_STRATEGY=local.
+ * @property supabaseServiceKey Supabase service role key (SUPABASE_SERVICE_ROLE_KEY env var).
+ *   Null when DB_STRATEGY=local.
  */
 data class AppConfig(
     val debugMode: Boolean,
     val jwtSecret: String,
     val enforceHttps: Boolean,
-    val supabaseUrl: String,
-    val supabaseServiceKey: String,
+    val supabaseUrl: String?,
+    val supabaseServiceKey: String?,
 )

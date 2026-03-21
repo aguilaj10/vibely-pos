@@ -1,6 +1,5 @@
-package com.vibely.pos.backend.services
+package com.vibely.pos.backend.data.datasource
 
-import com.vibely.pos.backend.data.datasource.SaleBackendDataSource
 import com.vibely.pos.backend.dto.request.GetAllSalesRequest
 import com.vibely.pos.shared.data.sales.dto.CreateSaleRequest
 import com.vibely.pos.shared.data.sales.dto.SaleDTO
@@ -8,14 +7,11 @@ import com.vibely.pos.shared.data.sales.dto.SaleItemDTO
 import com.vibely.pos.shared.domain.result.Result
 
 /**
- * Service for managing sale operations.
+ * Data source abstraction for sale persistence operations.
  *
- * Delegates all persistence to [SaleBackendDataSource], which is either Supabase or
- * Room/SQLite depending on the active [com.vibely.pos.backend.data.DatabaseStrategy].
+ * Implementations provide either Supabase (remote) or Room/SQLite (local) backends.
  */
-class SaleService(
-    private val dataSource: SaleBackendDataSource,
-) : BaseService() {
+interface SaleBackendDataSource {
     /**
      * Creates a new sale with items and updates inventory.
      *
@@ -23,8 +19,7 @@ class SaleService(
      * @param cashierId ID of the cashier creating the sale
      * @return Result containing created sale or error
      */
-    suspend fun createSale(request: CreateSaleRequest, cashierId: String): Result<SaleDTO> =
-        dataSource.createSale(request, cashierId)
+    suspend fun createSale(request: CreateSaleRequest, cashierId: String): Result<SaleDTO>
 
     /**
      * Retrieves all sales with optional filtering and pagination.
@@ -32,8 +27,7 @@ class SaleService(
      * @param request Request parameters for filtering and pagination
      * @return Result containing list of sales
      */
-    suspend fun getAll(request: GetAllSalesRequest): Result<List<SaleDTO>> =
-        dataSource.getAll(request)
+    suspend fun getAll(request: GetAllSalesRequest): Result<List<SaleDTO>>
 
     /**
      * Retrieves a sale by its ID.
@@ -41,7 +35,7 @@ class SaleService(
      * @param id Sale ID
      * @return Result containing the sale or error
      */
-    suspend fun getById(id: String): Result<SaleDTO> = dataSource.getById(id)
+    suspend fun getById(id: String): Result<SaleDTO>
 
     /**
      * Retrieves all items for a specific sale.
@@ -49,7 +43,7 @@ class SaleService(
      * @param saleId Sale ID
      * @return Result containing list of sale items
      */
-    suspend fun getItems(saleId: String): Result<List<SaleItemDTO>> = dataSource.getItems(saleId)
+    suspend fun getItems(saleId: String): Result<List<SaleItemDTO>>
 
     /**
      * Updates the status of a sale.
@@ -58,6 +52,5 @@ class SaleService(
      * @param status New status value
      * @return Result containing updated sale or error
      */
-    suspend fun updateStatus(saleId: String, status: String): Result<SaleDTO> =
-        dataSource.updateStatus(saleId, status)
+    suspend fun updateStatus(saleId: String, status: String): Result<SaleDTO>
 }

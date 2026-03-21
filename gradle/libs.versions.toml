@@ -21,6 +21,8 @@ spotless = "8.4.0"
 jwt = "4.5.1"
 koin = "4.2.0"
 kotlin = "2.3.20"
+ksp = "2.3.6"
+room = "2.7.0"
 kover = "0.9.7"
 mockk = "1.14.9"
 kotlinx-coroutines = "1.10.2"
@@ -93,6 +95,9 @@ ktor-clientMock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 kurrency-core = { module = "org.kimplify:kurrency-core", version.ref = "kurrency" }
 kurrency-compose = { module = "org.kimplify:kurrency-compose", version.ref = "kurrency" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+sqlite-driver-bundled = { module = "androidx.sqlite:sqlite-bundled", version = "2.5.0" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "supabase" }
 spotless-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
@@ -114,6 +119,8 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room" }
 
 [bundles]
 ktor-server = [
