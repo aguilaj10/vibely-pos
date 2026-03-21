@@ -24,3 +24,12 @@ allprojects {
     }
 }
 
+// Use the system Node.js instead of downloading a private copy.
+// Vercel's build environment has Node.js pre-installed but lacks libatomic.so.1
+// which the Kotlin-downloaded Node.js binary requires.
+rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
+    rootProject.extensions.configure<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec> {
+        download.set(false)
+    }
+}
+
