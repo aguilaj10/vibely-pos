@@ -43,6 +43,7 @@ import com.vibely.pos.backend.services.TokenService
 import com.vibely.pos.backend.services.UserManagementService
 import com.vibely.pos.backend.services.UserRepository
 import io.github.jan.supabase.SupabaseClient
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
 private const val ENV_DEBUG_MODE = "DEBUG_MODE"
@@ -51,6 +52,40 @@ private const val ENV_ENFORCE_HTTPS = "ENFORCE_HTTPS"
 private const val ENV_SUPABASE_URL = "SUPABASE_URL"
 private const val ENV_SUPABASE_SERVICE_KEY = "SUPABASE_SERVICE_ROLE_KEY"
 private const val DEFAULT_JWT_SECRET = "default-secret-key-change-in-production"
+
+private fun selectedDataSourceModule(): Module =
+    when (DatabaseStrategy.current) {
+        is DatabaseStrategy.Remote -> createRemoteDataSourceModule()
+        is DatabaseStrategy.Local -> createLocalDataSourceModule()
+    }
+
+/** Koin sub-module wiring Supabase as the data source for all feature services. */
+private fun createRemoteDataSourceModule() =
+    module {
+        single<ProductBackendDataSource> { SupabaseProductDataSource(get()) }
+        single<CategoryBackendDataSource> { SupabaseCategoryDataSource(get()) }
+        single<CustomerBackendDataSource> { SupabaseCustomerDataSource(get()) }
+        single<SaleBackendDataSource> { SupabaseSaleDataSource(get()) }
+        single<PaymentBackendDataSource> { SupabasePaymentDataSource(get()) }
+    }
+
+/** Koin sub-module wiring Room/SQLite as the data source for all features. */
+private fun createLocalDataSourceModule() =
+    module {
+        single<AppDatabase> { createDatabase() }
+
+        single { get<AppDatabase>().productDao() }
+        single { get<AppDatabase>().categoryDao() }
+        single { get<AppDatabase>().customerDao() }
+        single { get<AppDatabase>().saleDao() }
+        single { get<AppDatabase>().paymentDao() }
+
+        single<ProductBackendDataSource> { RoomProductDataSource(get()) }
+        single<CategoryBackendDataSource> { RoomCategoryDataSource(get()) }
+        single<CustomerBackendDataSource> { RoomCustomerDataSource(get()) }
+        single<SaleBackendDataSource> { RoomSaleDataSource(get(), get()) }
+        single<PaymentBackendDataSource> { RoomPaymentDataSource(get(), get()) }
+    }
 
 @Suppress("UndocumentedPublicProperty")
 val backendModule =
@@ -81,12 +116,7 @@ val backendModule =
         }
 
         // Single decision point: selects Supabase or Room data sources for the 5 feature services
-        includes(
-            when (DatabaseStrategy.current) {
-                is DatabaseStrategy.Remote -> remoteDataSourceModule
-                is DatabaseStrategy.Local -> localDataSourceModule
-            }
-        )
+        includes(selectedDataSourceModule())
 
         single<RouteAuthProvider> {
             val config: AppConfig = get()
@@ -132,30 +162,3 @@ val backendModule =
         single { CurrencyService(get()) }
     }
 
-/** Koin sub-module wiring Supabase as the data source for all feature services. */
-private val remoteDataSourceModule =
-    module {
-        single<ProductBackendDataSource> { SupabaseProductDataSource(get()) }
-        single<CategoryBackendDataSource> { SupabaseCategoryDataSource(get()) }
-        single<CustomerBackendDataSource> { SupabaseCustomerDataSource(get()) }
-        single<SaleBackendDataSource> { SupabaseSaleDataSource(get()) }
-        single<PaymentBackendDataSource> { SupabasePaymentDataSource(get()) }
-    }
-
-/** Koin sub-module wiring Room/SQLite as the data source for all features. */
-private val localDataSourceModule =
-    module {
-        single<AppDatabase> { createDatabase() }
-
-        single { get<AppDatabase>().productDao() }
-        single { get<AppDatabase>().categoryDao() }
-        single { get<AppDatabase>().customerDao() }
-        single { get<AppDatabase>().saleDao() }
-        single { get<AppDatabase>().paymentDao() }
-
-        single<ProductBackendDataSource> { RoomProductDataSource(get()) }
-        single<CategoryBackendDataSource> { RoomCategoryDataSource(get()) }
-        single<CustomerBackendDataSource> { RoomCustomerDataSource(get()) }
-        single<SaleBackendDataSource> { RoomSaleDataSource(get(), get()) }
-        single<PaymentBackendDataSource> { RoomPaymentDataSource(get(), get()) }
-    }

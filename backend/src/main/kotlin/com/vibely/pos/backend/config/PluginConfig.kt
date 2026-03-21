@@ -45,7 +45,6 @@ import com.vibely.pos.shared.data.settings.dto.UserPreferencesDTO
 import com.vibely.pos.shared.data.shift.dto.ShiftDTO
 import com.vibely.pos.shared.data.shift.dto.ShiftSummaryDTO
 import com.vibely.pos.shared.data.supplier.dto.SupplierDTO
-import com.vibely.pos.shared.di.sharedModules
 import com.vibely.pos.shared.domain.result.Result
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -81,7 +80,7 @@ fun Application.configureKoin() {
 
     install(Koin) {
         slf4jLogger()
-        modules(sharedModules() + backendModule)
+        modules(backendModule)
     }
 }
 
