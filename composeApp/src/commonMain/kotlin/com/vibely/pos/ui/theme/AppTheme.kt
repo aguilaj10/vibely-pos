@@ -1,10 +1,13 @@
 package com.vibely.pos.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
 
 /**
  * Local composition for accessing custom theme properties
@@ -26,15 +29,19 @@ fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable ()
         LightColorScheme
     }
 
-    CompositionLocalProvider(
-        LocalAppColors provides AppColors,
-    ) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = AppTypography,
-            shapes = AppShapes,
-            content = content,
-        )
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val dimensions = if (maxWidth < COMPACT_WIDTH_THRESHOLD) CompactDimensions else ExpandedDimensions
+        CompositionLocalProvider(
+            LocalAppColors provides AppColors,
+            LocalAppDimensions provides dimensions,
+        ) {
+            MaterialTheme(
+                colorScheme = colorScheme,
+                typography = AppTypography,
+                shapes = AppShapes,
+                content = content,
+            )
+        }
     }
 }
 
@@ -60,6 +67,10 @@ object AppTheme {
     val colors: AppColors
         @Composable
         get() = appColors()
+
+    val dimensions: AppDimensions
+        @Composable
+        get() = LocalAppDimensions.current
 
     val posTextStyles: PosTextStyles
         @Composable

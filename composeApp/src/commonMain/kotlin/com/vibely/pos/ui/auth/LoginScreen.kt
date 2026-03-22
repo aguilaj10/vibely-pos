@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
@@ -38,6 +39,7 @@ import com.vibely.pos.ui.components.AppCard
 import com.vibely.pos.ui.components.AppCardStyle
 import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.ValidationState
+import com.vibely.pos.ui.theme.LocalAppDimensions
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import vibely_pos.composeapp.generated.resources.Res
@@ -71,6 +73,7 @@ import vibely_pos.composeapp.generated.resources.auth_welcome_back
 fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewModel: LoginViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
     val focusManager = LocalFocusManager.current
+    val dims = LocalAppDimensions.current
 
     // Navigate to dashboard when login succeeds
     LaunchedEffect(state.isLoginSuccessful) {
@@ -90,18 +93,17 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
         contentAlignment = Alignment.Center,
     ) {
         AppCard(
-            modifier =
-            Modifier
-                .width(400.dp)
-                .padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 400.dp)
+                .padding(horizontal = dims.screenPadding),
             style = AppCardStyle.Elevated,
             elevation = 4.dp,
         ) {
             Column(
-                modifier =
-                Modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp),
+                    .padding(dims.cardPadding),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 // Title
@@ -111,17 +113,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                     textAlign = TextAlign.Center,
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dims.spacingSm))
 
                 // Subtitle
-                Text(
-                    text = stringResource(Res.string.auth_sign_in_to_your_account),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
                     text = stringResource(Res.string.auth_sign_in_to_your_account),
                     style = MaterialTheme.typography.bodyMedium,
@@ -129,7 +123,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                     textAlign = TextAlign.Center,
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(dims.spacingXl))
 
                 // Email field
                 AppTextField(
@@ -157,7 +151,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(dims.spacingMd))
 
                 // Password field
                 AppTextField(
@@ -215,7 +209,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(dims.spacingMd))
 
                 // Remember Me checkbox
                 Row(
@@ -227,7 +221,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                         onCheckedChange = viewModel::onRememberMeChange,
                         enabled = !state.isLoading,
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(dims.spacingSm))
                     Text(
                         text = stringResource(Res.string.auth_remember_me),
                         style = MaterialTheme.typography.bodyMedium,
@@ -240,7 +234,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(dims.spacingLg))
 
                 // Error message display
                 if (state.errorMessage != null) {
@@ -251,7 +245,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, modifier: Modifier = Modifier, viewM
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(dims.spacingMd))
                 }
 
                 // Login button

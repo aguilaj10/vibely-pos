@@ -13,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.vibely.pos.config.DebugConfig
@@ -33,6 +32,7 @@ import com.vibely.pos.ui.screens.categories.CategoriesScreen
 import com.vibely.pos.ui.settings.SettingsScreen
 import com.vibely.pos.ui.shifts.ShiftsScreen
 import com.vibely.pos.ui.suppliers.SuppliersScreen
+import com.vibely.pos.ui.theme.COMPACT_WIDTH_THRESHOLD
 import com.vibely.pos.ui.users.UsersScreen
 
 /**
@@ -98,7 +98,6 @@ fun AppNavigation(startDestination: Screen = if (DebugConfig.isDebugMode) Screen
 }
 
 /** Width threshold below which the bottom nav bar is used instead of the sidebar. */
-private val MOBILE_WIDTH_THRESHOLD = 600.dp
 
 /**
  * Layout for authenticated screens.
@@ -114,7 +113,7 @@ private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>) {
     val currentScreen = backStack.lastOrNull() ?: Screen.Dashboard
 
     androidx.compose.foundation.layout.BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        if (maxWidth < MOBILE_WIDTH_THRESHOLD) {
+        if (maxWidth < COMPACT_WIDTH_THRESHOLD) {
             // Phone layout: bottom navigation bar
             Scaffold(
                 bottomBar = {
