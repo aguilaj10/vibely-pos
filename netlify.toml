@@ -1,6 +1,6 @@
 [build]
-  command = "./gradlew wasmJsBrowserDistribution -PAPI_BASE_URL=$API_BASE_URL --no-configuration-cache"
-  publish = "composeApp/build/dist/wasmJs/productionExecutable"
+  command = "./gradlew wasmJsBrowserDevelopmentExecutable -PAPI_BASE_URL=$API_BASE_URL --no-configuration-cache --no-daemon"
+  publish = "composeApp/build/dist/wasmJs/developmentExecutable"
 
 [[headers]]
   for = "/*.wasm"
