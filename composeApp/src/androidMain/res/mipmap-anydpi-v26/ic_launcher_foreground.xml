@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Vibely POS — Android Adaptive Icon Foreground v3
+  Vibely POS — Android Adaptive Icon Foreground v4
   Canvas: 108×108dp. Safe zone: center 72×72dp (18dp inset on all sides).
-  White V + white barcode bars on transparent. Background layer is #111827.
-  v3: barcode shifted down to center the mark; V slightly narrower.
+  V is drawn first (background). Barcode drawn on top, centered vertically.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -11,18 +10,17 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- V left arm: white — slightly narrower than v2 -->
+    <!-- V — background element -->
     <path
-        android:pathData="M25,52 L54,90"
+        android:pathData="M18,13 L54,90"
         android:strokeColor="#FFFFFF"
         android:strokeWidth="10"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:fillColor="@android:color/transparent"/>
 
-    <!-- V right arm: white — slightly narrower than v2 -->
     <path
-        android:pathData="M83,52 L54,90"
+        android:pathData="M90,13 L54,90"
         android:strokeColor="#FFFFFF"
         android:strokeWidth="10"
         android:strokeLineCap="round"
@@ -30,22 +28,23 @@
         android:fillColor="@android:color/transparent"/>
 
     <!--
-      Barcode bars: white, no outline. Span x=22–86, y=31–53 (height=22).
-      Shifted down from v2 (was y=15–37) to center the mark vertically.
+      Barcode bars — drawn on top of the V, centered vertically.
+      y=42–64 (height=22, center at y=53 ≈ midpoint of 108dp canvas).
+      x span mirrors the SVG source scaled to 108dp.
     -->
-    <!-- bar 1 -->  <path android:pathData="M22,31 L25,31 L25,53 L22,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 2 -->  <path android:pathData="M27,31 L29,31 L29,53 L27,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 3 -->  <path android:pathData="M31,31 L35,31 L35,53 L31,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 4 -->  <path android:pathData="M37,31 L39,31 L39,53 L37,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 5 -->  <path android:pathData="M41,31 L44,31 L44,53 L41,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 6 -->  <path android:pathData="M46,31 L48,31 L48,53 L46,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 7 -->  <path android:pathData="M50,31 L52,31 L52,53 L50,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 8 -->  <path android:pathData="M54,31 L58,31 L58,53 L54,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 9 -->  <path android:pathData="M60,31 L62,31 L62,53 L60,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 10 --> <path android:pathData="M64,31 L67,31 L67,53 L64,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 11 --> <path android:pathData="M69,31 L71,31 L71,53 L69,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 12 --> <path android:pathData="M73,31 L77,31 L77,53 L73,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 13 --> <path android:pathData="M79,31 L81,31 L81,53 L79,53 Z" android:fillColor="#FFFFFF"/>
-    <!-- bar 14 --> <path android:pathData="M83,31 L86,31 L86,53 L83,53 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 1 -->  <path android:pathData="M22,42 L25,42 L25,64 L22,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 2 -->  <path android:pathData="M27,42 L29,42 L29,64 L27,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 3 -->  <path android:pathData="M31,42 L35,42 L35,64 L31,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 4 -->  <path android:pathData="M37,42 L39,42 L39,64 L37,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 5 -->  <path android:pathData="M41,42 L44,42 L44,64 L41,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 6 -->  <path android:pathData="M46,42 L48,42 L48,64 L46,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 7 -->  <path android:pathData="M50,42 L52,42 L52,64 L50,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 8 -->  <path android:pathData="M54,42 L58,42 L58,64 L54,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 9 -->  <path android:pathData="M60,42 L62,42 L62,64 L60,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 10 --> <path android:pathData="M64,42 L67,42 L67,64 L64,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 11 --> <path android:pathData="M69,42 L71,42 L71,64 L69,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 12 --> <path android:pathData="M73,42 L77,42 L77,64 L73,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 13 --> <path android:pathData="M79,42 L81,42 L81,64 L79,64 Z" android:fillColor="#FFFFFF"/>
+    <!-- bar 14 --> <path android:pathData="M83,42 L86,42 L86,64 L83,64 Z" android:fillColor="#FFFFFF"/>
 
 </vector>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80">
   <!--
-    Vibely POS — Full Wordmark v3
+    Vibely POS — Full Wordmark v4
     Black (#111827) background. White icon mark + white text.
     "Vibely" bold, "POS" smaller with letter-spacing.
   -->
@@ -11,29 +11,28 @@
   <!-- ===== ICON MARK (left column, 64px tall) ===== -->
   <!-- Scaled from 100×100 viewBox to 64px: scale=0.64, offset x=8 y=8 -->
   <g transform="translate(8, 8) scale(0.64)">
-    <!-- V left arm — slightly narrower than v2 -->
-    <line x1="17" y1="44" x2="50" y2="88"
+    <!-- V — background element -->
+    <line x1="17" y1="12" x2="50" y2="90"
           stroke="white" stroke-width="11" stroke-linecap="round"/>
-    <!-- V right arm — slightly narrower than v2 -->
-    <line x1="83" y1="44" x2="50" y2="88"
+    <line x1="83" y1="12" x2="50" y2="90"
           stroke="white" stroke-width="11" stroke-linecap="round"/>
-    <!-- Barcode bars — shifted down to center the mark -->
-    <rect x="14" y="25" width="3" height="22" fill="white"/>
-    <rect x="19" y="25" width="2" height="22" fill="white"/>
-    <rect x="23" y="25" width="4" height="22" fill="white"/>
-    <rect x="29" y="25" width="2" height="22" fill="white"/>
-    <rect x="33" y="25" width="3" height="22" fill="white"/>
-    <rect x="38" y="25" width="2" height="22" fill="white"/>
-    <rect x="42" y="25" width="2" height="22" fill="white"/>
-    <rect x="46" y="25" width="4" height="22" fill="white"/>
-    <rect x="52" y="25" width="2" height="22" fill="white"/>
-    <rect x="56" y="25" width="3" height="22" fill="white"/>
-    <rect x="61" y="25" width="2" height="22" fill="white"/>
-    <rect x="65" y="25" width="4" height="22" fill="white"/>
-    <rect x="71" y="25" width="2" height="22" fill="white"/>
-    <rect x="75" y="25" width="3" height="22" fill="white"/>
-    <rect x="80" y="25" width="3" height="22" fill="white"/>
-    <rect x="85" y="25" width="1" height="22" fill="white"/>
+    <!-- Barcode — foreground, centered vertically, overlays the V -->
+    <rect x="14" y="39" width="3" height="22" fill="white"/>
+    <rect x="19" y="39" width="2" height="22" fill="white"/>
+    <rect x="23" y="39" width="4" height="22" fill="white"/>
+    <rect x="29" y="39" width="2" height="22" fill="white"/>
+    <rect x="33" y="39" width="3" height="22" fill="white"/>
+    <rect x="38" y="39" width="2" height="22" fill="white"/>
+    <rect x="42" y="39" width="2" height="22" fill="white"/>
+    <rect x="46" y="39" width="4" height="22" fill="white"/>
+    <rect x="52" y="39" width="2" height="22" fill="white"/>
+    <rect x="56" y="39" width="3" height="22" fill="white"/>
+    <rect x="61" y="39" width="2" height="22" fill="white"/>
+    <rect x="65" y="39" width="4" height="22" fill="white"/>
+    <rect x="71" y="39" width="2" height="22" fill="white"/>
+    <rect x="75" y="39" width="3" height="22" fill="white"/>
+    <rect x="80" y="39" width="3" height="22" fill="white"/>
+    <rect x="85" y="39" width="1" height="22" fill="white"/>
   </g>
 
   <!-- Separator line -->
