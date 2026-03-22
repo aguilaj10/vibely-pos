@@ -1,39 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <!--
-    Vibely POS — App Icon Mark
-    Design: Geometric "V" with a three-bar pulse/spark at the apex.
-    The V arms are bold with rounded caps. The spark suggests energy and
-    the "vibely" brand personality. Reads clearly at 48×48px.
-    Primary color: #111827 (near-black brand color)
+    Vibely POS — App Icon Mark v2
+    Black (#111827) background. White V. White barcode bars spanning the full
+    width at the top — no outline, bars sit flush on the dark background.
+    The V arms emerge below the barcode, anchoring the whole mark.
   -->
 
-  <!-- V left arm: top-left down to apex -->
-  <line
-    x1="14" y1="18"
-    x2="50" y2="72"
-    stroke="#111827"
-    stroke-width="11"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
+  <!-- Background: primary near-black -->
+  <rect width="100" height="100" fill="#111827"/>
 
-  <!-- V right arm: top-right down to apex -->
-  <line
-    x1="86" y1="18"
-    x2="50" y2="72"
-    stroke="#111827"
-    stroke-width="11"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
+  <!-- V left arm -->
+  <line x1="14" y1="28" x2="50" y2="78"
+        stroke="white" stroke-width="11" stroke-linecap="round"/>
+  <!-- V right arm -->
+  <line x1="86" y1="28" x2="50" y2="78"
+        stroke="white" stroke-width="11" stroke-linecap="round"/>
 
-  <!-- Spark / pulse bars at the apex — three vertical bars of descending height,
-       centered just above the V's lowest point. They sit slightly inside the V
-       like a signal strength indicator, reinforcing "vibely" energy. -->
-  <!-- Bar 1 (left, shortest) -->
-  <rect x="38" y="59" width="5" height="10" rx="2.5" fill="#1D4ED8" />
-  <!-- Bar 2 (center, tallest) -->
-  <rect x="47.5" y="53" width="5" height="16" rx="2.5" fill="#1D4ED8" />
-  <!-- Bar 3 (right, medium) -->
-  <rect x="57" y="56" width="5" height="13" rx="2.5" fill="#1D4ED8" />
+  <!--
+    Barcode — white bars, no outline, black background shows between them.
+    Spans x=14–86 matching the V arm tips. y=10–32 (height=22).
+    Alternating thin (2–3px) and thick (4px) bars with 2px gaps.
+  -->
+  <rect x="14" y="10" width="3" height="22" fill="white"/>
+  <rect x="19" y="10" width="2" height="22" fill="white"/>
+  <rect x="23" y="10" width="4" height="22" fill="white"/>
+  <rect x="29" y="10" width="2" height="22" fill="white"/>
+  <rect x="33" y="10" width="3" height="22" fill="white"/>
+  <rect x="38" y="10" width="2" height="22" fill="white"/>
+  <rect x="42" y="10" width="2" height="22" fill="white"/>
+  <rect x="46" y="10" width="4" height="22" fill="white"/>
+  <rect x="52" y="10" width="2" height="22" fill="white"/>
+  <rect x="56" y="10" width="3" height="22" fill="white"/>
+  <rect x="61" y="10" width="2" height="22" fill="white"/>
+  <rect x="65" y="10" width="4" height="22" fill="white"/>
+  <rect x="71" y="10" width="2" height="22" fill="white"/>
+  <rect x="75" y="10" width="3" height="22" fill="white"/>
+  <rect x="80" y="10" width="3" height="22" fill="white"/>
+  <rect x="85" y="10" width="1" height="22" fill="white"/>
 </svg>
