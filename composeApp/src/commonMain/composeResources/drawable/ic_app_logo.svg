@@ -1,21 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <!--
-    Vibely POS — App Icon Mark v4
-    Black (#111827) background. V is the background element.
-    Barcode overlays the V in the center of the canvas.
+    Vibely POS — App Icon Mark v5
+    Black (#111827) background. Barcode in background, V in foreground.
+    Barcode centered vertically (y=39–61). V overlays it.
   -->
 
   <!-- Background: primary near-black -->
   <rect width="100" height="100" fill="#111827"/>
 
-  <!-- V — drawn first as the background element -->
-  <line x1="17" y1="12" x2="50" y2="90"
-        stroke="white" stroke-width="11" stroke-linecap="round"/>
-  <line x1="83" y1="12" x2="50" y2="90"
-        stroke="white" stroke-width="11" stroke-linecap="round"/>
-
   <!--
-    Barcode — drawn on top of the V.
+    Barcode — drawn first (background).
     Centered vertically: y=39–61 (height=22, center at y=50).
     Spans x=14–86. Alternating thin (2–3px) and thick (4px) bars.
   -->
@@ -35,4 +29,10 @@
   <rect x="75" y="39" width="3" height="22" fill="white"/>
   <rect x="80" y="39" width="3" height="22" fill="white"/>
   <rect x="85" y="39" width="1" height="22" fill="white"/>
+
+  <!-- V — drawn second (foreground), overlays the barcode -->
+  <line x1="17" y1="12" x2="50" y2="90"
+        stroke="white" stroke-width="11" stroke-linecap="round"/>
+  <line x1="83" y1="12" x2="50" y2="90"
+        stroke="white" stroke-width="11" stroke-linecap="round"/>
 </svg>

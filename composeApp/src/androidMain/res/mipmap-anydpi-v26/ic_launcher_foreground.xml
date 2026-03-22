@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Vibely POS — Android Adaptive Icon Foreground v4
+  Vibely POS — Android Adaptive Icon Foreground v5
   Canvas: 108×108dp. Safe zone: center 72×72dp (18dp inset on all sides).
-  V is drawn first (background). Barcode drawn on top, centered vertically.
+  Barcode drawn first (background). V drawn on top (foreground).
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -10,27 +10,9 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- V — background element -->
-    <path
-        android:pathData="M18,13 L54,90"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="10"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-
-    <path
-        android:pathData="M90,13 L54,90"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="10"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-
     <!--
-      Barcode bars — drawn on top of the V, centered vertically.
-      y=42–64 (height=22, center at y=53 ≈ midpoint of 108dp canvas).
-      x span mirrors the SVG source scaled to 108dp.
+      Barcode bars — drawn first (background), centered vertically.
+      y=42–64 (height=22, center at y=53).
     -->
     <!-- bar 1 -->  <path android:pathData="M22,42 L25,42 L25,64 L22,64 Z" android:fillColor="#FFFFFF"/>
     <!-- bar 2 -->  <path android:pathData="M27,42 L29,42 L29,64 L27,64 Z" android:fillColor="#FFFFFF"/>
@@ -46,5 +28,22 @@
     <!-- bar 12 --> <path android:pathData="M73,42 L77,42 L77,64 L73,64 Z" android:fillColor="#FFFFFF"/>
     <!-- bar 13 --> <path android:pathData="M79,42 L81,42 L81,64 L79,64 Z" android:fillColor="#FFFFFF"/>
     <!-- bar 14 --> <path android:pathData="M83,42 L86,42 L86,64 L83,64 Z" android:fillColor="#FFFFFF"/>
+
+    <!-- V — drawn on top (foreground) -->
+    <path
+        android:pathData="M18,13 L54,90"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="10"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+
+    <path
+        android:pathData="M90,13 L54,90"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="10"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
 
 </vector>
