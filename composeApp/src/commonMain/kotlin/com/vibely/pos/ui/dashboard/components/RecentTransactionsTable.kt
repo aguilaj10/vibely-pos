@@ -2,6 +2,7 @@ package com.vibely.pos.ui.dashboard.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vibely.pos.shared.domain.dashboard.entity.RecentTransaction
 import com.vibely.pos.shared.domain.dashboard.entity.TransactionStatus
@@ -10,7 +11,10 @@ import com.vibely.pos.ui.components.DataTable
 import com.vibely.pos.ui.components.DataTableCell
 import com.vibely.pos.ui.components.StatusChip
 import com.vibely.pos.ui.components.StatusChipVariant
+import com.vibely.pos.ui.components.StatusDot
 import com.vibely.pos.ui.components.TableColumn
+import com.vibely.pos.ui.theme.CompactDimensions
+import com.vibely.pos.ui.theme.LocalAppDimensions
 import com.vibely.pos.ui.utils.formatCurrency
 import org.jetbrains.compose.resources.stringResource
 import vibely_pos.composeapp.generated.resources.Res
@@ -19,11 +23,16 @@ import vibely_pos.composeapp.generated.resources.dashboard_transaction_column_in
 import vibely_pos.composeapp.generated.resources.dashboard_transaction_column_status
 import vibely_pos.composeapp.generated.resources.dashboard_transaction_column_time
 
+private val STATUS_EXPANDED_COLUMN_WIDTH: Dp = 120.dp
+private val STATUS_COMPACT_COLUMN_WIDTH: Dp = 40.dp
+
 /**
  * Recent transactions table component for dashboard.
  *
  * Displays a scrollable list of recent sale transactions with
  * invoice number, time, amount, and status badge.
+ * On compact (phone) layouts the status column is narrowed and a [StatusDot] is shown
+ * instead of a text chip to preserve horizontal space.
  *
  * @param transactions List of recent transactions to display.
  * @param modifier Optional modifier for customization.
@@ -35,6 +44,8 @@ fun RecentTransactionsTable(
     modifier: Modifier = Modifier,
     onTransactionClick: (RecentTransaction) -> Unit = {},
 ) {
+    val isCompact = LocalAppDimensions.current == CompactDimensions
+    val statusColumnWidth = if (isCompact) STATUS_COMPACT_COLUMN_WIDTH else STATUS_EXPANDED_COLUMN_WIDTH
     DataTable(
         columns =
         listOf(
@@ -56,7 +67,7 @@ fun RecentTransactionsTable(
             TableColumn(
                 key = "status",
                 label = stringResource(Res.string.dashboard_transaction_column_status),
-                width = 120.dp,
+                width = statusColumnWidth,
             ),
         ),
         data = transactions,
@@ -66,7 +77,7 @@ fun RecentTransactionsTable(
                 "invoice" -> DataTableCell(transaction.invoiceNumber)
                 "time" -> DataTableCell(FormatUtils.formatDateTime(transaction.saleDate).substringAfterLast(' '))
                 "amount" -> DataTableCell(transaction.totalAmount.amount.let { it.formatCurrency() })
-                "status" -> TransactionStatusChip(transaction.status)
+                "status" -> TransactionStatusChip(status = transaction.status, isCompact = isCompact)
                 else -> DataTableCell("")
             }
         },
@@ -76,17 +87,22 @@ fun RecentTransactionsTable(
 }
 
 @Composable
-private fun TransactionStatusChip(status: TransactionStatus) {
-    val (label, variant) =
-        when (status) {
+private fun TransactionStatusChip(status: TransactionStatus, isCompact: Boolean) {
+    if (isCompact) {
+        val (variant, label) = when (status) {
+            TransactionStatus.DRAFT -> StatusChipVariant.Info to "Draft"
+            TransactionStatus.COMPLETED -> StatusChipVariant.Success to "Completed"
+            TransactionStatus.CANCELLED -> StatusChipVariant.Info to "Cancelled"
+            TransactionStatus.REFUNDED -> StatusChipVariant.Error to "Refunded"
+        }
+        StatusDot(variant = variant, contentDescription = label)
+    } else {
+        val (label, variant) = when (status) {
             TransactionStatus.DRAFT -> "Draft" to StatusChipVariant.Info
             TransactionStatus.COMPLETED -> "Completed" to StatusChipVariant.Success
             TransactionStatus.CANCELLED -> "Cancelled" to StatusChipVariant.Info
             TransactionStatus.REFUNDED -> "Refunded" to StatusChipVariant.Error
         }
-
-    StatusChip(
-        label = label,
-        variant = variant,
-    )
+        StatusChip(label = label, variant = variant)
+    }
 }

@@ -52,6 +52,8 @@ import com.vibely.pos.ui.dialogs.LineItemFormData
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormData
 import com.vibely.pos.ui.dialogs.PurchaseOrderFormDialog
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.theme.CompactDimensions
+import com.vibely.pos.ui.theme.LocalAppDimensions
 import com.vibely.pos.ui.utils.formatCurrency
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -422,6 +424,7 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun TableRow(purchaseOrder: PurchaseOrder, onView: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
+    val isCompact = LocalAppDimensions.current == CompactDimensions
     Row(
         modifier =
         Modifier
@@ -435,12 +438,12 @@ private fun TableRow(purchaseOrder: PurchaseOrder, onView: () -> Unit, onEdit: (
         StatusChip(status = purchaseOrder.status, modifier = Modifier.width(100.dp))
 
         TableCell(
-            FormatUtils.formatDate(purchaseOrder.orderDate),
+            FormatUtils.formatDate(purchaseOrder.orderDate, isCompact),
             modifier = Modifier.width(120.dp),
         )
 
         TableCell(
-            purchaseOrder.expectedDeliveryDate?.let { FormatUtils.formatDate(it) } ?: "-",
+            purchaseOrder.expectedDeliveryDate?.let { FormatUtils.formatDate(it, isCompact) } ?: "-",
             modifier = Modifier.width(140.dp),
         )
 

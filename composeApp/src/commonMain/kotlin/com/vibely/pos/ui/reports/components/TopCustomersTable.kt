@@ -8,6 +8,8 @@ import com.vibely.pos.shared.util.FormatUtils
 import com.vibely.pos.ui.components.DataTable
 import com.vibely.pos.ui.components.DataTableCell
 import com.vibely.pos.ui.components.TableColumn
+import com.vibely.pos.ui.theme.CompactDimensions
+import com.vibely.pos.ui.theme.LocalAppDimensions
 import com.vibely.pos.ui.utils.formatCurrency
 import org.jetbrains.compose.resources.stringResource
 import vibely_pos.composeapp.generated.resources.Res
@@ -18,6 +20,7 @@ import vibely_pos.composeapp.generated.resources.reports_column_visits
 
 @Composable
 fun TopCustomersTable(customers: List<CustomerAnalytics>, modifier: Modifier = Modifier) {
+    val isCompact = LocalAppDimensions.current == CompactDimensions
     DataTable(
         columns =
         listOf(
@@ -45,7 +48,7 @@ fun TopCustomersTable(customers: List<CustomerAnalytics>, modifier: Modifier = M
                 "customer" -> DataTableCell(customer.customerName)
                 "totalSpent" -> DataTableCell((customer.totalSpent / 100.0).formatCurrency())
                 "visits" -> DataTableCell(customer.visitCount.toString())
-                "lastVisit" -> DataTableCell(FormatUtils.formatDate(customer.lastVisit))
+                "lastVisit" -> DataTableCell(FormatUtils.formatDate(customer.lastVisit, isCompact))
                 else -> DataTableCell("")
             }
         },

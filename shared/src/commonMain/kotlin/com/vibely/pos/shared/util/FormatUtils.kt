@@ -9,14 +9,23 @@ import kotlin.time.Instant
  */
 object FormatUtils {
     /**
-     * Formats Instant into readable dates
+     * Formats an Instant as a human-readable date.
      *
-     * @param instant that has the date to format
-     * @return The formatted date string
+     * Returns different formats based on the available display space:
+     * - Default (expanded): "Jan 3, 2026" — suited for tablet and desktop layouts.
+     * - Compact: "03/01/2026" (DD/MM/YYYY) — suited for phone layouts.
+     *
+     * @param instant The instant to format.
+     * @param isCompact When `true`, returns the compact DD/MM/YYYY format. Defaults to `false`.
+     * @return The formatted date string.
      */
-    fun formatDate(instant: Instant): String {
+    fun formatDate(instant: Instant, isCompact: Boolean = false): String {
         val (year, month, day) = epochToDate(instant.toEpochMilliseconds())
-        return "${MONTH_NAMES[month]} $day, $year"
+        return if (isCompact) {
+            "${day.toString().padStart(2, '0')}/${(month + 1).toString().padStart(2, '0')}/$year"
+        } else {
+            "${MONTH_NAMES[month]} $day, $year"
+        }
     }
 
     /**

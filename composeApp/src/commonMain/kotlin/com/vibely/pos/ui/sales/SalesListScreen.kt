@@ -45,10 +45,14 @@ import com.vibely.pos.ui.components.AppTextField
 import com.vibely.pos.ui.components.EmptyState
 import com.vibely.pos.ui.components.EmptyStateSize
 import com.vibely.pos.ui.components.PaginationControls
+import com.vibely.pos.ui.components.StatusChipVariant
+import com.vibely.pos.ui.components.StatusDot
 import com.vibely.pos.ui.dialogs.PaymentDialog
 import com.vibely.pos.ui.dialogs.RefundDialog
 import com.vibely.pos.ui.navigation.Screen
 import com.vibely.pos.ui.theme.AppColors
+import com.vibely.pos.ui.theme.CompactDimensions
+import com.vibely.pos.ui.theme.LocalAppDimensions
 import com.vibely.pos.ui.utils.formatDecimal
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -278,7 +282,7 @@ private fun SalesTableRow(sale: Sale, onClick: () -> Unit, onRefund: () -> Unit,
             )
 
             Text(
-                text = FormatUtils.formatDate(sale.saleDate),
+                text = FormatUtils.formatDate(sale.saleDate, LocalAppDimensions.current == CompactDimensions),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
@@ -412,59 +416,77 @@ private fun SalesTableHeader() {
 
 @Composable
 private fun PaymentStatusBadge(status: PaymentStatus, modifier: Modifier = Modifier) {
-    val (text, color) =
-        when (status) {
+    val isCompact = LocalAppDimensions.current == CompactDimensions
+    if (isCompact) {
+        val (variant, label) = when (status) {
+            PaymentStatus.PENDING -> StatusChipVariant.Warning to "Pending"
+            PaymentStatus.COMPLETED -> StatusChipVariant.Success to "Completed"
+            PaymentStatus.FAILED -> StatusChipVariant.Error to "Failed"
+            PaymentStatus.REFUNDED -> StatusChipVariant.Inactive to "Refunded"
+            PaymentStatus.CANCELLED -> StatusChipVariant.Error to "Cancelled"
+        }
+        Box(modifier = modifier, contentAlignment = Alignment.CenterStart) {
+            StatusDot(variant = variant, contentDescription = label)
+        }
+    } else {
+        val (text, color) = when (status) {
             PaymentStatus.PENDING -> "Pending" to AppColors.Warning
             PaymentStatus.COMPLETED -> "Completed" to AppColors.Success
             PaymentStatus.FAILED -> "Failed" to AppColors.Error
             PaymentStatus.REFUNDED -> "Refunded" to AppColors.TextSecondaryLight
             PaymentStatus.CANCELLED -> "Cancelled" to AppColors.Error
         }
-
-    Box(
-        modifier =
-        modifier
-            .background(
-                color = color.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(6.dp),
-            ).padding(horizontal = 12.dp, vertical = 6.dp),
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Medium,
-            color = color,
-            fontSize = 11.sp,
-        )
+        Box(
+            modifier = modifier
+                .background(color = color.copy(alpha = 0.1f), shape = RoundedCornerShape(6.dp))
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Medium,
+                color = color,
+                fontSize = 11.sp,
+            )
+        }
     }
 }
 
 @Composable
 private fun SaleStatusBadge(status: SaleStatus, modifier: Modifier = Modifier) {
-    val (text, color) =
-        when (status) {
+    val isCompact = LocalAppDimensions.current == CompactDimensions
+    if (isCompact) {
+        val (variant, label) = when (status) {
+            SaleStatus.DRAFT -> StatusChipVariant.Inactive to "Draft"
+            SaleStatus.COMPLETED -> StatusChipVariant.Success to "Completed"
+            SaleStatus.CANCELLED -> StatusChipVariant.Error to "Cancelled"
+            SaleStatus.REFUNDED -> StatusChipVariant.Warning to "Refunded"
+            SaleStatus.PARTIALLY_REFUNDED -> StatusChipVariant.Info to "Partial Refund"
+        }
+        Box(modifier = modifier, contentAlignment = Alignment.CenterStart) {
+            StatusDot(variant = variant, contentDescription = label)
+        }
+    } else {
+        val (text, color) = when (status) {
             SaleStatus.DRAFT -> "Draft" to AppColors.TextSecondaryLight
             SaleStatus.COMPLETED -> "Completed" to AppColors.Success
             SaleStatus.CANCELLED -> "Cancelled" to AppColors.Error
             SaleStatus.REFUNDED -> "Refunded" to AppColors.Warning
             SaleStatus.PARTIALLY_REFUNDED -> "Partially Refunded" to AppColors.Info
         }
-
-    Box(
-        modifier =
-        modifier
-            .background(
-                color = color.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(6.dp),
-            ).padding(horizontal = 12.dp, vertical = 6.dp),
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Medium,
-            color = color,
-            fontSize = 11.sp,
-        )
+        Box(
+            modifier = modifier
+                .background(color = color.copy(alpha = 0.1f), shape = RoundedCornerShape(6.dp))
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Medium,
+                color = color,
+                fontSize = 11.sp,
+            )
+        }
     }
 }
 

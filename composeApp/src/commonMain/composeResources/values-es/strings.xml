@@ -17,7 +17,7 @@
     <string name="nav_settings">Configuración</string>
     <string name="nav_exchange_rates">Tipos de Cambio</string>
     <string name="nav_theme_demo">Demo de Tema</string>
-    
+
     <!-- Authentication -->
     <string name="auth_welcome_back">Bienvenido de Nuevo</string>
     <string name="auth_sign_in_to_your_account">Inicia Sesión en tu Cuenta</string>
@@ -29,7 +29,7 @@
     <string name="auth_sign_in">Iniciar Sesión</string>
     <string name="auth_show_password">Mostrar Contraseña</string>
     <string name="auth_hide_password">Ocultar Contraseña</string>
-    
+
     <!-- Settings -->
     <string name="settings_title">Configuración</string>
     <string name="settings_store_info">Información de la Tienda</string>
@@ -44,7 +44,7 @@
     <string name="settings_see_you_soon">¡Hasta pronto!</string>
     <string name="settings_save">Guardar</string>
     <string name="settings_retry">Reintentar</string>
-    
+
     <!-- User Preferences -->
     <string name="preferences_user_preferences">Preferencias de Usuario</string>
     <string name="preferences_language">Idioma</string>
@@ -62,7 +62,7 @@
     <string name="preferences_english">Inglés</string>
     <string name="preferences_spanish">Español</string>
     <string name="preferences_french">Francés</string>
-    
+
     <!-- Tax & Currency -->
     <string name="tax_currency_title">Configuración de Impuesto &amp; Moneda</string>
     <string name="tax_currency_label">Tasa de Impuesto (%)</string>
@@ -80,7 +80,7 @@
     <string name="preferences_timeout_format">%1$d min</string>
     <string name="tax_currency_total_label">Total:</string>
     <string name="tax_currency_description">La tasa de impuesto se aplica a todas las ventas. La moneda afecta cómo se muestran los montos.</string>
-    
+
     <!-- Store Info -->
     <string name="store_info_title">Información de la Tienda</string>
     <string name="store_info_store_name">Nombre de la Tienda</string>
@@ -97,7 +97,7 @@
     <string name="store_info_email_error">El correo electrónico es requerido</string>
     <string name="store_info_email_error_invalid">Formato de correo electrónico inválido</string>
     <string name="store_info_description">Esta información se mostrará en los recibos y facturas.</string>
-    
+
     <!-- Receipt Config -->
     <string name="receipt_config_title">Configuración de Recibo</string>
     <string name="receipt_header_label">Encabezado del Recibo</string>
@@ -118,7 +118,7 @@
     <string name="receipt_sample_thank_you">Gracias por comprar!</string>
     <string name="receipt_sample_please_come_again">¡Por favor vuelva pronto!</string>
     <string name="receipt_sample_logo_placeholder">[Logotipo: $logoUrl]</string>
-    
+
     <!-- Common Actions -->
     <string name="common_add">Agregar</string>
     <string name="common_edit">Editar</string>
@@ -134,7 +134,7 @@
     <string name="common_amount">Monto</string>
     <string name="common_items">Artículos</string>
     <string name="common_active">Activo</string>
-    
+
     <!-- Checkout & Cart -->
     <string name="checkout_title">Caja</string>
     <string name="checkout_new_sale">Nueva Venta</string>
@@ -145,7 +145,7 @@
     <string name="checkout_point_of_sale">Punto de Venta</string>
     <string name="checkout_pos_abbr">PDV</string>
     <string name="checkout_coming_soon">Próximamente</string>
-    
+
     <!-- Payment -->
     <string name="payment_dialog_title">Pago Dividido</string>
     <string name="payment_total_amount">Monto Total</string>
@@ -157,7 +157,7 @@
     <string name="payment_method_cash">Efectivo</string>
     <string name="payment_method_transfer">Transferencia</string>
     <string name="payment_process_refund">Procesar Reembolso</string>
-    
+
     <!-- Shifts -->
     <string name="shifts_title">Gestión de Turnos</string>
     <string name="shifts_open">Abrir Turno</string>
@@ -175,11 +175,11 @@
     <string name="shifts_bill_coin_breakdown">Desglose de Billetes/Monedas (Opcional)</string>
     <string name="shifts_calculated_from_breakdown">Calculado del desglose:</string>
     <string name="shifts_no_shifts_found">No se encontraron turnos</string>
-    
+
     <!-- Sales & Reports -->
     <string name="sales_title">Historial de Ventas</string>
     <string name="sales_invoice">Factura</string>
-    <string name="sales_invoice_number">No. de Factura</string>
+    <string name="sales_invoice_number">Recibo</string>
     <string name="sales_payment">Pago</string>
     <string name="reports_title">Informes</string>
     <string name="reports_loading">Cargando informes...</string>
@@ -189,12 +189,12 @@
     <string name="reports_top_customers">Mejores Clientes</string>
     <string name="reports_top_categories">Categorías Principales</string>
     <string name="reports_no_data">No hay datos disponibles</string>
-    
+
     <!-- Dashboard -->
     <string name="dashboard_title">Panel de Control</string>
     <string name="dashboard_quick_actions">Acciones Rápidas</string>
     <string name="dashboard_recent_transactions">Transacciones Recientes</string>
-    
+
     <!-- Inventory & Products -->
     <string name="inventory_title">Inventario</string>
     <string name="inventory_all_categories">Todas las Categorías</string>
@@ -209,30 +209,30 @@
     <string name="inventory_no_items_added">No se agregaron artículos. Haga clic en \'Agregar Producto\' para agregar artículos de línea.</string>
     <string name="inventory_product_count">%1$d productos</string>
     <string name="inventory_unit_price_each">%1$s cada uno</string>
-    
+
     <!-- Categories -->
     <string name="categories_search_placeholder">Buscar categorías…</string>
     <string name="categories_add">Agregar Categoría</string>
-    
+
     <!-- Customers -->
     <string name="customers_add">Agregar Cliente</string>
     <string name="customers_edit">Editar Cliente</string>
     <string name="customers_no_customers_found">No se encontraron clientes</string>
     <string name="customers_loyalty_tier">Nivel de Lealtad</string>
-    
+
     <!-- Suppliers -->
     <string name="suppliers_add">Agregar Proveedor</string>
     <string name="suppliers_no_suppliers_found">No se encontraron proveedores</string>
-    
+
     <!-- Exchange Rates -->
     <string name="exchange_rates_title">Tipos de Cambio</string>
     <string name="exchange_rates_add">Agregar Tipo de Cambio</string>
     <string name="exchange_rates_no_rates_found">No se encontraron tipos de cambio</string>
-    
+
     <!-- Users -->
     <string name="users_add">Agregar Usuario</string>
     <string name="users_no_users_found">No se encontraron usuarios</string>
-    
+
     <!-- Purchase Orders -->
     <string name="purchase_orders_create">Crear OC</string>
     <string name="purchase_orders_edit">Editar OC</string>
@@ -241,22 +241,22 @@
     <string name="purchase_orders_no_items">No hay artículos. Haz clic en 'Agregar Producto' para agregar artículos.</string>
     <string name="purchase_orders_total">Total:</string>
     <string name="purchase_orders_no_orders_found">No se encontraron órdenes de compra</string>
-    
+
     <!-- Refund -->
     <string name="refund_restore_stock_warning">Esto restaurará el stock de productos al inventario.</string>
     <string name="refund_invoice">Factura</string>
     <string name="refund_reason_optional">Razón (opcional)</string>
     <string name="refund_process_refund">Procesar Reembolso</string>
-    
+
     <!-- Pagination -->
     <string name="pagination_page">Página %1$d</string>
     <string name="pagination_showing_entries">Mostrando %1$d - %2$d de %3$d entradas</string>
     <string name="pagination_no_data">No hay datos disponibles</string>
-    
+
     <!-- Debug -->
     <string name="debug_mode_badge">MODO DEBUG</string>
     <string name="debug_mode_icon">🔧</string>
-    
+
     <!-- Theme Demo (development/preview screen) -->
     <string name="theme_demo_title">Sistema de Temas de Vibely POS</string>
     <string name="theme_demo_description">Una demostración completa de componentes de tema personalizados</string>
@@ -294,7 +294,7 @@
     <string name="theme_demo_text_field_validation_label">Campo de Texto con Validación</string>
     <string name="theme_demo_text_field_validation">Escriba al menos 3 caracteres...</string>
     <string name="theme_demo_search_placeholder">Buscar productos...</string>
-    
+
     <!-- Form Labels (Common across forms) -->
     <string name="form_label_name">Nombre *</string>
     <string name="form_label_description">Descripción</string>
@@ -303,7 +303,7 @@
     <string name="form_label_address">Dirección</string>
     <string name="form_label_notes">Notas</string>
     <string name="form_label_notes_optional">Notas (opcional)</string>
-    
+
     <!-- Exchange Rate Form -->
     <string name="form_label_from_currency">Moneda Origen *</string>
     <string name="form_label_to_currency">Moneda Destino *</string>
@@ -311,7 +311,7 @@
     <string name="form_label_effective_date">Fecha Efectiva (AAAA-MM-DD) *</string>
     <string name="form_placeholder_date_example">2024-01-01</string>
     <string name="form_currency_display">%1$s - %2$s</string>
-    
+
     <!-- Purchase Order Form -->
     <string name="form_label_supplier">Proveedor *</string>
     <string name="form_label_product">Producto</string>
@@ -319,14 +319,14 @@
     <string name="form_label_unit_cost">Costo Unitario</string>
     <string name="form_product_display">%1$s (%2$s)</string>
     <string name="form_currency_symbol_code">%1$s %2$s</string>
-    
+
     <!-- User Form -->
     <string name="form_label_role">Rol *</string>
     <string name="form_label_email_required">Correo Electrónico *</string>
     <string name="form_label_full_name">Nombre Completo *</string>
     <string name="form_label_password">Contraseña *</string>
     <string name="form_label_confirm_password">Confirmar Contraseña *</string>
-    
+
     <!-- Product Form -->
     <string name="form_label_sku">SKU *</string>
     <string name="form_label_name_required">Nombre *</string>
@@ -341,28 +341,28 @@
     <string name="form_label_min_stock">Nivel Mínimo de Stock</string>
     <string name="form_label_unit">Unidad</string>
     <string name="form_label_barcode">Código de Barras</string>
-    
+
     <!-- Close Shift Form -->
     <string name="form_label_actual_cash">Efectivo Contado *</string>
     <string name="form_display_total_cash">+ %1$s</string>
     <string name="form_display_variance">%1$s%2$s</string>
     <string name="form_display_denomination_total">= %1$s</string>
-    
+
     <!-- Supplier Form -->
     <string name="form_label_supplier_name">Nombre del Proveedor *</string>
     <string name="form_label_contact_person">Persona de Contacto</string>
-    
+
     <!-- Customer Form -->
     <string name="form_label_first_name">Nombre *</string>
     <string name="form_label_last_name">Apellido *</string>
-    
+
     <!-- Category Form -->
     <string name="form_label_color_hex">Color (hex, ej., #FF5733)</string>
     <string name="form_label_icon">Ícono (opcional)</string>
-    
+
     <!-- Payment Dialog -->
     <string name="payment_amount_placeholder">Monto</string>
-    
+
     <!-- Search Placeholders -->
     <string name="sales_search_placeholder">Buscar por número de factura o ID...</string>
     <string name="users_search_placeholder">Buscar por nombre o correo...</string>
@@ -370,7 +370,7 @@
     <string name="suppliers_search_placeholder">Buscar por nombre, correo o teléfono...</string>
     <string name="inventory_search_by_name_sku">Buscar por nombre o SKU...</string>
     <string name="purchase_orders_search_placeholder">Buscar por número de OC, proveedor...</string>
-    
+
     <!-- Dashboard Metrics -->
     <string name="dashboard_metric_todays_sales">Ventas de Hoy</string>
     <string name="dashboard_metric_transactions">Transacciones</string>
@@ -378,12 +378,12 @@
     <string name="dashboard_metric_shift">Turno</string>
     <string name="dashboard_metric_shift_open">Abierto</string>
     <string name="dashboard_metric_shift_closed">Cerrado</string>
-    
+
     <!-- Quick Actions -->
     <string name="quick_action_new_sale">Nueva Venta</string>
     <string name="quick_action_inventory">Inventario</string>
     <string name="quick_action_reports">Informes</string>
-    
+
     <!-- Reports -->
     <string name="reports_metric_total_sales">Ventas Totales</string>
     <string name="reports_metric_total_profit">Ganancia Total</string>
@@ -393,7 +393,7 @@
     <string name="reports_date_this_week">Esta Semana</string>
     <string name="reports_date_this_month">Este Mes</string>
     <string name="reports_date_custom">Personalizado</string>
-    
+
     <!-- Report Tables -->
     <string name="reports_column_customer">Cliente</string>
     <string name="reports_column_total_spent">Total Gastado</string>
@@ -403,7 +403,7 @@
     <string name="reports_column_qty_sold">Cant Vendida</string>
     <string name="reports_column_revenue">Ingresos</string>
     <string name="reports_column_profit">Ganancia</string>
-    
+
     <!-- Report Tables (legacy - kept for compatibility) -->
     <string name="table_column_customer">Cliente</string>
     <string name="table_column_total_spent">Total Gastado</string>
@@ -414,85 +414,85 @@
     <string name="table_column_revenue">Ingresos</string>
     <string name="table_column_profit">Ganancia</string>
     <string name="table_display_revenue_percentage">%1$s (%2$s%%)</string>
-    
+
     <!-- Receipt Config -->
     <string name="receipt_logo_url_placeholder">https://ejemplo.com/logo.png</string>
     <string name="receipt_preview_sample_price_1">$10.00</string>
     <string name="receipt_preview_sample_price_2">$15.00</string>
     <string name="receipt_preview_sample_subtotal">$25.00</string>
     <string name="receipt_preview_sample_tax">$4.00</string>
-    
+
     <!-- Filters -->
     <string name="filter_all_roles">Todos los Roles</string>
     <string name="filter_all_statuses">Todos los Estados</string>
     <string name="filter_all_categories">Todas las Categorías</string>
     <string name="filter_clear_filters">Limpiar Filtros</string>
-    
+
     <!-- Categories Screen -->
     <string name="categories_top_categories">Categorías Principales</string>
     <string name="categories_all_categories">Todas las Categorías</string>
     <string name="categories_product_count">%1$d productos</string>
-    
+
     <!-- Checkout -->
     <string name="checkout_select_customer">Seleccionar Cliente</string>
     <string name="checkout_walkin_customer">Cliente sin Registro</string>
     <string name="checkout_no_products_found">No se encontraron productos</string>
-    
+
     <!-- App Name -->
     <string name="app_name">Vibely POS</string>
-    
+
     <!-- Common UI Elements -->
     <string name="common_close_icon">✕</string>
     <string name="common_coming_soon">Próximamente</string>
     <string name="common_refresh">Actualizar</string>
     <string name="common_refreshing">Actualizando...</string>
-    
+
     <!-- Suppliers Metrics -->
     <string name="suppliers_metric_total_suppliers">Total de Proveedores</string>
     <string name="suppliers_metric_active_suppliers">Proveedores Activos</string>
-    
+
     <!-- Dashboard Transaction Columns -->
     <string name="dashboard_transaction_column_invoice">Factura</string>
     <string name="dashboard_transaction_column_time">Hora</string>
     <string name="dashboard_transaction_column_amount">Monto</string>
     <string name="dashboard_transaction_column_status">Estado</string>
-    
+
     <!-- Shifts Metrics -->
     <string name="shifts_metric_opened">Abierto</string>
     <string name="shifts_metric_total_sales">Ventas Totales</string>
     <string name="shifts_metric_open_shifts">Turnos Abiertos</string>
     <string name="shifts_metric_todays_sales">Ventas de Hoy</string>
     <string name="shifts_metric_total_discrepancy">Discrepancia Total</string>
-    
+
     <!-- Error Messages -->
     <string name="error_something_went_wrong">¡Ups! Algo salió mal</string>
-    
+
     <!-- Purchase Orders KPI Labels -->
     <string name="purchase_orders_kpi_total_orders">Total de Órdenes</string>
     <string name="purchase_orders_kpi_pending_orders">Órdenes Pendientes</string>
     <string name="purchase_orders_kpi_total_amount">Monto Total</string>
-    
+
     <!-- Users KPI Labels -->
     <string name="users_kpi_total_users">Total de Usuarios</string>
     <string name="users_kpi_active_users">Usuarios Activos</string>
-    
+
     <!-- Customers KPI Labels -->
     <string name="customers_kpi_total_customers">Total de Clientes</string>
     <string name="customers_kpi_active_customers">Clientes Activos</string>
     <string name="customers_kpi_total_loyalty_points">Puntos de Lealtad Totales</string>
-    
+
     <!-- Categories KPI Labels -->
     <string name="categories_kpi_total_categories">Total de Categorías</string>
     <string name="categories_kpi_total_products">Total de Productos</string>
     <string name="categories_kpi_avg_per_category">Promedio por Categoría</string>
     <string name="categories_kpi_largest_category">Categoría Más Grande</string>
-    
+
     <!-- Inventory KPI Labels -->
     <string name="inventory_kpi_total_products">Total de Productos</string>
     <string name="inventory_kpi_low_stock">Stock Bajo</string>
     <string name="inventory_kpi_total_value">Valor Total</string>
     <string name="inventory_kpi_categories">Categorías</string>
-    
+
     <!-- Common Labels -->
     <string name="common_checkout">Caja</string>
     <string name="common_inactive">Inactivo</string>
