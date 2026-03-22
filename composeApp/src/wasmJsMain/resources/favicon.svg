@@ -1,24 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <!--
-    Vibely POS — Web Favicon v5
-    Black background. Barcode in background, V in foreground.
+    Vibely POS — Web Favicon v6
+    Layering: V (background) → dark mask strip → barcode (foreground).
     Optimized for 32×32 — barcode simplified to 6 bars.
   -->
 
   <!-- Background -->
   <rect width="32" height="32" rx="5" fill="#111827"/>
 
-  <!-- Barcode — background, centered vertically (y=12–20) -->
+  <!-- 1. V — background -->
+  <line x1="6" y1="4" x2="16" y2="29"
+        stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="26" y1="4" x2="16" y2="29"
+        stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- 2. Mask strip — hides V in the barcode zone -->
+  <rect x="0" y="10" width="32" height="12" fill="#111827"/>
+
+  <!-- 3. Barcode — foreground, centered (y=12–20) -->
   <rect x="5"  y="12" width="1.5" height="8" fill="white"/>
   <rect x="8"  y="12" width="3"   height="8" fill="white"/>
   <rect x="13" y="12" width="1.5" height="8" fill="white"/>
   <rect x="17" y="12" width="1.5" height="8" fill="white"/>
   <rect x="21" y="12" width="3"   height="8" fill="white"/>
   <rect x="26" y="12" width="1.5" height="8" fill="white"/>
-
-  <!-- V — foreground, overlays the barcode -->
-  <line x1="6" y1="4" x2="16" y2="29"
-        stroke="white" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="26" y1="4" x2="16" y2="29"
-        stroke="white" stroke-width="3.5" stroke-linecap="round"/>
 </svg>
