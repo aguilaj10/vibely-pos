@@ -57,6 +57,8 @@ kotlin {
             // Added for Compose Preview support on Android
             implementation(libs.compose.ui.tooling)
             implementation(libs.androidx.ui.tooling.preview)
+            implementation(libs.connectivity.http)
+            implementation(libs.connectivity.compose.http)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -82,10 +84,10 @@ kotlin {
             implementation(projects.shared)
 
             // Network Connectivity Monitoring - Core + Compose integration
+            // HTTP variants excluded from commonMain: browsers block cross-origin pings (CORS).
+            // Web targets use navigator.onLine via connectivity-core natively.
             implementation(libs.connectivity.core)
-            implementation(libs.connectivity.http)
             implementation(libs.connectivity.compose)
-            implementation(libs.connectivity.compose.http)
 
             // Currency Formatting - Kotlin Multiplatform
             implementation(libs.kurrency.core)
@@ -99,6 +101,8 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.ktor.clientCio)
             implementation(libs.logback)
+            implementation(libs.connectivity.http)
+            implementation(libs.connectivity.compose.http)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.test)

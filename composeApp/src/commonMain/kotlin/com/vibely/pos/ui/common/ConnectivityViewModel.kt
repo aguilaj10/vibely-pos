@@ -11,21 +11,17 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for managing application connectivity state.
  *
- * Monitors network connectivity status and exposes it as a reactive StateFlow.
- * Uses multiple endpoints for reliability checking.
+ * Monitors network connectivity using platform-native detection via [createConnectivity].
+ * Each platform provides a CORS-safe implementation:
+ * - Android / JVM: HTTP polling to external hosts.
+ * - Web (JS / WasmJs): browser `navigator.onLine` API — no HTTP pings.
  */
 class ConnectivityViewModel : ViewModel() {
 
     private val _isOnline = MutableStateFlow(true)
     val isOnline: StateFlow<Boolean> = _isOnline.asStateFlow()
 
-    private val connectivity = Connectivity {
-        autoStart = true
-        urls("cloudflare.com", "google.com", "dns.google")
-        port = 443
-        pollingIntervalMs = 10.seconds
-        timeoutMs = 5.seconds
-    }
+    private val connectivity = createConnectivity()
 
     init {
         viewModelScope.launch {
