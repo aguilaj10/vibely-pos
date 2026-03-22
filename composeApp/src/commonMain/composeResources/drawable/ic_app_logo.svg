@@ -1,40 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <!--
-    Vibely POS — App Icon Mark v2
-    Black (#111827) background. White V. White barcode bars spanning the full
-    width at the top — no outline, bars sit flush on the dark background.
-    The V arms emerge below the barcode, anchoring the whole mark.
+    Vibely POS — App Icon Mark v3
+    Black (#111827) background. White V. White barcode bars centered vertically.
+    Barcode sits in the middle of the canvas; V emerges below it.
   -->
 
   <!-- Background: primary near-black -->
   <rect width="100" height="100" fill="#111827"/>
 
-  <!-- V left arm -->
-  <line x1="14" y1="28" x2="50" y2="78"
+  <!-- V left arm — slightly narrower than v2 -->
+  <line x1="17" y1="44" x2="50" y2="88"
         stroke="white" stroke-width="11" stroke-linecap="round"/>
-  <!-- V right arm -->
-  <line x1="86" y1="28" x2="50" y2="78"
+  <!-- V right arm — slightly narrower than v2 -->
+  <line x1="83" y1="44" x2="50" y2="88"
         stroke="white" stroke-width="11" stroke-linecap="round"/>
 
   <!--
     Barcode — white bars, no outline, black background shows between them.
-    Spans x=14–86 matching the V arm tips. y=10–32 (height=22).
+    Spans x=14–86. y=25–47 (height=22, shifted down from v2 to center the mark).
     Alternating thin (2–3px) and thick (4px) bars with 2px gaps.
   -->
-  <rect x="14" y="10" width="3" height="22" fill="white"/>
-  <rect x="19" y="10" width="2" height="22" fill="white"/>
-  <rect x="23" y="10" width="4" height="22" fill="white"/>
-  <rect x="29" y="10" width="2" height="22" fill="white"/>
-  <rect x="33" y="10" width="3" height="22" fill="white"/>
-  <rect x="38" y="10" width="2" height="22" fill="white"/>
-  <rect x="42" y="10" width="2" height="22" fill="white"/>
-  <rect x="46" y="10" width="4" height="22" fill="white"/>
-  <rect x="52" y="10" width="2" height="22" fill="white"/>
-  <rect x="56" y="10" width="3" height="22" fill="white"/>
-  <rect x="61" y="10" width="2" height="22" fill="white"/>
-  <rect x="65" y="10" width="4" height="22" fill="white"/>
-  <rect x="71" y="10" width="2" height="22" fill="white"/>
-  <rect x="75" y="10" width="3" height="22" fill="white"/>
-  <rect x="80" y="10" width="3" height="22" fill="white"/>
-  <rect x="85" y="10" width="1" height="22" fill="white"/>
+  <rect x="14" y="25" width="3" height="22" fill="white"/>
+  <rect x="19" y="25" width="2" height="22" fill="white"/>
+  <rect x="23" y="25" width="4" height="22" fill="white"/>
+  <rect x="29" y="25" width="2" height="22" fill="white"/>
+  <rect x="33" y="25" width="3" height="22" fill="white"/>
+  <rect x="38" y="25" width="2" height="22" fill="white"/>
+  <rect x="42" y="25" width="2" height="22" fill="white"/>
+  <rect x="46" y="25" width="4" height="22" fill="white"/>
+  <rect x="52" y="25" width="2" height="22" fill="white"/>
+  <rect x="56" y="25" width="3" height="22" fill="white"/>
+  <rect x="61" y="25" width="2" height="22" fill="white"/>
+  <rect x="65" y="25" width="4" height="22" fill="white"/>
+  <rect x="71" y="25" width="2" height="22" fill="white"/>
+  <rect x="75" y="25" width="3" height="22" fill="white"/>
+  <rect x="80" y="25" width="3" height="22" fill="white"/>
+  <rect x="85" y="25" width="1" height="22" fill="white"/>
 </svg>

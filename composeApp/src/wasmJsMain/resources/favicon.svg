@@ -1,25 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <!--
-    Vibely POS — Web Favicon v2
-    Black background, white V, white barcode bars at the top.
+    Vibely POS — Web Favicon v3
+    Black background, white V, white barcode bars centered in the mark.
     Optimized for 32×32 — barcode simplified to 6 bars for readability.
   -->
 
   <!-- Background -->
   <rect width="32" height="32" rx="5" fill="#111827"/>
 
-  <!-- V left arm -->
-  <line x1="5" y1="12" x2="16" y2="26"
+  <!-- V left arm — slightly narrower, starts below barcode -->
+  <line x1="6" y1="17" x2="16" y2="29"
         stroke="white" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- V right arm -->
-  <line x1="27" y1="12" x2="16" y2="26"
+  <!-- V right arm — slightly narrower, starts below barcode -->
+  <line x1="26" y1="17" x2="16" y2="29"
         stroke="white" stroke-width="3.5" stroke-linecap="round"/>
 
-  <!-- Barcode — 6 white bars, simplified for 32px readability -->
-  <rect x="5"  y="4" width="1.5" height="8" fill="white"/>
-  <rect x="8"  y="4" width="3"   height="8" fill="white"/>
-  <rect x="13" y="4" width="1.5" height="8" fill="white"/>
-  <rect x="17" y="4" width="1.5" height="8" fill="white"/>
-  <rect x="21" y="4" width="3"   height="8" fill="white"/>
-  <rect x="26" y="4" width="1.5" height="8" fill="white"/>
+  <!-- Barcode — 6 white bars, shifted down to center the mark -->
+  <rect x="5"  y="8" width="1.5" height="8" fill="white"/>
+  <rect x="8"  y="8" width="3"   height="8" fill="white"/>
+  <rect x="13" y="8" width="1.5" height="8" fill="white"/>
+  <rect x="17" y="8" width="1.5" height="8" fill="white"/>
+  <rect x="21" y="8" width="3"   height="8" fill="white"/>
+  <rect x="26" y="8" width="1.5" height="8" fill="white"/>
 </svg>
