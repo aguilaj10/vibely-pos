@@ -124,7 +124,9 @@ buildkonfig {
         buildConfigField(
             com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
             "API_BASE_URL",
-            System.getenv("API_BASE_URL") ?: "http://localhost:8080",
+            (project.findProperty("API_BASE_URL") as String?)
+                ?: System.getenv("API_BASE_URL")
+                ?: "http://localhost:8080",
         )
     }
 }

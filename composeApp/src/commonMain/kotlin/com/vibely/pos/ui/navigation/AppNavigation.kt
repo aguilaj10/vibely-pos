@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -11,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.vibely.pos.config.DebugConfig
@@ -20,6 +23,7 @@ import com.vibely.pos.ui.customers.CustomersScreen
 import com.vibely.pos.ui.dashboard.DashboardScreen
 import com.vibely.pos.ui.exchangerates.ExchangeRatesScreen
 import com.vibely.pos.ui.inventory.InventoryScreen
+import com.vibely.pos.ui.navigation.components.BottomNavigationBar
 import com.vibely.pos.ui.navigation.components.LeftSidebarNavigation
 import com.vibely.pos.ui.purchaseorders.PurchaseOrdersScreen
 import com.vibely.pos.ui.reports.ReportsScreen
@@ -93,11 +97,15 @@ fun AppNavigation(startDestination: Screen = if (DebugConfig.isDebugMode) Screen
     }
 }
 
+/** Width threshold below which the bottom nav bar is used instead of the sidebar. */
+private val MOBILE_WIDTH_THRESHOLD = 600.dp
+
 /**
- * Layout for authenticated screens with left sidebar navigation.
+ * Layout for authenticated screens.
  *
- * Provides consistent navigation structure across all authenticated screens.
- * Uses left sidebar for desktop/tablet layouts.
+ * Adapts between two layouts based on available width:
+ * - Compact (< 600dp): bottom navigation bar — suited for phones.
+ * - Expanded (≥ 600dp): collapsible left sidebar — suited for tablets and desktop.
  *
  * @param backStack The navigation back stack.
  */
@@ -105,122 +113,153 @@ fun AppNavigation(startDestination: Screen = if (DebugConfig.isDebugMode) Screen
 private fun AuthenticatedScreenLayout(backStack: MutableList<Screen>) {
     val currentScreen = backStack.lastOrNull() ?: Screen.Dashboard
 
-    Row(modifier = Modifier.fillMaxSize()) {
-        LeftSidebarNavigation(
-            backStack = backStack,
-            currentScreen = currentScreen,
-            modifier = Modifier.fillMaxHeight(),
-        )
-
-        Box(modifier = Modifier.weight(1f)) {
-            NavDisplay(
-                backStack = backStack,
-                onBack = { if (backStack.size > 1) backStack.removeLast() },
-                entryProvider = { key ->
-                    when (key) {
-                        is Screen.Dashboard -> {
-                            NavEntry(key) {
-                                DashboardScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
-                            }
-                        }
-
-                        is Screen.Checkout -> {
-                            NavEntry(key) {
-                                CheckoutScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
-                            }
-                        }
-
-                        is Screen.CheckoutEdit -> {
-                            NavEntry(key) {
-                                CheckoutScreen(
-                                    onNavigate = { navScreen -> backStack.add(navScreen) },
-                                    saleId = key.saleId,
-                                )
-                            }
-                        }
-
-                        is Screen.Sales -> {
-                            NavEntry(key) {
-                                SalesListScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
-                            }
-                        }
-
-                        is Screen.Inventory -> {
-                            NavEntry(key) {
-                                InventoryScreen()
-                            }
-                        }
-
-                        is Screen.Categories -> {
-                            NavEntry(key) {
-                                CategoriesScreen()
-                            }
-                        }
-
-                        is Screen.Suppliers -> {
-                            NavEntry(key) {
-                                SuppliersScreen()
-                            }
-                        }
-
-                        is Screen.PurchaseOrders -> {
-                            NavEntry(key) {
-                                PurchaseOrdersScreen()
-                            }
-                        }
-
-                        is Screen.Customers -> {
-                            NavEntry(key) {
-                                CustomersScreen()
-                            }
-                        }
-
-                        is Screen.Users -> {
-                            NavEntry(key) {
-                                UsersScreen()
-                            }
-                        }
-
-                        is Screen.Shifts -> {
-                            NavEntry(key) {
-                                ShiftsScreen()
-                            }
-                        }
-
-                        is Screen.Reports -> {
-                            NavEntry(key) {
-                                ReportsScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
-                            }
-                        }
-
-                        is Screen.Settings -> {
-                            NavEntry(key) {
-                                SettingsScreen(
-                                    onNavigate = { screen -> backStack.add(screen) },
-                                )
-                            }
-                        }
-
-                        is Screen.ExchangeRates -> {
-                            NavEntry(key) {
-                                ExchangeRatesScreen()
-                            }
-                        }
-
-                        else -> {
-                            error("Unknown route: $key")
-                        }
-                    }
+    androidx.compose.foundation.layout.BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        if (maxWidth < MOBILE_WIDTH_THRESHOLD) {
+            // Phone layout: bottom navigation bar
+            Scaffold(
+                bottomBar = {
+                    BottomNavigationBar(
+                        currentScreen = currentScreen,
+                        onNavigate = { screen -> backStack.add(screen) },
+                    )
                 },
-            )
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    ScreenNavHost(backStack = backStack)
+                }
+            }
+        } else {
+            // Tablet / desktop layout: collapsible left sidebar
+            Row(modifier = Modifier.fillMaxSize()) {
+                LeftSidebarNavigation(
+                    backStack = backStack,
+                    currentScreen = currentScreen,
+                    modifier = Modifier.fillMaxHeight(),
+                )
+                Box(modifier = Modifier.weight(1f)) {
+                    ScreenNavHost(backStack = backStack)
+                }
+            }
         }
     }
+}
+
+/**
+ * Hosts the [NavDisplay] with all authenticated screen destinations.
+ *
+ * Extracted to avoid duplicating the entry-provider map between the mobile
+ * and desktop layout branches of [AuthenticatedScreenLayout].
+ *
+ * @param backStack The navigation back stack shared with the parent layout.
+ */
+@Composable
+private fun ScreenNavHost(backStack: MutableList<Screen>) {
+    NavDisplay(
+        backStack = backStack,
+        onBack = { if (backStack.size > 1) backStack.removeLast() },
+        entryProvider = { key ->
+            when (key) {
+                is Screen.Dashboard -> {
+                    NavEntry(key) {
+                        DashboardScreen(
+                            onNavigate = { screen -> backStack.add(screen) },
+                        )
+                    }
+                }
+
+                is Screen.Checkout -> {
+                    NavEntry(key) {
+                        CheckoutScreen(
+                            onNavigate = { screen -> backStack.add(screen) },
+                        )
+                    }
+                }
+
+                is Screen.CheckoutEdit -> {
+                    NavEntry(key) {
+                        CheckoutScreen(
+                            onNavigate = { navScreen -> backStack.add(navScreen) },
+                            saleId = key.saleId,
+                        )
+                    }
+                }
+
+                is Screen.Sales -> {
+                    NavEntry(key) {
+                        SalesListScreen(
+                            onNavigate = { screen -> backStack.add(screen) },
+                        )
+                    }
+                }
+
+                is Screen.Inventory -> {
+                    NavEntry(key) {
+                        InventoryScreen()
+                    }
+                }
+
+                is Screen.Categories -> {
+                    NavEntry(key) {
+                        CategoriesScreen()
+                    }
+                }
+
+                is Screen.Suppliers -> {
+                    NavEntry(key) {
+                        SuppliersScreen()
+                    }
+                }
+
+                is Screen.PurchaseOrders -> {
+                    NavEntry(key) {
+                        PurchaseOrdersScreen()
+                    }
+                }
+
+                is Screen.Customers -> {
+                    NavEntry(key) {
+                        CustomersScreen()
+                    }
+                }
+
+                is Screen.Users -> {
+                    NavEntry(key) {
+                        UsersScreen()
+                    }
+                }
+
+                is Screen.Shifts -> {
+                    NavEntry(key) {
+                        ShiftsScreen()
+                    }
+                }
+
+                is Screen.Reports -> {
+                    NavEntry(key) {
+                        ReportsScreen(
+                            onNavigate = { screen -> backStack.add(screen) },
+                        )
+                    }
+                }
+
+                is Screen.Settings -> {
+                    NavEntry(key) {
+                        SettingsScreen(
+                            onNavigate = { screen -> backStack.add(screen) },
+                        )
+                    }
+                }
+
+                is Screen.ExchangeRates -> {
+                    NavEntry(key) {
+                        ExchangeRatesScreen()
+                    }
+                }
+
+                else -> {
+                    error("Unknown route: $key")
+                }
+            }
+        },
+    )
 }

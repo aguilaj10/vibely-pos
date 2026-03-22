@@ -40,5 +40,6 @@ plugins {
 }
 
 include(":composeApp")
+include(":androidApp")
 include(":backend")
 include(":shared")

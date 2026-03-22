@@ -1,5 +1,6 @@
 package com.vibely.pos
 
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,14 +11,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val debugMode = try {
-            System.getProperty("DEBUG_MODE")?.toBoolean() == true ||
-                System.getenv("DEBUG_MODE")?.toBoolean() == true
-        } catch (e: Exception) {
-            false
-        }
-
-        if (debugMode) {
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
             DebugConfig.enableDebugMode()
         }
 
