@@ -4,19 +4,24 @@ FROM gradle:9.3.1-jdk21 AS build
 # Set working directory
 WORKDIR /app
 
+# Tell settings.gradle.kts to skip composeApp/androidApp so this image
+# does not need their sources or the Android SDK to build.
+ENV BACKEND_ONLY=true
+
 # Copy Gradle configuration files
 COPY build.gradle.kts settings.gradle.kts gradle.properties ./
 COPY buildSrc ./buildSrc
 COPY gradle ./gradle
 COPY gradlew gradlew.bat ./
 
-# Copy source code
+# Copy source code (only modules required by :backend)
 COPY shared ./shared
 COPY backend ./backend
-COPY composeApp ./composeApp
 
-# Build the application
-RUN gradle :backend:installDist --no-daemon
+# Build the application.
+# --no-configuration-cache: the cache assumes settings/projects don't depend
+# on env vars; BACKEND_ONLY makes the project set vary, so we must disable it.
+RUN gradle :backend:installDist --no-daemon --no-configuration-cache
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
